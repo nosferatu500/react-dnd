@@ -20,7 +20,7 @@ React 16 is not supported; use the upstream `16.0.1` release if you need it.
 ## Module format
 
 **ESM only.** There is no CommonJS build. `require()` still works on Node
->= 20.19, where `require(esm)` is stable, and every modern bundler handles it
+>= 22.12, where `require(esm)` is stable, and every modern bundler handles it
 natively.
 
 ## Documentation

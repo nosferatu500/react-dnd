@@ -1,12 +1,13 @@
-// Safari 6 and 6.1 for desktop, iPad, and iPhone are the only browsers that
-// have WebKitMutationObserver but not un-prefixed MutationObserver.
-// Must use `global` or `self` instead of `window` to work in both frames and web
-// workers. `global` is a provision of Browserify, Mr, Mrs, or Mop.
-
-/* globals self */
-const scope = typeof global !== 'undefined' ? global : self
+// `globalThis` rather than a `global`/`self` fallback: this has to work in
+// frames and web workers as well as the main thread, which is precisely what
+// `globalThis` standardised.
+//
+// The WebKitMutationObserver branch dates from Safari 6.x, which had the
+// prefixed name only. It is kept because it costs one `||` and the fallback path
+// below is what actually matters.
+const scope = globalThis as any
 const BrowserMutationObserver =
-	(scope as any).MutationObserver || (scope as any).WebKitMutationObserver
+	scope.MutationObserver || scope.WebKitMutationObserver
 
 export function makeRequestCallFromTimer(callback: () => void) {
 	return function requestCall() {

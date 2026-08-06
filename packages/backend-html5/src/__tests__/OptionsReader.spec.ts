@@ -1,19 +1,18 @@
 import { OptionsReader } from '../OptionsReader.js'
 
-declare const global: any
-
 describe('The HTML5Backend Options Reader', () => {
 	describe('window injection', () => {
 		it('uses an undefined window when no window is available', () => {
-			const mockWindow = global.window
+			const mockWindow = globalThis.window
 			try {
-				// rome-ignore lint/performance/noDelete: This doesn't work without delete
-				delete global.window
-				expect(global.window).toBeUndefined()
+				// The cast is needed because globalThis.window is not declared
+				// optional; deleting it is the only way to simulate a non-DOM host.
+				delete (globalThis as { window?: Window }).window
+				expect(globalThis.window).toBeUndefined()
 				const options = new OptionsReader(undefined)
 				expect(options.window).toBeUndefined()
 			} finally {
-				global.window = mockWindow
+				globalThis.window = mockWindow
 			}
 		})
 	})

@@ -48,7 +48,11 @@ const SWCRC = {
 	$schema: 'https://swc.rs/schema.json',
 	sourceMaps: true,
 	jsc: {
-		target: 'es2022',
+		// SWC has no `es2025` yet (it caps at es2024), and `esnext` means "do not
+		// downlevel anything" — which is what an ES2025 target wants. TypeScript
+		// is the authority on which language level is allowed; see
+		// tsconfig.base.json.
+		target: 'esnext',
 		parser: { syntax: 'typescript', tsx: true },
 		transform: {
 			react: { runtime: 'automatic', useBuiltins: true, development: false },

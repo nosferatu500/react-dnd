@@ -17,8 +17,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Oldest supported and current LTS.
-        node-version: ['20.19', '24.x']
+        # Node 20 reached EOL on 2026-04-30. 22.12 is the oldest supported line
+        # and is engines.node — it is the floor that catches an ES2025 built-in
+        # that the runtime does not actually have yet.
+        node-version: ['22.12', '24.x', '26.x']
 
     steps:
       - uses: actions/checkout@v5
@@ -60,7 +62,7 @@ jobs:
         run: git diff --exit-code
 
       - name: Publish coverage to codecov.io
-        if: matrix.node-version == '24.x'
+        if: matrix.node-version == '26.x'
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -82,7 +84,7 @@ jobs:
 
       - uses: actions/setup-node@v5
         with:
-          node-version: 24.x
+          node-version: 26.x
           cache: npm
 
       - run: npm ci

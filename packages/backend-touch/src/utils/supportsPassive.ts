@@ -14,7 +14,7 @@ export const supportsPassive = ((): boolean => {
 				},
 			}),
 		)
-	} catch (_e) {
+	} catch {
 		// do nothing
 	}
 	return supported

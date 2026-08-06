@@ -15,9 +15,10 @@ Drag and Drop for React.
 | | Supported |
 | --- | --- |
 | React | `^17.0.2 \|\| ^18.0.0 \|\| ^19.0.0` |
-| Node (for building/testing this repo) | `>= 20.19` |
+| Node | `>= 22.12` (Node 20 reached EOL 2026-04-30) |
 | TypeScript (for consumers) | `>= 5.0` — `exports` carries `types` |
-| Module format | **ESM only** (`require()` still works on Node >= 20.19 via `require(esm)`) |
+| Module format | **ESM only** (`require()` still works via `require(esm)`) |
+| Language level | **ES2025**, shipped un-downleveled |
 
 React 16 is **no longer supported**. If you need it, use `react-dnd@16.0.1`
 from upstream.

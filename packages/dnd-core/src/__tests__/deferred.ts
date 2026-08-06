@@ -11,13 +11,15 @@ export interface Deferred {
 /**
  * A promise plus its resolver, so a subscription callback can settle the test
  * the way `done` used to.
+ *
+ * Built on `Promise.withResolvers()` (ES2024), which replaces the
+ * `let resolve!: () => void` dance this file used to hand-roll. `resolve` is
+ * re-wrapped as a zero-argument function so it can be passed straight to a
+ * monitor subscription, whose `Listener` type takes no arguments.
  */
 export function deferred(): Deferred {
-	let resolve!: () => void
-	const promise = new Promise<void>((res) => {
-		resolve = res
-	})
-	return { promise, resolve }
+	const { promise, resolve } = Promise.withResolvers<void>()
+	return { promise, resolve: () => resolve() }
 }
 
 /**
@@ -25,7 +27,7 @@ export function deferred(): Deferred {
  * `@react-dnd/asap` queue has flushed handler-registry mutations.
  */
 export function nextMacroTask(): Promise<void> {
-	return new Promise((resolve) => {
-		setTimeout(resolve, 0)
-	})
+	const { promise, resolve } = Promise.withResolvers<void>()
+	setTimeout(resolve, 0)
+	return promise
 }

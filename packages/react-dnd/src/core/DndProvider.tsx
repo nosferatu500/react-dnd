@@ -3,6 +3,7 @@ import { createDragDropManager } from 'dnd-core'
 import type { FC, ReactNode } from 'react'
 import { memo, useEffect } from 'react'
 
+import type { DndContextType } from './DndContext.js'
 import { DndContext } from './DndContext.js'
 
 export type DndProviderProps<BackendContext, BackendOptions> =
@@ -20,6 +21,18 @@ export type DndProviderProps<BackendContext, BackendOptions> =
 
 let refCount = 0
 const INSTANCE_SYM = Symbol.for('__REACT_DND_CONTEXT_INSTANCE__')
+
+/**
+ * The slot react-dnd stashes its shared manager in, so that separate bundles of
+ * this library on one page still cooperate.
+ *
+ * This used to be reached through `declare const global: any`, which silently
+ * turned every access into `any`. Naming the shape means the symbol indexing is
+ * actually typechecked.
+ */
+interface DndGlobalContext {
+	[INSTANCE_SYM]?: DndContextType | null
+}
 
 /**
  * A React component that provides the React-DnD context
@@ -64,10 +77,19 @@ export const DndProvider: FC<DndProviderProps<unknown, unknown>> = memo(
 	},
 )
 
-function getDndContextValue(props: DndProviderProps<unknown, unknown>) {
+/**
+ * Returns the manager to publish, and whether it came from the shared global
+ * slot (and therefore needs refcounting).
+ *
+ * The explicit tuple matters: inferred from the array literals this was
+ * `(DndContextType | boolean)[]`, so `manager` reached
+ * `<DndContext.Provider value={...}>` typed as `boolean | DndContextType`.
+ */
+function getDndContextValue(
+	props: DndProviderProps<unknown, unknown>,
+): [manager: DndContextType, isGlobalInstance: boolean] {
 	if ('manager' in props) {
-		const manager = { dragDropManager: props.manager }
-		return [manager, false]
+		return [{ dragDropManager: props.manager }, false]
 	}
 
 	const manager = createSingletonDndContext(
@@ -76,32 +98,38 @@ function getDndContextValue(props: DndProviderProps<unknown, unknown>) {
 		props.options,
 		props.debugMode,
 	)
-	const isGlobalInstance = !props.context
-
-	return [manager, isGlobalInstance]
+	return [manager, !props.context]
 }
 
 function createSingletonDndContext<BackendContext, BackendOptions>(
 	backend: BackendFactory,
-	context: BackendContext = getGlobalContext(),
+	context: BackendContext | undefined,
 	options: BackendOptions,
 	debugMode?: boolean,
-) {
-	const ctx = context as any
-	if (!ctx[INSTANCE_SYM]) {
-		ctx[INSTANCE_SYM] = {
-			dragDropManager: createDragDropManager(
-				backend,
-				context,
-				options,
-				debugMode,
-			),
-		}
+): DndContextType {
+	// A caller-supplied context (an iframe's window, say) gets its own manager;
+	// otherwise the manager is shared through the global slot.
+	const host = (context ?? getGlobalContext()) as DndGlobalContext
+	// `??=` rather than a truthiness check: DndProvider's teardown puts `null`
+	// back in this slot, and nullish is exactly the condition to re-create on.
+	host[INSTANCE_SYM] ??= {
+		dragDropManager: createDragDropManager(
+			backend,
+			context,
+			options,
+			debugMode,
+		),
 	}
-	return ctx[INSTANCE_SYM]
+	return host[INSTANCE_SYM]
 }
 
-declare const global: any
-function getGlobalContext() {
-	return typeof global !== 'undefined' ? global : (window as any)
+function getGlobalContext(): DndGlobalContext {
+	// `globalThis` is the whole reason this used to be a `global`/`self`/`window`
+	// fallback guarded by `typeof`. It resolves in browsers, workers, iframes and
+	// Node alike.
+	//
+	// The cast claims our symbol slot on the global object; `globalThis` has no
+	// declared members in common with an all-optional interface, so TS's weak-type
+	// check rejects the plain return.
+	return globalThis as DndGlobalContext
 }

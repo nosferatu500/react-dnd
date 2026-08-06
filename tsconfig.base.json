@@ -1,12 +1,16 @@
 {
   "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    /* ES2025 language level. SWC does no downleveling (target: esnext), so
+       whatever is written here is what ships. The runtime floor is Node 22.12
+       (engines.node) — `lib` runs slightly ahead of it, so check availability
+       before reaching for a brand-new built-in. CI's lowest leg is the floor. */
+    "target": "ES2025",
+    "lib": ["ES2025", "DOM", "DOM.Iterable"],
 
     /* TS6 requires an explicit, non-legacy module/resolution pair.
-       `preserve` + `bundler` keeps the ESM-with-.js-specifiers sources that
-       SWC transpiles into both dist/cjs and dist/esm. */
+       `preserve` + `bundler` matches the ESM-with-.js-specifiers sources that
+       SWC emits as-is; the packages are ESM only. */
     "module": "Preserve",
     "moduleResolution": "Bundler",
     "verbatimModuleSyntax": true,

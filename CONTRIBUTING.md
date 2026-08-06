@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node `>= 20.19`
+- Node `>= 22.12`
 - npm `>= 10` (this repo uses **npm workspaces**; Yarn is no longer used)
 
 ## Getting started
@@ -33,6 +33,22 @@ workspace automatically when its version satisfies the range.
 | `npm run test:modules` | that the built entrypoints load by `import` and by `require(esm)` |
 
 Run `npm run lint:fix` to apply Biome's safe fixes.
+
+## Language level
+
+`target` and `lib` are **ES2025** and SWC does no downleveling, so whatever you
+write is what ships.
+
+`lib` runs slightly ahead of the runtime floor (`engines.node` is 22.12), so TS
+will happily let you call a built-in that Node 22 does not have. Before reaching
+for something very new, check its availability — `RegExp.escape`, for instance,
+is Node 24+, which is why `vitest.aliases.mjs` still escapes by hand. CI's lowest
+leg runs the floor exactly so this is caught.
+
+One deliberate omission: `union()` in `backend-html5` does **not** use the ES2025
+`Set` methods, because `Set.prototype.union` would raise that package's *browser*
+floor to Chrome 122 / Safari 17 / Firefox 127 for no gain over
+`[...new Set([...a, ...b])]`.
 
 > Avoid `biome check --write --unsafe`. Two of its unsafe fixes are actively
 > wrong for this codebase: `noUnusedPrivateClassMembers` deletes private fields

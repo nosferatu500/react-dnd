@@ -104,9 +104,9 @@ over that with a dual build, these packages are now **ESM only**:
 There is no `require` condition, no `dist/cjs`, and no `dist/esm` — one flavour
 in one directory.
 
-**`require()` still works.** `require(esm)` is unflagged and stable in Node
-20.19.0 and 22.12.0, and `engines.node` is `>= 20.19.0`, so every Node version
-these packages support can `require()` them. That is guarded by a test
+**`require()` still works.** `require(esm)` is unflagged and stable from Node
+20.19.0 / 22.12.0 onward, and `engines.node` is `>= 22.12.0`, so every Node
+version these packages support can `require()` them. That is guarded by a test
 (`npm run test:modules`) rather than assumed — if it ever stops holding, the
 ESM-only decision needs revisiting.
 
@@ -116,8 +116,8 @@ What this means in practice:
 | --- | --- |
 | ESM (`import`) | yes |
 | Bundlers (Vite, webpack 5, Rollup, esbuild, Next) | yes |
-| `require()` on Node >= 20.19 | yes, via `require(esm)` |
-| `require()` on Node < 20.19 | **no** — but those versions are EOL and below `engines.node` |
+| `require()` on Node >= 22.12 | yes, via `require(esm)` |
+| `require()` on Node < 20.19 | **no** — and those lines are EOL anyway |
 | Jest with the default CJS transform | needs ESM support enabled, as for any ESM-only dependency |
 
 **Layout change:** entrypoints moved from `dist/esm/index.mjs` (and upstream's
@@ -129,6 +129,29 @@ map had no `types` condition at all (in fact no `exports` map), so users on
 `moduleResolution: node16`/`nodenext`/`bundler` could not resolve declarations.
 `npm run check:exports` runs [`attw`](https://arethetypeswrong.github.io) with
 its `esm-only` profile over all nine packages in CI, so this cannot regress.
+
+### The packages target ES2025, and require Node >= 22.12
+
+`engines.node` moved from `>= 20.19.0` to `>= 22.12.0`. Two reasons:
+
+- **Node 20 reached end-of-life on 2026-04-30.** The supported lines are 22
+  (Maintenance LTS), 24 (Active LTS) and 26 (Current).
+- ES2024/ES2025 built-ins need it. `Promise.withResolvers` and the `Set`
+  methods arrived in Node 22 (V8 12.4).
+
+The TypeScript `target` and `lib` are now `ES2025`, and SWC runs with
+`target: esnext`, meaning **nothing is downleveled** — the JavaScript you get is
+the language level the sources are written in.
+
+In practice this changed almost no output. Comparing the build before and after
+the bump, **97 of 103 emitted files were byte-identical**; the six that differed
+were exactly the six files edited by hand. That is expected: ES2023, ES2024 and
+ES2025 added very little *syntax* (mostly regex flags and import attributes,
+none of which this codebase uses) — their substance is new *built-ins*. So the
+target bump is about which built-ins are allowed, not about how code is emitted.
+
+Consumers bundling for older browsers were already transpiling this package's
+ES2022 output if they needed to; that has not changed.
 
 ### `react-dnd` no longer depends on `hoist-non-react-statics`
 

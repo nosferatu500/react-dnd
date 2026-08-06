@@ -44,8 +44,8 @@ export function reduce(
 
 	// Check the target ids at the innermost position. If they are valid, add them
 	// to the result
-	const prevInnermostTargetId = prevTargetIds[prevTargetIds.length - 1]
-	const innermostTargetId = targetIds[targetIds.length - 1]
+	const prevInnermostTargetId = prevTargetIds.at(-1)
+	const innermostTargetId = targetIds.at(-1)
 	if (prevInnermostTargetId !== innermostTargetId) {
 		if (prevInnermostTargetId) {
 			result.push(prevInnermostTargetId)

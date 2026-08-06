@@ -48,7 +48,7 @@ export class MonotonicInterpolant {
 				)
 			}
 		}
-		c1s.push(ms[ms.length - 1]!)
+		c1s.push(ms.at(-1)!)
 
 		// Get degree-2 and degree-3 coefficients
 		const c2s = []

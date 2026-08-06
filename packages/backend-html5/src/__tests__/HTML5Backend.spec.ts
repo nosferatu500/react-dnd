@@ -3,20 +3,19 @@ import type { DragDropManager } from 'dnd-core'
 import type { HTML5BackendImpl } from '../HTML5BackendImpl.js'
 import { HTML5Backend } from '../index.js'
 
-declare const global: any
-
 describe('The HTML5 Backend', () => {
 	describe('window injection', () => {
 		it('uses an undefined window when no window is available', () => {
-			const mockWindow = global.window
+			const mockWindow = globalThis.window
 			try {
-				// rome-ignore lint/performance/noDelete: This doesn't work without delete
-				delete global.window
+				// The cast is needed because globalThis.window is not declared
+				// optional; deleting it is the only way to simulate a non-DOM host.
+				delete (globalThis as { window?: Window }).window
 				const backend = HTML5Backend(mockManager()) as HTML5BackendImpl
 				expect(backend).toBeDefined()
 				expect(backend.window).toBeUndefined()
 			} finally {
-				global.window = mockWindow
+				globalThis.window = mockWindow
 			}
 		})
 

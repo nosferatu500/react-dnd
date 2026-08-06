@@ -32,17 +32,17 @@ describe('Drag Around: Custom Drag Layer', () => {
 		expect(second).toHaveStyle({ opacity: 1 })
 
 		const preview = await rendered.findByRole('BoxPreview')
-		expect(preview).toHaveStyle({ backgroundColor: 'white' })
+		expect(preview).toHaveStyle('background-color: rgb(255, 255, 255)')
 
 		// The preview cycles its colour on a 500ms interval.
 		await act(async () => {
 			await vi.advanceTimersByTimeAsync(501)
 		})
-		expect(preview).toHaveStyle({ backgroundColor: 'yellow' })
+		expect(preview).toHaveStyle('background-color: rgb(255, 255, 0)')
 
 		await act(async () => {
 			await vi.advanceTimersByTimeAsync(501)
 		})
-		expect(preview).toHaveStyle({ backgroundColor: 'white' })
+		expect(preview).toHaveStyle('background-color: rgb(255, 255, 255)')
 	})
 })

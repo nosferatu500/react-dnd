@@ -33,9 +33,9 @@
     "packages/util-asap/src/**/*",
     "packages/util-invariant/src/**/*",
     "packages/util-shallowequal/src/**/*",
-    "vitest.config.ts",
-    "vitest.compat17.config.ts",
-    "vitest.setup.ts"
+    "vitest.config.mts",
+    "vitest.compat17.config.mts",
+    "vitest.setup.mts"
   ],
   "exclude": ["**/node_modules/**", "**/dist/**"]
 }

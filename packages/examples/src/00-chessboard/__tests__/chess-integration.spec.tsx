@@ -109,17 +109,17 @@ describe('The Chess Example', () => {
 
 			await fireDragHover(knight, screen.getByTestId('(1,7)'))
 
-			// Yellow cell is knight moving range
+			// Yellow cell is knight moving range. jest-dom v7 compares computed
+			// values verbatim and no longer normalises colour keywords, so these
+			// assert the rgb() form jsdom actually reports.
 			const legalMoves = screen.getAllByRole(OverlayType.PossibleMove)
 			expect(legalMoves.length).toBe(3)
 			legalMoves.forEach((square) => {
-				expect(square).toHaveStyle({ backgroundColor: 'yellow' })
+				expect(square).toHaveStyle('background-color: rgb(255, 255, 0)')
 			})
 
 			// Red cell is current knight position when hold dragging
-			expect(screen.getByRole(OverlayType.IllegalMoveHover)).toHaveStyle({
-				backgroundColor: 'red',
-			})
+			expect(screen.getByRole(OverlayType.IllegalMoveHover)).toHaveStyle('background-color: rgb(255, 0, 0)')
 		})
 	})
 })

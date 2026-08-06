@@ -32,6 +32,9 @@
   "files": [
     "dist/cjs",
     "dist/esm",
+    "src",
+    "!src/**/__tests__",
+    "!src/**/__compat__",
     "README.md",
     "LICENSE"
   ],
@@ -45,8 +48,8 @@
   "scripts": {
     "clean": "shx rm -rf dist .turbo tsconfig.tsbuildinfo",
     "_build_types": "tsc -b tsconfig.json",
-    "_build_esm": "swc src -d dist/esm --strip-leading-paths -C module.type=es6 -C module.ignoreDynamic=true",
-    "_build_cjs": "swc src -d dist/cjs --strip-leading-paths -C module.type=commonjs",
+    "_build_esm": "swc src -d dist/esm --strip-leading-paths --ignore '**/__tests__/**,**/__compat__/**,**/*.spec.ts,**/*.spec.tsx' -C module.type=es6 -C module.ignoreDynamic=true",
+    "_build_cjs": "swc src -d dist/cjs --strip-leading-paths --ignore '**/__tests__/**,**/__compat__/**,**/*.spec.ts,**/*.spec.tsx' -C module.type=commonjs",
     "build": "run-p _build_types _build_esm _build_cjs && npm run _finalize",
     "check": "biome check src",
     "release": "npm publish --access public",

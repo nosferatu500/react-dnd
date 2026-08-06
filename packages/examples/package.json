@@ -29,7 +29,7 @@
   "scripts": {
     "clean": "shx rm -rf dist .turbo",
     "_build_types": "tsc -b tsconfig.json",
-    "_build_esm": "swc src -d dist --strip-leading-paths -C module.type=es6",
+    "_build_esm": "swc src -d dist --strip-leading-paths --ignore '**/__tests__/**,**/__compat__/**,**/*.spec.ts,**/*.spec.tsx' -C module.type=es6",
     "_build_docs": "tsc -p tsconfig.docs.json",
     "_unjsxify": "node ../../scripts/unjsxify.mjs ./dist/docs",
     "build": "run-p _build_types _build_esm && run-s _build_docs _unjsxify",

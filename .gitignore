@@ -1,37 +1,26 @@
 node_modules/
 packages/*/dist
-packages/*/commonjs
+packages/*/build
 packages/*/lib
 .turbo/
 .swc/
-tsconfig.tsbuildinfo
+*.tsbuildinfo
 
-# Docsite Artifacts
+# Docsite artifacts
 packages/docsite/public
 packages/docsite/.cache
 packages/docsite/static/examples_js
 packages/docsite/static/examples_ts
 
-__site__
-__site_prerender__
+# Next.js
+packages/*/.next
 
-# Test Artifacts
+# Test artifacts
 coverage/
 test-results.xml
-.jest-cache
 
 # Misc
 *-*.log
 .idea
 .DS_Store
 .rollup.cache/
-
-# Yarn v2
-# https://yarnpkg.com/advanced/qa#which-files-should-be-gitignored
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions

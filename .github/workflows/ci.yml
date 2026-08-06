@@ -1,54 +1,98 @@
-name: Node CI
+name: CI
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
-      
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  verify:
+    name: Verify (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        node-version: [20.x]
+        # Oldest supported and current LTS.
+        node-version: ['20.19', '24.x']
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+          cache: npm
 
-      - name: Enable Corepack
-        run: corepack enable
-  
-      - name: Configure Yarn
-        run: |
-          yarn config set nodeLinker node-modules
-          yarn config set enableGlobalCache false
+      - run: npm ci
 
-      - name: Install Dependencies
-        run: yarn install
-        
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          server-token: ${{ secrets.TURBO_TOKEN }}
+      - name: Build
+        run: npm run build
 
-      - run: yarn ci
-        name: Execute Tests
-        env:
-          CI: true
-          TURBO_API: 'http://127.0.0.1:9080'
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: 'react-dnd'
+      - name: Lint and format (Biome)
+        run: npm run lint
+
+      - name: Typecheck (TypeScript 6)
+        run: npm run check:types
+
+      - name: Validate published exports (attw)
+        run: npm run check:exports
+
+      - name: Test
+        run: npm run test:coverage
+
+      - name: React 17/18/19 conformance matrix
+        run: npm run test:matrix
+
+      - name: Verify built ESM + CJS entrypoints load
+        run: npm run test:modules
+
+      - name: Spellcheck docs
+        run: npm run spellcheck
+
+      - name: Fail if the build dirtied the tree
+        run: git diff --exit-code
 
       - name: Publish coverage to codecov.io
-        uses: codecov/codecov-action@v3
+        if: matrix.node-version == '24.x'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  # The main suite runs on whatever React is installed, so covering React 18
+  # end-to-end (through @testing-library/react, not just the compat harness)
+  # requires a real install swap. Vitest aliases cannot do it: RTL resolves its
+  # own react-dom/client via Node and would load a second React copy.
+  react-install-matrix:
+    name: Full suite on React ${{ matrix.react }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        react: ['18', '19']
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.x
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install React ${{ matrix.react }}
+        run: |
+          npm install --no-save --workspace-root \
+            react@${{ matrix.react }} react-dom@${{ matrix.react }}
+          node -e "console.log('react', require('react/package.json').version)"
+
+      - run: npm run build
+
+      - run: npm test

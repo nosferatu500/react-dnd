@@ -61,6 +61,8 @@ export class TouchBackendImpl implements Backend {
 	private moveStartSourceIds: string[] | undefined
 	private waitingForDelay: boolean | undefined
 	private timeout: ReturnType<typeof setTimeout> | undefined
+	/** Cached so teardown removes exactly the listener setup added. */
+	private topMoveStartHandler: ((e: Event) => void) | undefined
 	private dragOverTargetIds: string[] | undefined
 	private draggedSourceNode: HTMLElement | undefined
 	private draggedSourceNodeRemovalObserver: MutationObserver | undefined
@@ -128,7 +130,10 @@ export class TouchBackendImpl implements Backend {
 		)
 		TouchBackendImpl.isSetUp = true
 
-		this.addEventListener(root, 'start', this.getTopMoveStartHandler() as any)
+		this.topMoveStartHandler = this.getTopMoveStartHandler() as (
+			e: Event,
+		) => void
+		this.addEventListener(root, 'start', this.topMoveStartHandler as any)
 		this.addEventListener(
 			root,
 			'start',
@@ -177,7 +182,10 @@ export class TouchBackendImpl implements Backend {
 			this.handleTopMoveStartCapture as any,
 			true,
 		)
-		this.removeEventListener(root, 'start', this.handleTopMoveStart as any)
+		if (this.topMoveStartHandler) {
+			this.removeEventListener(root, 'start', this.topMoveStartHandler as any)
+			this.topMoveStartHandler = undefined
+		}
 		this.removeEventListener(root, 'move', this.handleTopMoveCapture, true)
 		this.removeEventListener(root, 'move', this.handleTopMove as any)
 		this.removeEventListener(
@@ -391,6 +399,10 @@ export class TouchBackendImpl implements Backend {
 			e.type === eventNames.touch.start
 				? this.options.delayTouchStart
 				: this.options.delayMouseStart
+		// Cancel any timer from a previous start: without this, rapid starts queue
+		// several handleTopMoveStart calls and a stale one can begin a drag after
+		// the interaction was abandoned.
+		clearTimeout(this.timeout)
 		this.timeout = setTimeout(
 			this.handleTopMoveStart.bind(this, e as any),
 			delay,

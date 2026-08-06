@@ -1,7 +1,6 @@
-import type { DragDropManager } from 'dnd-core'
-
 import { TouchBackend } from '../index.js'
 import type { TouchBackendImpl } from '../TouchBackendImpl.js'
+import { mockManager } from './mockManager.js'
 
 describe('TouchBackend', () => {
 	it('can be constructed', () => {
@@ -31,11 +30,3 @@ describe('TouchBackend', () => {
 		expect(backend._getDropTargetId({} as Element)).toEqual(undefined)
 	})
 })
-
-function mockManager(): DragDropManager {
-	return {
-		getActions: () => null,
-		getMonitor: () => null,
-		getRegistry: () => null,
-	} as any
-}

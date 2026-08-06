@@ -118,7 +118,10 @@ export class SourceConnector implements Connector {
 			return didChange
 		}
 
-		if (didChange) {
+		// `!this.dragSourceUnsubscribe` covers the disconnect-then-reconnect case
+		// where nothing else changed, which is what React StrictMode's
+		// teardown/setup cycle produces.
+		if (didChange || !this.dragSourceUnsubscribe) {
 			this.lastConnectedHandlerId = this.handlerId
 			this.lastConnectedDragSource = dragSource
 			this.lastConnectedDragSourceOptions = this.dragSourceOptions
@@ -152,7 +155,7 @@ export class SourceConnector implements Connector {
 			return
 		}
 
-		if (didChange) {
+		if (didChange || !this.dragPreviewUnsubscribe) {
 			this.lastConnectedHandlerId = this.handlerId
 			this.lastConnectedDragPreview = dragPreview
 			this.lastConnectedDragPreviewOptions = this.dragPreviewOptions

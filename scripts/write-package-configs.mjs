@@ -63,8 +63,12 @@ for (const [dir, { refs, extra }] of Object.entries(PACKAGES)) {
 			composite: true,
 			emitDeclarationOnly: true,
 			rootDir: './src',
-			outDir: './dist/types',
-			tsBuildInfoFile: './dist/types/.tsbuildinfo',
+			// Declarations sit next to the JavaScript SWC emits; the packages are
+			// ESM only, so there is a single output flavour and no dist/types
+			// intermediate to mirror.
+			outDir: './dist',
+			// Kept out of dist/ so the build cache is never published.
+			tsBuildInfoFile: './tsconfig.tsbuildinfo',
 			...extra,
 		},
 		// A composite project must enumerate every file it owns, hence all of src/.

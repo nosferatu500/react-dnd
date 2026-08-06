@@ -81,29 +81,60 @@ The effect now re-asserts ownership of the slot on every mount. There is nothing
 to do on your side; if you had worked around this by passing an explicit
 `manager` prop, you can stop.
 
-### Published packages resolve types correctly for both `import` and `require`
+### The packages are now ESM only
 
-Upstream's `exports` map had no `types` condition, so TypeScript users on
-`moduleResolution: node16`/`nodenext`/`bundler` could not resolve declarations
-for the ESM entrypoint at all. Each package now ships:
+Upstream shipped a single `dist/` of ESM-syntax `.js` files in a package with no
+`"type": "module"` and no `exports` map — a shape that is neither valid CommonJS
+nor valid ESM, and only worked because bundlers are lenient. Rather than paper
+over that with a dual build, these packages are now **ESM only**:
 
 ```json
+"type": "module",
+"main": "./dist/index.js",
+"types": "./dist/index.d.ts",
 "exports": {
   ".": {
-    "import": { "types": "./dist/esm/index.d.ts", "default": "./dist/esm/index.js" },
-    "require": { "types": "./dist/cjs/index.d.ts", "default": "./dist/cjs/index.js" }
-  }
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
+  "./package.json": "./package.json"
 }
 ```
 
-`npm run check:exports` runs [`attw`](https://arethetypeswrong.github.io) over
-every package in CI, so this cannot regress.
+There is no `require` condition, no `dist/cjs`, and no `dist/esm` — one flavour
+in one directory.
 
-**Layout change:** the ESM build is `dist/esm/*.js` (with
-`dist/esm/package.json` declaring `"type": "module"`) instead of
-`dist/esm/*.mjs`. Deep imports into `dist/` were never supported and are still
-not; if you were reaching into `dist/esm/index.mjs` directly, use the package
-entrypoint.
+**`require()` still works.** `require(esm)` is unflagged and stable in Node
+20.19.0 and 22.12.0, and `engines.node` is `>= 20.19.0`, so every Node version
+these packages support can `require()` them. That is guarded by a test
+(`npm run test:modules`) rather than assumed — if it ever stops holding, the
+ESM-only decision needs revisiting.
+
+What this means in practice:
+
+| Consumer | Works? |
+| --- | --- |
+| ESM (`import`) | yes |
+| Bundlers (Vite, webpack 5, Rollup, esbuild, Next) | yes |
+| `require()` on Node >= 20.19 | yes, via `require(esm)` |
+| `require()` on Node < 20.19 | **no** — but those versions are EOL and below `engines.node` |
+| Jest with the default CJS transform | needs ESM support enabled, as for any ESM-only dependency |
+
+**Layout change:** entrypoints moved from `dist/esm/index.mjs` (and upstream's
+`dist/index.js`) to `dist/index.js`. Deep imports into `dist/` were never
+supported; use the package entrypoint.
+
+TypeScript resolution is now correct for the first time — upstream's `exports`
+map had no `types` condition at all (in fact no `exports` map), so users on
+`moduleResolution: node16`/`nodenext`/`bundler` could not resolve declarations.
+`npm run check:exports` runs [`attw`](https://arethetypeswrong.github.io) with
+its `esm-only` profile over all nine packages in CI, so this cannot regress.
+
+### `react-dnd` no longer depends on `hoist-non-react-statics`
+
+It was never imported — a leftover from the decorator API removed in v14. The
+dependency, its `@types` peer, and the corresponding `peerDependenciesMeta`
+entry are gone. One fewer transitive package, and one fewer CommonJS dependency.
 
 ### `react-dnd-test-utils` now requires React >= 18.3
 

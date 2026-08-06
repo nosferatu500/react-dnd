@@ -4,8 +4,8 @@
     "composite": true,
     "emitDeclarationOnly": true,
     "rootDir": "./src",
-    "outDir": "./dist/types",
-    "tsBuildInfoFile": "./dist/types/.tsbuildinfo"
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "include": ["./src"],
   "exclude": ["./src/**/__tests__/**", "./src/**/__compat__/**"]

@@ -22,6 +22,12 @@ exists from React 18.3. React 19 removed `react-dom/test-utils` entirely, so
 there is no spelling that covers React 17 as well. `react-dnd` itself still
 supports React 17.
 
+## Module format
+
+**ESM only.** There is no CommonJS build. `require()` still works on Node
+>= 20.19, where `require(esm)` is stable, and every modern bundler handles it
+natively.
+
 ## Documentation
 
 https://github.com/nosferatu500/react-dnd#readme

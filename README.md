@@ -16,7 +16,8 @@ Drag and Drop for React.
 | --- | --- |
 | React | `^17.0.2 \|\| ^18.0.0 \|\| ^19.0.0` |
 | Node (for building/testing this repo) | `>= 20.19` |
-| TypeScript (for consumers) | `>= 5.0` — `exports` carries per-condition `types` |
+| TypeScript (for consumers) | `>= 5.0` — `exports` carries `types` |
+| Module format | **ESM only** (`require()` still works on Node >= 20.19 via `require(esm)`) |
 
 React 16 is **no longer supported**. If you need it, use `react-dnd@16.0.1`
 from upstream.
@@ -81,7 +82,7 @@ callback (or pass them a shared ref object):
 
 ```sh
 npm install          # npm workspaces; there is no Yarn here anymore
-npm run build        # turbo: swc for JS, tsc for declarations
+npm run build        # turbo: swc emits ESM, tsc emits declarations alongside
 npm test             # Vitest against src/, on the installed React (19)
 npm run test:matrix  # the same conformance suite on React 17, 18 and 19
 npm run ci           # everything CI runs
@@ -93,8 +94,8 @@ Useful individual checks:
 | --- | --- |
 | `npm run check:types` | TypeScript 6, `@tsconfig/strictest`, all sources + specs |
 | `npm run lint` | Biome (lint + format); replaces ESLint and Rome |
-| `npm run check:exports` | `attw` — that both `import` and `require` resolve correct types |
-| `npm run test:modules` | that the published ESM and CJS entrypoints actually load |
+| `npm run check:exports` | `attw` (`esm-only` profile) — that the entrypoints resolve correct types |
+| `npm run test:modules` | that the published entrypoints load, by `import` **and** by `require(esm)` |
 
 ## Documentation
 

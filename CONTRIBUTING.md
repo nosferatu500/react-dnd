@@ -24,13 +24,13 @@ workspace automatically when its version satisfies the range.
 
 | Command | What it guards |
 | --- | --- |
-| `npm run build` | Turborepo: SWC emits `dist/cjs` + `dist/esm`, `tsc -b` emits declarations |
+| `npm run build` | Turborepo: SWC emits `dist/*.js`, `tsc -b` emits declarations alongside |
 | `npm run lint` | Biome — lint **and** format (replaces ESLint + Rome) |
 | `npm run check:types` | `tsc` over every source and spec under `@tsconfig/strictest` |
-| `npm run check:exports` | `attw` — that `import` and `require` each resolve correctly typed entrypoints |
+| `npm run check:exports` | `attw` (`esm-only` profile) — that the entrypoints resolve correct types |
 | `npm test` | Vitest, run against `src/` on the installed React |
 | `npm run test:matrix` | the shared conformance suite on React 17, 18 and 19 |
-| `npm run test:modules` | that the built ESM and CJS entrypoints load in Node |
+| `npm run test:modules` | that the built entrypoints load by `import` and by `require(esm)` |
 
 Run `npm run lint:fix` to apply Biome's safe fixes.
 

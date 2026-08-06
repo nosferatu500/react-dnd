@@ -105,7 +105,7 @@ You can add these values to your event object properties yourself, however.
 
 [Enzyme](https://github.com/airbnb/enzyme) is a commonly-used tool for testing React components.
 Because of a [bug in Enzyme](https://github.com/airbnb/enzyme/issues/1852), you'll want to wrap your component in a fragment when you mount it.
-You can then store a ref to your wrapped component and use this ref to access the current `DragDropMananger` instance and call its methods.
+You can then store a ref to your wrapped component and use this ref to access the current `DragDropManager` instance and call its methods.
 
 ```jsx
 const [BoxContext] = wrapInTestContext(Box)

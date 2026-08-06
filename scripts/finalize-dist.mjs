@@ -13,10 +13,10 @@
  *    consumers on TypeScript's node16/nodenext resolution got types that
  *    "masquerade as ESM" (attw FalseESM) — they would see `export default`
  *    where the runtime hands them `module.exports`. Placing the same
- *    declarations next to each JavaScript flavour lets the adjacent
+ *    declarations next to each JavaScript flavor lets the adjacent
  *    package.json give them the right module kind.
  *
- * The declaration text is identical for both flavours: sources use explicit
+ * The declaration text is identical for both flavors: sources use explicit
  * `.js` import specifiers, which resolve the same either way. `dist/types` and
  * `dist/{cjs,esm}` are the same depth below the package root, so `.d.ts.map`
  * sourcemap paths stay valid after the copy.

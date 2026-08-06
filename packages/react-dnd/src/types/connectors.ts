@@ -13,7 +13,7 @@ export type ConnectableElement = RefObject<any> | ReactElement | Element | null
  * returning `ReactElement | null` therefore no longer satisfies `Ref<T>`, and
  * `<div ref={drag} />` failed to typecheck against `@types/react@19`.
  *
- * The overloads below keep every runtime behaviour intact while reporting
+ * The overloads below keep every runtime behavior intact while reporting
  * `void` for the ref-callback call, which is the only form React ever invokes.
  *
  * Note the runtime still returns the node it was handed (see

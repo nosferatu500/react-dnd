@@ -110,7 +110,7 @@ describe('The Chess Example', () => {
 			await fireDragHover(knight, screen.getByTestId('(1,7)'))
 
 			// Yellow cell is knight moving range. jest-dom v7 compares computed
-			// values verbatim and no longer normalises colour keywords, so these
+			// values verbatim and no longer normalizes color keywords, so these
 			// assert the rgb() form jsdom actually reports.
 			const legalMoves = screen.getAllByRole(OverlayType.PossibleMove)
 			expect(legalMoves.length).toBe(3)

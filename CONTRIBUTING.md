@@ -54,7 +54,7 @@ each major's own root API directly and shares one assertion set
 to pin an isolated, self-consistent React tree.
 
 Adding an assertion to `harness.tsx` applies it to all three majors at once.
-That is the point: behavioural drift between versions shows up as a failure
+That is the point: behavioral drift between versions shows up as a failure
 rather than as suites that quietly diverged.
 
 ## Releasing

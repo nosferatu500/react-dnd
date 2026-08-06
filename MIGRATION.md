@@ -40,7 +40,7 @@ return <div ref={drag} />
 
 `DragElementWrapper` is now an overloaded interface whose ref-callback form
 reports `void`, while the element-cloning and ref-object forms keep their old
-return types. **Runtime behaviour is unchanged** — the connector still returns
+return types. **Runtime behavior is unchanged** — the connector still returns
 the node it was handed, and React 19 ignores non-function return values from
 callback refs (verified, not assumed).
 
@@ -166,7 +166,7 @@ Spec-level changes you will notice:
 - **`done` callbacks are gone** (Vitest 4 passes a `TestContext` as the second
   argument). Converted to `async` tests: see
   `packages/dnd-core/src/__tests__/deferred.ts`.
-- `jest-dom` v7 no longer normalises CSS colour keywords, so
+- `jest-dom` v7 no longer normalizes CSS color keywords, so
   `toHaveStyle('background-color: white')` must be written as the computed
   `rgb(255, 255, 255)`.
 - Fake timers need `vi.useFakeTimers({ shouldAdvanceTime: true })` alongside
@@ -180,7 +180,7 @@ surfaced the `DndProvider` bug above.
 
 - `moduleResolution: "Node"` is rejected by TS6; the base config now uses
   `module: "Preserve"` + `moduleResolution: "Bundler"`, which matches the
-  ESM-with-`.js`-specifiers sources that SWC transpiles into both flavours.
+  ESM-with-`.js`-specifiers sources that SWC transpiles into both flavors.
 - `baseUrl` is deprecated in TS6 and removed; `paths` no longer needs it.
 - Packages are TypeScript **project references** (`composite: true`), so each
   `tsconfig.json` enumerates all of `src/` rather than just the entry file.
@@ -191,7 +191,7 @@ surfaced the `DndProvider` bug above.
 `scripts/esmify.mjs` — which renamed every ESM file to `.mjs` and rewrote import
 specifiers with string replacement — is replaced by
 `scripts/finalize-dist.mjs`, which stamps a `type` manifest into each output
-directory and mirrors the declarations next to both JavaScript flavours.
+directory and mirrors the declarations next to both JavaScript flavors.
 
 ### Removed packages
 
@@ -234,5 +234,5 @@ this migration and is left as-is; see
 subscription rather than `useSyncExternalStore`. That is the pattern
 `useSyncExternalStore` exists to replace, and it is the likely root cause of
 several upstream reports about stale collected props under concurrent rendering.
-Changing it is a behavioural change that needs its own investigation — see the
+Changing it is a behavioral change that needs its own investigation — see the
 triage document.

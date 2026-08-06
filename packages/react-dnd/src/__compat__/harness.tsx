@@ -9,7 +9,7 @@
  *
  * So the compat suites skip RTL and talk to each major's own root API directly.
  * Both call `defineCompatSuite` with a small adapter, which keeps the assertions
- * identical across versions: any behavioural drift between majors shows up as a
+ * identical across versions: any behavioral drift between majors shows up as a
  * failure rather than as two suites that quietly diverged.
  */
 import type { Identifier } from 'dnd-core'

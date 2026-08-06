@@ -34,7 +34,7 @@ describe('Drag Around: Custom Drag Layer', () => {
 		const preview = await rendered.findByRole('BoxPreview')
 		expect(preview).toHaveStyle('background-color: rgb(255, 255, 255)')
 
-		// The preview cycles its colour on a 500ms interval.
+		// The preview cycles its color on a 500ms interval.
 		await act(async () => {
 			await vi.advanceTimersByTimeAsync(501)
 		})

@@ -100,7 +100,8 @@ export const Card: FC<CardProps> = ({ id, text, index, moveCard }) => {
 	})
 
 	const opacity = isDragging ? 0 : 1
-	drag(drop(ref))
+	drag(ref)
+	drop(ref)
 	return (
 		<div ref={ref} style={{ ...style, opacity }} data-handler-id={handlerId}>
 			{text}

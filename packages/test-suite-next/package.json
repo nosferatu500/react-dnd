@@ -1,26 +1,20 @@
 {
   "name": "test-suite-next",
+  "version": "16.0.1",
   "private": true,
+  "description": "Verifies react-dnd consumes cleanly from Next.js (App Router + RSC boundary)",
   "scripts": {
+    "clean": "shx rm -rf .next .turbo",
     "start:next": "next dev",
     "build": "next build",
-    "next-check": "next lint",
-    "check": "eslint pages --ext .js,.jsx,.mjs,.cjs,.ts,.tsx,.cts,.mts --resolve-plugins-relative-to ../eslint-config"
+    "check": "biome check app"
   },
   "dependencies": {
-    "next": "12.3.4",
-    "react": "18.2.0",
-    "react-dnd": "workspace:^",
-    "react-dnd-examples": "workspace:^",
-    "react-dnd-html5-backend": "workspace:^",
-    "react-dom": "18.2.0"
-  },
-  "devDependencies": {
-    "@react-dnd/eslint-config": "workspace:^",
-    "@types/eslint": "^8.4.10",
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
-    "eslint": "8.32.0",
-    "eslint-config-next": "12.3.4"
+    "next": "^16.3.0",
+    "react": "^19.2.8",
+    "react-dnd": "^16.0.1",
+    "react-dnd-examples": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dom": "^19.2.8"
   }
 }

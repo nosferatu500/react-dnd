@@ -1,0 +1,10 @@
+{
+  "name": "@react-dnd/compat-react18",
+  "version": "16.0.1",
+  "private": true,
+  "description": "Pins React 18 in an isolated node_modules subtree so the matrix suite can run against React 18.",
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

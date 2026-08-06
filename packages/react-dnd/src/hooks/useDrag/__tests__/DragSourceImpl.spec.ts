@@ -136,7 +136,7 @@ describe('The Hooks DragSourceImpl', () => {
 
 	describe('endDrag()', () => {
 		it('will reconnect by default', () => {
-			const reconnect = jest.fn()
+			const reconnect = vi.fn()
 			const impl = new DragSourceImpl({ type: 'box' }, monitor, {
 				reconnect,
 			} as any)
@@ -145,8 +145,8 @@ describe('The Hooks DragSourceImpl', () => {
 		})
 
 		it('will invoke end() in spec before reconnecting ', () => {
-			const reconnect = jest.fn()
-			const end = jest.fn()
+			const reconnect = vi.fn()
+			const end = vi.fn()
 			const item = { x: 1 }
 			const impl = new DragSourceImpl(
 				{ type: 'box', end },
@@ -160,7 +160,7 @@ describe('The Hooks DragSourceImpl', () => {
 			impl.endDrag()
 			expect(reconnect.mock.calls.length).toEqual(1)
 			expect(end.mock.calls.length).toEqual(1)
-			expect(end.mock.calls[0][0]).toEqual(item)
+			expect(end.mock.calls[0]?.[0]).toEqual(item)
 		})
 	})
 })

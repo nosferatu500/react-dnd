@@ -49,18 +49,11 @@ function parseRoleFromHandlerId(handlerId: string) {
 }
 
 function mapContainsValue<T>(map: Map<string, T>, searchValue: T) {
-	const entries = map.entries()
-	let isDone = false
-	do {
-		const {
-			done,
-			value: [, value],
-		} = entries.next()
+	for (const value of map.values()) {
 		if (value === searchValue) {
 			return true
 		}
-		isDone = !!done
-	} while (!isDone)
+	}
 	return false
 }
 

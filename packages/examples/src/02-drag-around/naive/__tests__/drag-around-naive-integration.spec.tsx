@@ -17,7 +17,7 @@ describe('Drag Around: Naive', () => {
 		const getBoxes = () => rendered.findAllByTestId('box')
 		const boxes = await getBoxes()
 		expect(boxes.length).toEqual(2)
-		const first = boxes[0]
+		const first = boxes[0]!
 
 		// Dragging a box hides it
 		await fireDrag(first)
@@ -25,7 +25,7 @@ describe('Drag Around: Naive', () => {
 		expect(await getBoxes()).toHaveLength(1)
 
 		// Dropping the box shows it again
-		await fireReleaseDrag(first)
+		await fireReleaseDrag()
 		expect(await getBoxes()).toHaveLength(2)
 	})
 
@@ -36,7 +36,7 @@ describe('Drag Around: Naive', () => {
 		const boxes = await getBoxes()
 		const checkbox = await rendered.findByRole('checkbox')
 		expect(boxes.length).toEqual(2)
-		const first = boxes[0]
+		const first = boxes[0]!
 
 		// disable source hiding
 		await fireEvent.click(checkbox)
@@ -47,7 +47,7 @@ describe('Drag Around: Naive', () => {
 		expect(await getBoxes()).toHaveLength(2)
 
 		// Drop the box
-		await fireReleaseDrag(first)
+		await fireReleaseDrag()
 		expect(await getBoxes()).toHaveLength(2)
 	})
 })

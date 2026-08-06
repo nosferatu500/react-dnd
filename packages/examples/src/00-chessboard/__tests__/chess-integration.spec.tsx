@@ -113,13 +113,13 @@ describe('The Chess Example', () => {
 			const legalMoves = screen.getAllByRole(OverlayType.PossibleMove)
 			expect(legalMoves.length).toBe(3)
 			legalMoves.forEach((square) => {
-				expect(square).toHaveStyle('backgroundColor: yellow')
+				expect(square).toHaveStyle({ backgroundColor: 'yellow' })
 			})
 
 			// Red cell is current knight position when hold dragging
-			expect(screen.getByRole(OverlayType.IllegalMoveHover)).toHaveStyle(
-				'backgroundColor: red',
-			)
+			expect(screen.getByRole(OverlayType.IllegalMoveHover)).toHaveStyle({
+				backgroundColor: 'red',
+			})
 		})
 	})
 })

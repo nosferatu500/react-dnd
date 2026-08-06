@@ -40,7 +40,7 @@ describe('The Hooks DropTargetImpl', () => {
 				getItem: () => item,
 			} as DropTargetMonitor
 
-			const hover = jest.fn()
+			const hover = vi.fn()
 			const impl = new DropTargetImpl(
 				{
 					hover,
@@ -70,7 +70,7 @@ describe('The Hooks DropTargetImpl', () => {
 				getItem: () => item,
 			} as DropTargetMonitor
 
-			const drop = jest.fn()
+			const drop = vi.fn()
 			const impl = new DropTargetImpl(
 				{
 					drop,

@@ -3,17 +3,17 @@ import { TargetConnector } from '../TargetConnector.js'
 
 describe('TargetConnector', () => {
 	it('unsubscribes drop target when clearing handler id', () => {
-		const connectDropTarget = jest.fn()
+		const connectDropTarget = vi.fn()
 		const backend: Backend = {
-			setup: jest.fn(),
-			teardown: jest.fn(),
-			connectDragSource: jest.fn(),
-			connectDragPreview: jest.fn(),
+			setup: vi.fn(),
+			teardown: vi.fn(),
+			connectDragSource: vi.fn(),
+			connectDragPreview: vi.fn(),
 			connectDropTarget,
-			profile: jest.fn(),
+			profile: vi.fn(),
 		}
 		const connector = new TargetConnector(backend)
-		const unsubscribeDropTarget = jest.fn()
+		const unsubscribeDropTarget = vi.fn()
 		connectDropTarget.mockReturnValueOnce(unsubscribeDropTarget)
 
 		connector.receiveHandlerId('test')

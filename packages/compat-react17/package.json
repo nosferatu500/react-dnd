@@ -1,0 +1,10 @@
+{
+  "name": "@react-dnd/compat-react17",
+  "version": "16.0.1",
+  "private": true,
+  "description": "Pins React 17 in an isolated node_modules subtree so the compat suite can run against the oldest supported peer.",
+  "dependencies": {
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  }
+}

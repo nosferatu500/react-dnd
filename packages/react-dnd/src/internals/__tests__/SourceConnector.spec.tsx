@@ -1,26 +1,27 @@
+import type { Mocked } from 'vitest'
 import type { Backend } from 'dnd-core'
 
 
 import { SourceConnector } from '../SourceConnector.js'
 
 describe('SourceConnector', () => {
-	let backend: jest.Mocked<Backend>
+	let backend: Mocked<Backend>
 	let connector: SourceConnector
 
 	beforeEach(() => {
 		backend = {
-			setup: jest.fn(),
-			teardown: jest.fn(),
-			connectDragSource: jest.fn(),
-			connectDragPreview: jest.fn(),
-			connectDropTarget: jest.fn(),
-			profile: jest.fn(),
+			setup: vi.fn(),
+			teardown: vi.fn(),
+			connectDragSource: vi.fn(),
+			connectDragPreview: vi.fn(),
+			connectDropTarget: vi.fn(),
+			profile: vi.fn(),
 		}
 		connector = new SourceConnector(backend)
 	})
 
 	it('unsubscribes drag source when clearing handler id', () => {
-		const unsubscribeDragSource = jest.fn()
+		const unsubscribeDragSource = vi.fn()
 		backend.connectDragSource.mockReturnValueOnce(unsubscribeDragSource)
 
 		connector.receiveHandlerId('test')
@@ -35,7 +36,7 @@ describe('SourceConnector', () => {
 	})
 
 	it('unsubscribes drag preview when hook is called without node', () => {
-		const unsubscribeDragSource = jest.fn()
+		const unsubscribeDragSource = vi.fn()
 		backend.connectDragSource.mockReturnValueOnce(unsubscribeDragSource)
 
 		connector.receiveHandlerId('test')
@@ -50,7 +51,7 @@ describe('SourceConnector', () => {
 	})
 
 	it('unsubscribes drag preview when clearing handler id', () => {
-		const unsubscribeDragPreview = jest.fn()
+		const unsubscribeDragPreview = vi.fn()
 		backend.connectDragPreview.mockReturnValueOnce(unsubscribeDragPreview)
 
 		connector.receiveHandlerId('test')
@@ -65,7 +66,7 @@ describe('SourceConnector', () => {
 	})
 
 	it('unsubscribes drag preview when hook called without node', () => {
-		const unsubscribeDragPreview = jest.fn()
+		const unsubscribeDragPreview = vi.fn()
 		backend.connectDragPreview.mockReturnValueOnce(unsubscribeDragPreview)
 
 		connector.receiveHandlerId('test')

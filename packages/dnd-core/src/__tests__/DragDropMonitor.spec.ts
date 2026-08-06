@@ -1,3 +1,4 @@
+import { deferred } from './deferred.js'
 import type { ITestBackend } from 'react-dnd-test-backend'
 import { TestBackend } from 'react-dnd-test-backend'
 
@@ -107,15 +108,18 @@ describe('DragDropMonitor', () => {
 			expect(raisedChange).toEqual(false)
 		})
 
-		it('raises global change event on beginDrag()', (done) => {
+		it('raises global change event on beginDrag()', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 
 			monitor.subscribeToStateChange(onlyOnce(done))
 			backend.simulateBeginDrag([sourceId])
+			await promise
 		})
 
-		it('raises global change event on beginDrag() even if a subscriber causes other changes', (done) => {
+		it('raises global change event on beginDrag() even if a subscriber causes other changes', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 			const target = new NormalTarget()
@@ -130,6 +134,7 @@ describe('DragDropMonitor', () => {
 
 			monitor.subscribeToStateChange(onlyOnce(done))
 			backend.simulateBeginDrag([sourceId])
+			await promise
 		})
 
 		it('raises local change event on sources and targets in beginDrag()', () => {
@@ -515,7 +520,8 @@ describe('DragDropMonitor', () => {
 			expect(raisedChangeForTargetD).toEqual(false)
 		})
 
-		it('raises global change event on endDrag()', (done) => {
+		it('raises global change event on endDrag()', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 			const target = new NormalTarget()
@@ -524,9 +530,11 @@ describe('DragDropMonitor', () => {
 			backend.simulateBeginDrag([sourceId])
 			monitor.subscribeToStateChange(done)
 			backend.simulateEndDrag()
+			await promise
 		})
 
-		it('raises global change event on drop()', (done) => {
+		it('raises global change event on drop()', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 			const target = new NormalTarget()
@@ -537,6 +545,7 @@ describe('DragDropMonitor', () => {
 
 			monitor.subscribeToStateChange(done)
 			backend.simulateDrop()
+			await promise
 		})
 
 		it('does not raise global change event if hover targets have not changed', () => {
@@ -846,7 +855,8 @@ describe('DragDropMonitor', () => {
 			expect(monitor.getDifferenceFromInitialOffset()).toEqual(null)
 		})
 
-		it('raises offset change event on beginDrag()', (done) => {
+		it('raises offset change event on beginDrag()', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 
@@ -855,9 +865,11 @@ describe('DragDropMonitor', () => {
 				clientOffset: { x: 0, y: 0 },
 				getSourceClientOffset: () => ({ x: 0, y: 0 }),
 			})
+			await promise
 		})
 
-		it('raises offset change event on hover() if clientOffset changed', (done) => {
+		it('raises offset change event on hover() if clientOffset changed', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 			const target = new NormalTarget()
@@ -872,6 +884,7 @@ describe('DragDropMonitor', () => {
 			backend.simulateHover([targetId], {
 				clientOffset: { x: 20, y: 10 },
 			})
+			await promise
 		})
 
 		it('does not raise offset change event on hover() when not tracking offset', () => {
@@ -921,7 +934,8 @@ describe('DragDropMonitor', () => {
 			expect(raisedChange).toEqual(true)
 		})
 
-		it('raises offset change event on endDrag()', (done) => {
+		it('raises offset change event on endDrag()', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 			const target = new NormalTarget()
@@ -930,9 +944,11 @@ describe('DragDropMonitor', () => {
 			backend.simulateBeginDrag([sourceId])
 			monitor.subscribeToOffsetChange(done)
 			backend.simulateEndDrag()
+			await promise
 		})
 
-		it('raises offset change event on drop()', (done) => {
+		it('raises offset change event on drop()', async () => {
+			const { promise, resolve: done } = deferred()
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 			const target = new NormalTarget()
@@ -943,6 +959,7 @@ describe('DragDropMonitor', () => {
 
 			monitor.subscribeToOffsetChange(done)
 			backend.simulateDrop()
+			await promise
 		})
 	})
 

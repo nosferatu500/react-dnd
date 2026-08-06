@@ -1,12 +1,25 @@
 {
-  "extends": "@tsconfig/strictest",
+  "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "lib": ["ESNext", "DOM"],
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    /* TS6 requires an explicit, non-legacy module/resolution pair.
+       `preserve` + `bundler` keeps the ESM-with-.js-specifiers sources that
+       SWC transpiles into both dist/cjs and dist/esm. */
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+
     "jsx": "react-jsx",
     "declaration": true,
-    "allowSyntheticDefaultImports": true
+    "declarationMap": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedSideEffectImports": true,
+    "incremental": true
   }
 }

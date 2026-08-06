@@ -1,3 +1,4 @@
+import { nextMacroTask } from './deferred.js'
 import 'setimmediate'
 
 import type { ITestBackend } from 'react-dnd-test-backend'
@@ -29,46 +30,40 @@ describe('DragDropManager', () => {
 	})
 
 	describe('handler registration', () => {
-		it('registers and unregisters drag sources', (done) => {
+		it('registers and unregisters drag sources', async () => {
 			const source = new NormalSource()
 			const sourceId = registry.addSource(Types.FOO, source)
 			expect(registry.getSource(sourceId)).toEqual(source)
 
 			registry.removeSource(sourceId)
 
-			setImmediate(() => {
-				expect(registry.getSource(sourceId)).toEqual(undefined)
-				expect(() => registry.removeSource(sourceId)).toThrow()
-				done()
-			})
+			await nextMacroTask()
+			expect(registry.getSource(sourceId)).toEqual(undefined)
+			expect(() => registry.removeSource(sourceId)).toThrow()
 		})
 
-		it('registers and unregisters drop targets', (done) => {
+		it('registers and unregisters drop targets', async () => {
 			const target = new NormalTarget()
 			const targetId = registry.addTarget(Types.FOO, target)
 			expect(registry.getTarget(targetId)).toEqual(target)
 
 			registry.removeTarget(targetId)
 
-			setImmediate(() => {
-				expect(registry.getTarget(targetId)).toEqual(undefined)
-				expect(() => registry.removeTarget(targetId)).toThrow()
-				done()
-			})
+			await nextMacroTask()
+			expect(registry.getTarget(targetId)).toEqual(undefined)
+			expect(() => registry.removeTarget(targetId)).toThrow()
 		})
 
-		it('registers and unregisters multi-type drop targets', (done) => {
+		it('registers and unregisters multi-type drop targets', async () => {
 			const target = new NormalTarget()
 			const targetId = registry.addTarget([Types.FOO, Types.BAR], target)
 			expect(registry.getTarget(targetId)).toEqual(target)
 
 			registry.removeTarget(targetId)
 
-			setImmediate(() => {
-				expect(registry.getTarget(targetId)).toEqual(undefined)
-				expect(() => registry.removeTarget(targetId)).toThrow()
-				done()
-			})
+			await nextMacroTask()
+			expect(registry.getTarget(targetId)).toEqual(undefined)
+			expect(() => registry.removeTarget(targetId)).toThrow()
 		})
 
 		it('knows the difference between sources and targets', () => {
@@ -207,7 +202,7 @@ describe('DragDropManager', () => {
 				expect(() => backend.simulateBeginDrag([sourceId])).toThrow()
 			})
 
-			it('throws in beginDrag() if it is called with an invalid handles', (done) => {
+			it('throws in beginDrag() if it is called with an invalid handles', async () => {
 				const source = new NormalSource()
 				const sourceId = registry.addSource(Types.FOO, source)
 				const target = new NormalTarget()
@@ -226,10 +221,8 @@ describe('DragDropManager', () => {
 
 				registry.removeSource(sourceId)
 
-				setImmediate(() => {
-					expect(() => backend.simulateBeginDrag([sourceId])).toThrow()
-					done()
-				})
+				await nextMacroTask()
+				expect(() => backend.simulateBeginDrag([sourceId])).toThrow()
 			})
 
 			it('calls beginDrag() on the innermost handler with canDrag() returning true', () => {

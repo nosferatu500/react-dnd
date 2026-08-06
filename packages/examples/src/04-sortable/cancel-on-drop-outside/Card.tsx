@@ -64,7 +64,15 @@ export const Card: FC<CardProps> = memo(function Card({
 
 	const opacity = isDragging ? 0 : 1
 	return (
-		<div ref={(node) => drag(drop(node))} style={{ ...style, opacity }}>
+		<div
+			ref={(node) => {
+				// Attach both connectors separately: a callback ref must not return a
+				// value, because React 19 treats a returned function as a cleanup.
+				drag(node)
+				drop(node)
+			}}
+			style={{ ...style, opacity }}
+		>
 			{text}
 		</div>
 	)

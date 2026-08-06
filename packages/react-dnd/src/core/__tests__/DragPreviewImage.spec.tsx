@@ -13,7 +13,7 @@ describe('The DragPreviewImage component', () => {
 	afterEach(cleanup)
 
 	it('can render a preview image into the document', async () => {
-		const onConnect = jest.fn()
+		const onConnect = vi.fn()
 		function Knight() {
 			const [{ isDragging }, drag, preview] = useDrag({
 				type: 'KNIGHT',
@@ -24,7 +24,7 @@ describe('The DragPreviewImage component', () => {
 			const knightStyle = {
 				color: 'black',
 			}
-			const connectPreview = (a: any, b: any) => {
+			const connectPreview = (a: any, b?: any) => {
 				onConnect(a, b)
 				return preview(a, b)
 			}

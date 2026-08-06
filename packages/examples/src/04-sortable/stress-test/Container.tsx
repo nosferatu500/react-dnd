@@ -1,6 +1,6 @@
-import Faker from 'faker'
+import { faker } from '@faker-js/faker'
 import update from 'immutability-helper'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactElement } from 'react'
 import { Component } from 'react'
 
 import { Card } from './Card.js'
@@ -24,7 +24,7 @@ function buildCardData() {
 	const cardsByIndex: CardItem[] = []
 
 	for (let i = 0; i < 1000; i += 1) {
-		const card = { id: i, text: Faker.name.findName() }
+		const card = { id: i, text: faker.person.fullName() }
 		cardsById[card.id] = card
 		cardsByIndex[i] = card
 	}
@@ -50,13 +50,13 @@ export class Container extends Component<
 		this.state = STATE
 	}
 
-	public componentWillUnmount(): void {
+	public override componentWillUnmount(): void {
 		if (this.requestedFrame !== undefined) {
 			cancelAnimationFrame(this.requestedFrame)
 		}
 	}
 
-	public render(): JSX.Element {
+	public override render(): ReactElement {
 		const { cardsByIndex } = this.cardState
 
 		return (

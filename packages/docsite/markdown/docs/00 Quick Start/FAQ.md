@@ -37,13 +37,35 @@ Both [`useDrag`](/docs/api/useDrag) and [`useDrop`](/docs/api/useDrop) can accep
 
 ### How do I combine several drag sources and drop targets in a single component?
 
-Both [`useDrag`](/docs/api/useDrag) and [`useDrop`](/docs/api/useDrop) return functions that may be chained against within a node's ref function. For example:
+Both [`useDrag`](/docs/api/useDrag) and [`useDrop`](/docs/api/useDrop) return connector functions that can be applied to the same node. Call each one from a ref callback with a block body:
 
 ```js
 const [, drag] = useDrag(...args)
 const [, drop] = useDrop(...args)
 
-return <div ref={(node) => drag(drop(node))}></div>
+return (
+  <div
+    ref={(node) => {
+      drag(node)
+      drop(node)
+    }}
+  ></div>
+)
+```
+
+> **Do not** chain them as `ref={(node) => drag(drop(node))}`. React 19 interprets a
+> value returned from a callback ref as a cleanup function, so a ref callback must
+> not return anything. Chaining also no longer typechecks against
+> `@types/react@19`, where connectors are declared as `RefCallback`s.
+
+Alternatively, pass the same ref object to both connectors:
+
+```js
+const ref = useRef(null)
+drag(ref)
+drop(ref)
+
+return <div ref={ref}></div>
 ```
 
 ### How do I register a drop target for the native files?

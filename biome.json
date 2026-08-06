@@ -1,0 +1,90 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": [
+			"**",
+			"!**/coverage",
+			"!**/dist",
+			"!**/build",
+			"!**/public",
+			"!**/.turbo",
+			"!**/.next",
+			"!**/.cache",
+			"!**/CHANGELOG.md",
+			"!packages/docsite/static/**"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineWidth": 80
+	},
+	"javascript": {
+		"formatter": {
+			"semicolons": "asNeeded",
+			"quoteStyle": "single",
+			"trailingCommas": "all",
+			"quoteProperties": "asNeeded"
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "warn",
+				"useHookAtTopLevel": "error",
+				"noUnusedImports": "error",
+				"noUnusedVariables": "error"
+			},
+			"style": {
+				"useImportType": "error",
+				"useConsistentArrayType": {
+					"level": "error",
+					"options": { "syntax": "shorthand" }
+				}
+			},
+			"performance": {
+				"noBarrelFile": "off",
+				"noReExportAll": "off"
+			}
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.spec.ts", "**/*.spec.tsx", "**/__tests__/**"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"useHookAtTopLevel": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["module_test/**", "scripts/**"],
+			"linter": {
+				"rules": {
+					"style": { "useNodejsImportProtocol": "off" },
+					"correctness": { "noUndeclaredDependencies": "off" }
+				}
+			}
+		}
+	]
+}

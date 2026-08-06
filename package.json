@@ -4,7 +4,7 @@
   "description": "React-DnD Monorepo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/react-dnd/react-dnd.git"
+    "url": "git+https://github.com/nosferatu500/react-dnd.git"
   },
   "keywords": [
     "react",
@@ -18,76 +18,93 @@
     "drag-and-drop",
     "dnd",
     "javascript",
+    "typescript",
     "react-component",
-    "hoc"
+    "hooks"
   ],
   "engines": {
-    "node": ">= 10.0"
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
   },
   "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
   "contributors": [
     "Chris Trevino <darthtrevino@gmail.com> (http://github.com/darthtrevino)",
     "Jordan Gensler (http://github.com/kesne)",
-    "Gagan (https://github.com/thetechie)"
+    "Gagan (https://github.com/thetechie)",
+    "Vitalii Shvetsov (https://github.com/nosferatu500)"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/react-dnd/react-dnd/issues"
+    "url": "https://github.com/nosferatu500/react-dnd/issues"
   },
-  "homepage": "https://github.com/react-dnd/react-dnd",
-  "scripts": {
-    "_modules_esm": "node ./module_test/mjs-imports.mjs",
-    "_modules_cjs": "node ./module_test/cjs-imports.cjs",
-    "_build_docsite": "yarn build:docsite",
-    "_check_modules": "run-s _modules_esm _modules_cjs",
-    "_check_spelling": "mdspell 'packages/documentation/docsite/markdown/**/*.md' --en-us --report",
-    "_check_rome": "rome check .",
-    "_release_packages": "turbo run release",
-    "_ci_packages": "turbo run ci",
-    "check_packages": "turbo run check",
-    "clean:": "yarn clean",
-    "build:": "yarn build",
-    "check:": "yarn check",
-    "test:": "yarn test",
-    "release:": "yarn release",
-    "format:": "yarn format",
-    "clean": "turbo run clean",
-    "build": "turbo run build",
-    "top_level_checks": "run-s _check_spelling _check_rome _check_modules",
-    "test": "turbo run test",
-    "release": "run-s clean ci _release_packages",
-    "format": "rome format . --write",
-    "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s -r 0",
-    "ci": "run-s _ci_packages top_level_checks git-is-clean",
-    "git-is-clean": "git status && git diff-index HEAD",
-    "update_sdks": "yarn dlx @yarnpkg/sdks vscode"
-  },
+  "homepage": "https://github.com/nosferatu500/react-dnd#readme",
   "workspaces": [
-    "packages/*"
+    "packages/backend-html5",
+    "packages/backend-test",
+    "packages/backend-touch",
+    "packages/compat-react17",
+    "packages/compat-react18",
+    "packages/dnd-core",
+    "packages/examples",
+    "packages/react-dnd",
+    "packages/test-suite-next",
+    "packages/test-suite-vite",
+    "packages/test-utils",
+    "packages/util-asap",
+    "packages/util-invariant",
+    "packages/util-shallowequal"
   ],
-  "devDependencies": {
-    "@tsconfig/strictest": "^1.0.2",
-    "@types/node": "^18.11.18",
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10",
-    "conventional-changelog-cli": "^2.2.2",
-    "dnd-core": "workspace:^",
-    "inquirer": "^9.1.4",
-    "markdown-spellcheck": "^1.3.1",
-    "npm-run-all": "^4.1.5",
-    "react-dnd": "workspace:^",
-    "react-dnd-examples": "workspace:^",
-    "react-dnd-html5-backend": "workspace:^",
-    "react-dnd-test-backend": "workspace:^",
-    "react-dnd-test-utils": "workspace:^",
-    "react-dnd-touch-backend": "workspace:^",
-    "rome": "^11.0.0",
-    "turbo": "~1.6",
-    "typescript": "~4.9.4"
+  "scripts": {
+    "clean": "turbo run clean && shx rm -rf coverage .turbo",
+    "build": "turbo run build",
+    "check": "turbo run check",
+    "check:types": "tsc -p tsconfig.test.json",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:react17": "vitest run --config vitest.compat17.config.ts",
+    "test:react18": "cross-env REACT_VERSION=18 vitest run",
+    "test:react19": "cross-env REACT_VERSION=19 vitest run",
+    "test:matrix": "npm-run-all -s test:react17 test:react18 test:react19",
+    "test:modules": "npm-run-all -s test:modules:esm test:modules:cjs",
+    "test:modules:esm": "node ./module_test/mjs-imports.mjs",
+    "test:modules:cjs": "node ./module_test/cjs-imports.cjs",
+    "spellcheck": "cspell --no-progress \"packages/docsite/markdown/**/*.md\" \"*.md\"",
+    "ci": "npm-run-all -s build lint check test:coverage test:modules git-is-clean",
+    "git-is-clean": "git status --porcelain && git diff-index --quiet HEAD",
+    "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s -r 0",
+    "release": "npm-run-all -s clean ci && turbo run release"
   },
-  "packageManager": "yarn@3.3.1",
-  "resolutions": {
-    "@types/react": "18.0.5",
-    "@types/react-dom": "18.0.1"
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.7",
+    "@swc/cli": "^0.8.1",
+    "@swc/core": "^1.15.47",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@tsconfig/strictest": "^2.0.5",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.5",
+    "@vitest/coverage-v8": "^4.1.10",
+    "conventional-changelog": "^8.1.0",
+    "cross-env": "^10.1.0",
+    "cspell": "^10.0.1",
+    "jsdom": "^30.0.1",
+    "npm-run-all2": "^8.0.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "shx": "^0.4.0",
+    "turbo": "^2.10.8",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.3"
   }
 }

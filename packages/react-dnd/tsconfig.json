@@ -1,9 +1,24 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "./src",
+    "composite": true,
     "emitDeclarationOnly": true,
-    "outDir": "./dist/types"
+    "rootDir": "./src",
+    "outDir": "./dist/types",
+    "tsBuildInfoFile": "./dist/types/.tsbuildinfo"
   },
-  "include": ["./src/index.ts"]
+  "include": [
+    "./src/index.ts"
+  ],
+  "references": [
+    {
+      "path": "../dnd-core"
+    },
+    {
+      "path": "../util-invariant"
+    },
+    {
+      "path": "../util-shallowequal"
+    }
+  ]
 }

@@ -1,0 +1,41 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "incremental": false,
+    "declaration": false,
+    "declarationMap": false,
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
+    /* Typecheck against sources, matching how Vitest resolves the suite, so a
+       stale dist/ can never mask or invent an error. */
+    "paths": {
+      "dnd-core": ["./packages/dnd-core/src/index.ts"],
+      "react-dnd": ["./packages/react-dnd/src/index.ts"],
+      "react-dnd-html5-backend": ["./packages/backend-html5/src/index.ts"],
+      "react-dnd-touch-backend": ["./packages/backend-touch/src/index.ts"],
+      "react-dnd-test-backend": ["./packages/backend-test/src/index.ts"],
+      "react-dnd-test-utils": ["./packages/test-utils/src/index.ts"],
+      "react-dnd-examples": ["./packages/examples/src/index.ts"],
+      "@react-dnd/asap": ["./packages/util-asap/src/index.ts"],
+      "@react-dnd/invariant": ["./packages/util-invariant/src/index.ts"],
+      "@react-dnd/shallowequal": ["./packages/util-shallowequal/src/index.ts"]
+    }
+  },
+  "include": [
+    "packages/backend-html5/src/**/*",
+    "packages/backend-test/src/**/*",
+    "packages/backend-touch/src/**/*",
+    "packages/dnd-core/src/**/*",
+    "packages/examples/src/**/*",
+    "packages/react-dnd/src/**/*",
+    "packages/test-utils/src/**/*",
+    "packages/util-asap/src/**/*",
+    "packages/util-invariant/src/**/*",
+    "packages/util-shallowequal/src/**/*",
+    "vitest.config.ts",
+    "vitest.compat17.config.ts",
+    "vitest.setup.ts"
+  ],
+  "exclude": ["**/node_modules/**", "**/dist/**"]
+}

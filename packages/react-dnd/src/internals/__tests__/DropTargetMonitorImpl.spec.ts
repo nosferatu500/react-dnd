@@ -12,7 +12,7 @@ describe('The DropTargetMonitorImpl', () => {
 	})
 
 	it('uses the monitor for canDrop', () => {
-		const canDropOnTarget = jest.fn()
+		const canDropOnTarget = vi.fn()
 		const manager = createDragDropManager(TestBackend)
 		manager.getMonitor().canDropOnTarget = canDropOnTarget
 		const monitor = new DropTargetMonitorImpl(manager)
@@ -38,7 +38,7 @@ describe('The DropTargetMonitorImpl', () => {
 	})
 
 	it('uses the monitor for isOver', () => {
-		const isOver = jest.fn()
+		const isOver = vi.fn()
 		const manager = createDragDropManager(TestBackend)
 		manager.getMonitor().isOverTarget = isOver
 		const monitor = new DropTargetMonitorImpl(manager)
@@ -69,7 +69,7 @@ describe('The DropTargetMonitorImpl', () => {
 		]
 
 		THUNK_METHODS.forEach((method) => {
-			const mock = jest.fn()
+			const mock = vi.fn()
 			;(manager.getMonitor() as any)[method] = mock
 			;(monitor as any)[method]()
 			expect(mock.mock.calls).toHaveLength(1)

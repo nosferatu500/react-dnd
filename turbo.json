@@ -1,32 +1,21 @@
 {
-	"$schema": "https://turborepo.org/schema.json",
-	"pipeline": {
+	"$schema": "https://turborepo.com/schema.json",
+	"ui": "stream",
+	"tasks": {
 		"clean": {
 			"cache": false
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [
-				"dist/**/*",
-				"build/**/*",
-				".next/**/*",
-				"public/**/*",
-				"static/examples_js/**/*",
-				"static/examples_ts/**/*"
-			]
+			"inputs": ["src/**", "tsconfig*.json", ".swcrc", "package.json"],
+			"outputs": ["dist/**", "build/**", ".next/**"]
 		},
 		"check": {
 			"dependsOn": ["^build"],
 			"outputs": []
 		},
-		"test": {
-			"dependsOn": ["build", "^build"],
-			"outputs": ["coverage/**/*"]
-		},
-		"ci": {
-			"dependsOn": ["build", "check", "test"]
-		},
 		"release": {
+			"dependsOn": ["build"],
 			"cache": false
 		}
 	}

@@ -33,18 +33,32 @@ export const DndProvider: FC<DndProviderProps<unknown, unknown>> = memo(
 		 * clean it up to avoid memory leaks
 		 */
 		useEffect(() => {
-			if (isGlobalInstance) {
-				const context = getGlobalContext()
-				++refCount
+			if (!isGlobalInstance) {
+				return
+			}
+			const context = getGlobalContext()
 
-				return () => {
-					if (--refCount === 0) {
-						context[INSTANCE_SYM] = null
-					}
+			/**
+			 * Re-assert ownership of the global slot on every (re)mount.
+			 *
+			 * React 18 StrictMode mounts effects, tears them down, then mounts
+			 * them again. The teardown used to drop `refCount` to 0 and null the
+			 * global slot, but the remount only incremented `refCount` again — so
+			 * the slot stayed null while this provider kept using the manager it
+			 * captured during render. Any provider mounted afterwards then built a
+			 * *second* manager instead of sharing this one, and drags could not
+			 * cross between them. The same happened for any ordinary remount,
+			 * StrictMode merely made it deterministic.
+			 */
+			context[INSTANCE_SYM] = manager
+			++refCount
+
+			return () => {
+				if (--refCount === 0) {
+					context[INSTANCE_SYM] = null
 				}
 			}
-			return
-		}, [])
+		}, [isGlobalInstance, manager])
 
 		return <DndContext.Provider value={manager}>{children}</DndContext.Provider>
 	},

@@ -1,13 +1,18 @@
 {
+	"$schema": "https://swc.rs/schema.json",
 	"sourceMaps": true,
 	"jsc": {
-		"target": "es2017",
+		"target": "es2022",
 		"parser": {
 			"syntax": "typescript",
 			"tsx": true
 		},
 		"transform": {
-			"react": { "runtime": "automatic", "useBuiltins": true }
+			"react": {
+				"runtime": "automatic",
+				"useBuiltins": true,
+				"development": false
+			}
 		}
 	}
 }

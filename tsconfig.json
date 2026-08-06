@@ -1,7 +1,15 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "baseUrl": "."
-  },
-  "exclude": ["**/node_modules/**", "**/lib/**"]
+  "files": [],
+  "references": [
+    { "path": "./packages/util-asap" },
+    { "path": "./packages/util-invariant" },
+    { "path": "./packages/util-shallowequal" },
+    { "path": "./packages/dnd-core" },
+    { "path": "./packages/react-dnd" },
+    { "path": "./packages/backend-html5" },
+    { "path": "./packages/backend-touch" },
+    { "path": "./packages/backend-test" },
+    { "path": "./packages/test-utils" },
+    { "path": "./packages/examples" }
+  ]
 }

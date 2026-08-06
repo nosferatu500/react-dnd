@@ -1,6 +1,6 @@
 import type { BackendFactory } from 'dnd-core'
 import type { ComponentType, Ref } from 'react'
-import { Component, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import type { ITestBackend, TestBackendOptions } from 'react-dnd-test-backend'
@@ -38,24 +38,23 @@ export function wrapWithBackend<T>(
 	Backend: BackendFactory = HTML5Backend,
 	backendOptions?: unknown,
 ): ComponentType<T> {
-	class TestContextWrapper extends Component<
-		T & {
-			forwardedRef: Ref<any>
-		}
-	> {
-		public override render() {
-			const { forwardedRef, ...rest } = this.props
+	// Previously this forwarded through an intermediate class component that
+	// re-published the ref as a `forwardedRef` prop. That indirection stopped
+	// typechecking under @types/react@19 and was never needed: forwardRef can
+	// hand the ref straight to the decorated component.
+	const Wrapped = forwardRef<unknown, T & object>(
+		function TestContextWrapper(props, ref: Ref<any>) {
 			return (
 				<DndProvider backend={Backend} options={backendOptions}>
-					<DecoratedComponent ref={forwardedRef} {...(rest as any as T)} />
+					<DecoratedComponent ref={ref} {...(props as unknown as T)} />
 				</DndProvider>
 			)
-		}
-	}
-	const ForwardedComponent = forwardRef<unknown, T>(
-		function ForwardedTestContextWrapper(props, ref) {
-			return <TestContextWrapper {...props} forwardedRef={ref} />
 		},
 	)
-	return ForwardedComponent as unknown as ComponentType<T>
+
+	Wrapped.displayName = `TestContextWrapper(${
+		DecoratedComponent.displayName || DecoratedComponent.name || 'Component'
+	})`
+
+	return Wrapped as unknown as ComponentType<T>
 }

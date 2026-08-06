@@ -1,28 +1,31 @@
-import { jest } from '@jest/globals'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { tick, wrapWithBackend } from 'react-dnd-test-utils'
+import { wrapWithBackend } from 'react-dnd-test-utils'
 
 import Example from '../index.js'
 
 describe('Drag Around: Custom Drag Layer', () => {
-	afterEach(cleanup)
+	afterEach(() => {
+		cleanup()
+		vi.useRealTimers()
+	})
 
 	it('toggles the overlay layer over time', async () => {
-		jest.useFakeTimers('modern')
+		// `shouldAdvanceTime` keeps the real clock ticking underneath the fake one.
+		// Without it, Testing Library's `findBy*`/`waitFor` polling never fires and
+		// the test deadlocks instead of failing.
+		vi.useFakeTimers({ shouldAdvanceTime: true })
+
 		const TestExample = wrapWithBackend(Example)
 		const rendered = render(<TestExample />)
 		const draggableBoxes = await rendered.findAllByRole('DraggableBox')
 		expect(draggableBoxes).toHaveLength(2)
-		const first = draggableBoxes[0]
-		const second = draggableBoxes[1]
+		const first = draggableBoxes[0]!
+		const second = draggableBoxes[1]!
 
 		// Dragging a box hides it
-		let tickAwait: Promise<void>
 		await act(async () => {
 			fireEvent.dragStart(first)
-			tickAwait = tick()
-			jest.advanceTimersByTime(10)
-			await tickAwait
+			await vi.advanceTimersByTimeAsync(10)
 		})
 
 		expect(first).toHaveStyle({ opacity: 0 })
@@ -31,13 +34,14 @@ describe('Drag Around: Custom Drag Layer', () => {
 		const preview = await rendered.findByRole('BoxPreview')
 		expect(preview).toHaveStyle({ backgroundColor: 'white' })
 
-		act(() => {
-			jest.advanceTimersByTime(501)
+		// The preview cycles its colour on a 500ms interval.
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(501)
 		})
 		expect(preview).toHaveStyle({ backgroundColor: 'yellow' })
 
-		act(() => {
-			jest.advanceTimersByTime(501)
+		await act(async () => {
+			await vi.advanceTimersByTimeAsync(501)
 		})
 		expect(preview).toHaveStyle({ backgroundColor: 'white' })
 	})

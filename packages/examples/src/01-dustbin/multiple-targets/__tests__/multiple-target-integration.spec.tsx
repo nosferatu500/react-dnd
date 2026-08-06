@@ -18,7 +18,7 @@ describe('Dustbin: Multiple Targets', () => {
 		expect(dustbins.length).toEqual(4)
 		expect(boxes.length).toEqual(3)
 
-		window.alert = jest.fn()
+		window.alert = vi.fn()
 
 		// Bin Types
 		const glassBin = dustbins[0]!

@@ -18,7 +18,7 @@ describe('The useDrop hook', () => {
 
 		const err = console.error
 		try {
-			const errorMock = jest.fn()
+			const errorMock = vi.fn()
 			console.error = errorMock
 			expect(() => render(<Component />)).toThrow(/Expected drag drop context/)
 		} finally {
@@ -39,7 +39,7 @@ describe('The useDrop hook', () => {
 
 		const err = console.error
 		try {
-			const errorMock = jest.fn()
+			const errorMock = vi.fn()
 			console.error = errorMock
 			expect(() =>
 				render(

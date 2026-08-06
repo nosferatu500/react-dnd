@@ -12,7 +12,7 @@ describe('The DragSourceMonitorImpl', () => {
 	})
 
 	it('uses the monitor for canDrag', () => {
-		const canDragSource = jest.fn()
+		const canDragSource = vi.fn()
 		const manager = createDragDropManager(TestBackend)
 		manager.getMonitor().canDragSource = canDragSource
 		const monitor = new DragSourceMonitorImpl(manager)
@@ -52,7 +52,7 @@ describe('The DragSourceMonitorImpl', () => {
 		]
 
 		THUNK_METHODS.forEach((method) => {
-			const mock = jest.fn()
+			const mock = vi.fn()
 			;(manager.getMonitor() as any)[method] = mock
 			;(monitor as any)[method]()
 			expect(mock.mock.calls).toHaveLength(1)

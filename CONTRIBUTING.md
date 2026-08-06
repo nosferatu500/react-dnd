@@ -29,7 +29,7 @@ workspace automatically when its version satisfies the range.
 | `npm run check:types` | `tsc` over every source and spec under `@tsconfig/strictest` |
 | `npm run check:exports` | `attw` (`esm-only` profile) — that the entrypoints resolve correct types |
 | `npm test` | Vitest, run against `src/` on the installed React |
-| `npm run test:matrix` | the shared conformance suite on React 17, 18 and 19 |
+| `npm run test:matrix` | the shared conformance suite on React 18 and 19 |
 | `npm run test:modules` | that the built entrypoints load by `import` and by `require(esm)` |
 
 Run `npm run lint:fix` to apply Biome's safe fixes.
@@ -63,15 +63,18 @@ The main suite uses `@testing-library/react`, which requires React >= 18, and
 resolves its own `react-dom/client` through Node — so it always runs on whatever
 React is installed at the repo root (currently 19).
 
-React 17 and 18 are covered by `packages/react-dnd/src/__compat__`, which drives
+React 18 is covered locally by `packages/react-dnd/src/__compat__`, which drives
 each major's own root API directly and shares one assertion set
-(`harness.tsx`). Each leg has its own Vitest config that aliases React into
-`packages/compat-react1{7,8}/node_modules` — private workspaces that exist only
-to pin an isolated, self-consistent React tree.
+(`harness.tsx`). Each leg has its own Vitest config; the 18 leg aliases React
+into `packages/compat-react18/node_modules`, a private workspace that exists only
+to pin an isolated, self-consistent React 18 tree.
 
-Adding an assertion to `harness.tsx` applies it to all three majors at once.
-That is the point: behavioral drift between versions shows up as a failure
-rather than as suites that quietly diverged.
+Adding an assertion to `harness.tsx` applies it to both majors at once. That is
+the point: behavioral drift between versions shows up as a failure rather than as
+suites that quietly diverged.
+
+Full end-to-end coverage of React 18 (through Testing Library, not just the
+compat harness) happens in CI, which reinstalls React at each matrix version.
 
 ## Releasing
 

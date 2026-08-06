@@ -13,9 +13,10 @@ npm install dnd-core
 
 ## Supported React versions
 
-`^17.0.2 || ^18.0.0 || ^19.0.0`
+`^18.0.0 || ^19.0.0`
 
-React 16 is not supported; use the upstream `16.0.1` release if you need it.
+React 16 and 17 are not supported; use the upstream `16.0.1` release if you
+need them.
 
 ## Module format
 

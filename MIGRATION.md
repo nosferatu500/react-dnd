@@ -7,14 +7,48 @@ do about it.
 
 ## For consumers of the published packages
 
-### React 16 is no longer supported
+### React 16 and 17 are no longer supported
 
-`peerDependencies.react` is now `^17.0.2 || ^18.0.0 || ^19.0.0`. Upstream
-advertised `>= 16.14` but only ever tested React 16/17 semantics. If you are on
-React 16, stay on `react-dnd@16.0.1`.
+`peerDependencies.react` is now `^18.0.0 || ^19.0.0`. Upstream advertised
+`>= 16.14` but only ever tested React 16/17 semantics. If you need React 16 or
+17, stay on `react-dnd@16.0.1`.
 
-React 17, 18 and 19 are each asserted by the same conformance suite in CI — see
+React 18 is the floor because the library is now built on `useSyncExternalStore`
+(see below), which React added in 18.0. Both supported majors are asserted by the
+same conformance suite — see
 [CONTRIBUTING.md](./CONTRIBUTING.md#testing-across-react-versions).
+
+### Collected props are read with `useSyncExternalStore`
+
+A dnd-core monitor *is* an external store: it holds drag state outside React and
+announces changes through its own subscription API. `useCollector` previously
+mirrored that into `useState` and subscribed from a layout effect, which had two
+problems that React 18 made worse.
+
+**Missed updates.** A monitor change landing between render and the subscribing
+effect was lost. The old code compensated by re-running the collector on *every*
+render — the comment on that line admitted the Dustbin stress test broke without
+it. `useSyncExternalStore` re-checks the snapshot when it subscribes, so nothing
+is missed and the polling is gone.
+
+**Tearing.** Holding a `useState` mirror of external state means two components
+rendering in a single concurrent pass can observe different drag state.
+`useSyncExternalStore` is precisely the primitive that makes that impossible.
+
+There is also a measurable side effect. `useDragLayer` subscribed with
+`useEffect(() => monitor.subscribeToOffsetChange(...))` and **no dependency
+array**, so every render tore both subscriptions down and rebuilt them — during a
+drag, that is every pointer move. Subscriptions are now memoized on the monitor.
+A regression test asserts the count stays flat across re-renders; it fails
+against the old implementation (5 subscriptions after 3 re-renders, vs 2).
+
+No API changed. `useDrag`, `useDrop` and `useDragLayer` have the same signatures
+and the same collected output; `useCollector` was always internal.
+
+One timing change worth knowing: the connector reconnect that fires when
+collected props change used to run synchronously inside the monitor's change
+callback, i.e. against the pre-render DOM. It is now a layout effect keyed on the
+collected value, so it runs once the DOM matches what was collected.
 
 ### Connectors are now typed as `RefCallback` — `ref={drag}` typechecks again
 
@@ -166,7 +200,8 @@ The only spelling that works on both currently maintained majors is `act` from
 the `react` entrypoint, added in 18.3. Its peer range is therefore
 `^18.3.0 || ^19.0.0`, and `@testing-library/react` peer is `>= 16`.
 
-`react-dnd` itself still supports React 17 — only the test helpers are stricter.
+`react-dnd` itself needs only React 18.0, so the test helpers are one minor
+version stricter than the library.
 
 ### `dnd-core`: `mapContainsValue` no longer throws on an empty map
 
@@ -257,8 +292,8 @@ directory and mirrors the declarations next to both JavaScript flavors.
 
 ### New private packages
 
-`packages/compat-react17` and `packages/compat-react18` exist only to pin an
-isolated React tree that the compat suites alias into. They are never published.
+`packages/compat-react18` exists only to pin an isolated React 18 tree that the
+compat suite aliases into. It is never published.
 
 ---
 

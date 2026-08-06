@@ -1,16 +1,18 @@
 /**
  * A React-version-agnostic conformance suite for react-dnd.
  *
- * The main test suite runs on whichever React is installed at the repo root,
- * through @testing-library/react. That library requires React >= 18, so it
- * cannot certify React 17 — the oldest peer this package supports. And RTL's own
- * `react`/`react-dom` imports resolve by plain Node resolution, which makes
- * alias-based version switching unreliable.
+ * The main test suite runs through @testing-library/react against whichever
+ * React is installed at the repo root (19). RTL resolves its own
+ * `react-dom/client` by plain Node resolution, so it cannot be pointed at a
+ * different React with a Vitest alias — covering React 18 through RTL needs a
+ * real install swap, which is what the CI matrix does.
  *
- * So the compat suites skip RTL and talk to each major's own root API directly.
- * Both call `defineCompatSuite` with a small adapter, which keeps the assertions
- * identical across versions: any behavioral drift between majors shows up as a
- * failure rather than as two suites that quietly diverged.
+ * These suites fill the local gap: they skip RTL and drive each major's own root
+ * API directly, so `npm run test:matrix` exercises React 18 and 19 without
+ * touching node_modules. Both legs call `defineCompatSuite` with a small
+ * adapter, so the assertions stay identical across versions and behavioral drift
+ * between majors shows up as a failure rather than as two suites that quietly
+ * diverged.
  */
 import type { Identifier } from 'dnd-core'
 import type { FC } from 'react'

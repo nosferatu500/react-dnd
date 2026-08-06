@@ -1,4 +1,6 @@
-import type { Action } from '../interfaces.js'
+import type { Store } from 'redux'
+
+import type { Action, SentinelAction } from '../interfaces.js'
 import { get } from '../utils/js_utils.js'
 import type { State as DirtyHandlerIdsState } from './dirtyHandlerIds.js'
 import { reduce as dirtyHandlerIds } from './dirtyHandlerIds.js'
@@ -34,3 +36,19 @@ export function reduce(state: State = {} as State, action: Action<any>): State {
 		stateId: stateId(state.stateId),
 	}
 }
+
+/**
+ * Everything dnd-core dispatches. Most actions carry a payload; `endDrag` and
+ * `publishDragSource` are bare sentinels.
+ */
+export type DndAction = Action<any> | SentinelAction
+
+/**
+ * The dnd-core redux store.
+ *
+ * Explicitly parameterized on `DndAction` rather than letting Redux default to
+ * `UnknownAction`: that default carries an `[extraProps: string]: unknown` index
+ * signature, which dnd-core's tightly-shaped actions do not (and should not)
+ * have.
+ */
+export type DndStore = Store<State, DndAction>

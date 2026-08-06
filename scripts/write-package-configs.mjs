@@ -14,7 +14,7 @@ const PACKAGES = {
 	// `types` is set explicitly wherever globals are needed: a composite build in
 	// a monorepo otherwise picks up every @types package hoisted to the root,
 	// including vitest's globals, which must not leak into published .d.ts.
-	'util-asap': { refs: [], extra: { types: ['node'] } },
+	'util-asap': { refs: [] },
 	'util-invariant': { refs: [], extra: { types: ['node'] } },
 	'util-shallowequal': { refs: [] },
 	'dnd-core': {

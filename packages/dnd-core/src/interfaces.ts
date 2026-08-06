@@ -120,11 +120,17 @@ export interface HandlerRegistry {
 }
 
 export interface Action<Payload> {
-	type: Identifier
+	/**
+	 * Action types are always string constants (see actions/dragDrop/types.ts).
+	 * This was previously `Identifier`, i.e. `string | symbol` — that is the type
+	 * of a drag *item* type, and it never belonged here. No reducer has ever
+	 * matched a symbol.
+	 */
+	type: string
 	payload: Payload
 }
 export interface SentinelAction {
-	type: Identifier
+	type: string
 }
 
 export type ActionCreator<Payload> = (args: any[]) => Action<Payload>

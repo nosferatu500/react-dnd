@@ -1,5 +1,3 @@
-import type { Action, Store } from 'redux'
-
 import { createDragDropActions } from '../actions/dragDrop/index.js'
 import type {
 	ActionCreator,
@@ -9,16 +7,16 @@ import type {
 	DragDropMonitor,
 	HandlerRegistry,
 } from '../interfaces.js'
-import type { State } from '../reducers/index.js'
+import type { DndAction, DndStore } from '../reducers/index.js'
 import type { DragDropMonitorImpl } from './DragDropMonitorImpl.js'
 
 export class DragDropManagerImpl implements DragDropManager {
-	private store: Store<State>
+	private store: DndStore
 	private monitor: DragDropMonitor
 	private backend: Backend | undefined
 	private isSetUp = false
 
-	public constructor(store: Store<State>, monitor: DragDropMonitor) {
+	public constructor(store: DndStore, monitor: DragDropMonitor) {
 		this.store = store
 		this.monitor = monitor
 		store.subscribe(this.handleRefCountChange)
@@ -67,7 +65,7 @@ export class DragDropManagerImpl implements DragDropManager {
 		)
 	}
 
-	public dispatch(action: Action<any>): void {
+	public dispatch(action: DndAction): void {
 		this.store.dispatch(action)
 	}
 

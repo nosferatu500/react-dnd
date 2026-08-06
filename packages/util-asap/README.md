@@ -1,6 +1,12 @@
 # @react-dnd/asap
 
-High-priority task queue used internally by dnd-core.
+**Deprecated.** Use the platform's `queueMicrotask` instead.
+
+This package predates `queueMicrotask` — it was a ~300-line `MutationObserver`
+based microtask scheduler. `queueMicrotask` has been available in every browser
+since 2018 and in Node 11, with the same guarantees, so `asap()` is now a
+one-line wrapper around it and `dnd-core` no longer depends on this package at
+all.
 
 Part of [React DnD](https://github.com/nosferatu500/react-dnd) — a maintained
 fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).

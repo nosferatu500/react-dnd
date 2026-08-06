@@ -1,11 +1,10 @@
-import type { Store } from 'redux'
 import { createStore } from 'redux'
 
 import { DragDropManagerImpl } from './classes/DragDropManagerImpl.js'
 import { DragDropMonitorImpl } from './classes/DragDropMonitorImpl.js'
 import { HandlerRegistryImpl } from './classes/HandlerRegistryImpl.js'
 import type { BackendFactory, DragDropManager } from './interfaces.js'
-import type { State } from './reducers/index.js'
+import type { DndStore } from './reducers/index.js'
 import { reduce } from './reducers/index.js'
 
 export function createDragDropManager(
@@ -22,7 +21,7 @@ export function createDragDropManager(
 	return manager
 }
 
-function makeStoreInstance(debugMode: boolean): Store<State> {
+function makeStoreInstance(debugMode: boolean): DndStore {
 	// TODO: if we ever make a react-native version of this,
 	// we'll need to consider how to pull off dev-tooling
 	const reduxDevTools =

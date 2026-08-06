@@ -1,6 +1,4 @@
-import { asap } from '@react-dnd/asap'
 import { invariant } from '@react-dnd/invariant'
-import type { Store } from 'redux'
 
 import {
 	addSource,
@@ -22,7 +20,7 @@ import type {
 	TargetType,
 } from '../interfaces.js'
 import { HandlerRole } from '../interfaces.js'
-import type { State } from '../reducers/index.js'
+import type { DndStore } from '../reducers/index.js'
 import { getNextUniqueId } from '../utils/getNextUniqueId.js'
 
 function getNextHandlerId(role: HandlerRole): string {
@@ -63,9 +61,9 @@ export class HandlerRegistryImpl implements HandlerRegistry {
 	private dropTargets: Map<string, DropTarget> = new Map()
 	private pinnedSourceId: string | null = null
 	private pinnedSource: any = null
-	private store: Store<State>
+	private store: DndStore
 
-	public constructor(store: Store<State>) {
+	public constructor(store: DndStore) {
 		this.store = store
 	}
 
@@ -129,7 +127,15 @@ export class HandlerRegistryImpl implements HandlerRegistry {
 	public removeSource(sourceId: string): void {
 		invariant(this.getSource(sourceId), 'Expected an existing source.')
 		this.store.dispatch(removeSource(sourceId))
-		asap(() => {
+		// Deferred so that a source removed during a drag is still resolvable for
+		// the rest of the current turn — endDrag() looks it up after the reducer has
+		// already dropped it.
+		//
+		// This was `asap()` from @react-dnd/asap: a 300-line MutationObserver-based
+		// microtask polyfill from 2014. `queueMicrotask` is the platform version of
+		// exactly that, including asap's guarantee that a throwing task does not
+		// disrupt the others.
+		queueMicrotask(() => {
 			this.dragSources.delete(sourceId)
 			this.types.delete(sourceId)
 		})

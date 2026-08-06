@@ -187,6 +187,39 @@ target bump is about which built-ins are allowed, not about how code is emitted.
 Consumers bundling for older browsers were already transpiling this package's
 ES2022 output if they needed to; that has not changed.
 
+### `dnd-core` uses `redux@5` and `queueMicrotask`
+
+Two dependency changes, both about correctness rather than bundle size:
+
+**`redux@4` → `redux@5`.** Redux 4 is CommonJS-only with no `exports` map, which
+is a wart inside an otherwise ESM-only dependency chain. Redux 5 ships proper ESM.
+`createStore` is marked deprecated in v5's types but emits no runtime warning and
+is still the right primitive for a store this small.
+
+The upgrade caught a real modeling error. `Action<Payload>.type` was typed
+`Identifier` (`string | symbol`) — but `Identifier` is the type of a drag *item*
+type, and every dnd-core action type is a string constant
+(`'dnd-core/HOVER'`, …). No reducer has ever matched a symbol. `type` is now
+`string`. The store is also explicitly parameterized (`DndStore`,
+`DndAction`) instead of falling back to Redux's `UnknownAction`, whose
+`[extraProps: string]: unknown` index signature dnd-core's actions deliberately
+lack. `DragDropManager.dispatch` is `dispatch(action: any)` in the public
+interface, so nothing changed for consumers.
+
+**`@react-dnd/asap` → `queueMicrotask`.** `dnd-core` used `asap()` in exactly one
+place, to defer a handler-map delete by one microtask. `@react-dnd/asap` was a
+~300-line `MutationObserver`-based scheduler written around 2014, before a
+standard existed. `queueMicrotask` has been in every browser since 2018 and Node
+11, with the same two guarantees the package was built for: the task runs in its
+own turn before the next macrotask, and a throwing task does not prevent the rest
+from running. `dnd-core` no longer depends on the package at all.
+
+`@react-dnd/asap` itself is now a one-line wrapper around `queueMicrotask`,
+marked `@deprecated`. Its `AsapQueue` and `TaskFactory` exports are gone — they
+were implementation detail of the polyfill. Nothing in this repo used them, but
+this is a breaking change to that package's surface if you imported them
+directly.
+
 ### `react-dnd` no longer depends on `hoist-non-react-statics`
 
 It was never imported — a leftover from the decorator API removed in v14. The

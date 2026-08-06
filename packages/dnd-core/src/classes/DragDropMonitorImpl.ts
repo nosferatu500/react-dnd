@@ -1,5 +1,4 @@
 import { invariant } from '@react-dnd/invariant'
-import type { Store } from 'redux'
 
 import type {
 	DragDropMonitor,
@@ -9,7 +8,7 @@ import type {
 	Unsubscribe,
 	XYCoord,
 } from '../interfaces.js'
-import type { State } from '../reducers/index.js'
+import type { DndStore } from '../reducers/index.js'
 import {
 	getDifferenceFromInitialOffset,
 	getSourceClientOffset,
@@ -18,10 +17,10 @@ import { areDirty } from '../utils/dirtiness.js'
 import { matchesType } from '../utils/matchesType.js'
 
 export class DragDropMonitorImpl implements DragDropMonitor {
-	private store: Store<State>
+	private store: DndStore
 	public readonly registry: HandlerRegistry
 
-	public constructor(store: Store<State>, registry: HandlerRegistry) {
+	public constructor(store: DndStore, registry: HandlerRegistry) {
 		this.store = store
 		this.registry = registry
 	}

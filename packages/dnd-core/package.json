@@ -48,9 +48,8 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "@react-dnd/asap": "^5.0.2",
     "@react-dnd/invariant": "^4.0.2",
-    "redux": "^4.2.0"
+    "redux": "^5.0.1"
   },
   "devDependencies": {
     "@types/setimmediate": "^1.0.2",

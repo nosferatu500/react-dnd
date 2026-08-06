@@ -73,13 +73,11 @@ export const Container: FC = () => {
 					/>
 				)
 			},
-			[],
+			[moveCard],
 		)
 
 		return (
-			<>
-				<div style={style}>{cards.map((card, i) => renderCard(card, i))}</div>
-			</>
+			<div style={style}>{cards.map((card, i) => renderCard(card, i))}</div>
 		)
 	}
 }

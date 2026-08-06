@@ -26,7 +26,7 @@ export function useCollector<T, S>(
 				onUpdate()
 			}
 		}
-	}, [collected, monitor, onUpdate])
+	}, [collected, monitor, onUpdate, collect])
 
 	// update the collected properties after react renders.
 	// Note that the "Dustbin Stress Test" fails if this is not

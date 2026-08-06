@@ -331,12 +331,7 @@ export class HTML5BackendImpl implements Backend {
 
 	private isNodeInDocument = (node: Node | null | undefined): boolean => {
 		// Check the node either in the main document or in the current context
-		return Boolean(
-			node &&
-				this.document &&
-				this.document.body &&
-				this.document.body.contains(node),
-		)
+		return Boolean(node && this.document?.body?.contains(node))
 	}
 
 	private endDragIfSourceWasRemovedFromDOM = (): void => {
@@ -504,7 +499,7 @@ export class HTML5BackendImpl implements Backend {
 			try {
 				// Firefox won't drag without setting data
 				dataTransfer?.setData('application/json', {} as any)
-			} catch (err) {
+			} catch (_err) {
 				// IE doesn't support MIME types in setData
 			}
 

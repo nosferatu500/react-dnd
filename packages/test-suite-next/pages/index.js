@@ -18,9 +18,7 @@ function AppGuts() {
 
 	return (
 		<div className="App">
-			<select
-				onChange={useCallback((evt) => setName(evt.target.value), [setName])}
-			>
+			<select onChange={useCallback((evt) => setName(evt.target.value), [])}>
 				{exampleNames.map((n) => (
 					<option key={n} value={n}>
 						{n}

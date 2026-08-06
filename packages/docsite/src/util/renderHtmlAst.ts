@@ -4,7 +4,7 @@ import rehypeReact from 'rehype-react'
 
 import { ExampleTabs } from '../components/exampleTabs'
 import {
-	MarkdownAstNode,
+	type MarkdownAstNode,
 	processImagesInMarkdownAst as processImages,
 } from './processImagesInMarkdownAst'
 

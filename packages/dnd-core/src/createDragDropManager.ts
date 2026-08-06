@@ -31,8 +31,7 @@ function makeStoreInstance(debugMode: boolean): Store<State> {
 	return createStore(
 		reduce,
 		debugMode &&
-			reduxDevTools &&
-			reduxDevTools({
+			reduxDevTools?.({
 				name: 'dnd-core',
 				instanceId: 'dnd-core',
 			}),

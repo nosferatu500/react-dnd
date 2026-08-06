@@ -69,7 +69,7 @@ export const Container: FC = memo(function Container() {
 					name
 						? {
 								$push: [name],
-						  }
+							}
 						: {},
 				),
 			)

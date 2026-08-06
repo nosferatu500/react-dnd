@@ -26,6 +26,13 @@
     "node": ">=20.19.0",
     "npm": ">=10.0.0"
   },
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=10.0.0",
+      "onFail": "error"
+    }
+  },
   "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
   "contributors": [
     "Chris Trevino <darthtrevino@gmail.com> (http://github.com/darthtrevino)",
@@ -73,13 +80,15 @@
     "test:modules:esm": "node ./module_test/mjs-imports.mjs",
     "test:modules:cjs": "node ./module_test/cjs-imports.cjs",
     "spellcheck": "cspell --no-progress \"packages/docsite/markdown/**/*.md\" \"*.md\"",
-    "ci": "npm-run-all -s build lint check:types test:coverage test:matrix test:modules git-is-clean",
+    "ci": "npm-run-all -s build lint check:types check:exports test:coverage test:matrix test:modules git-is-clean",
     "git-is-clean": "git status --porcelain && git diff-index --quiet HEAD",
     "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s -r 0",
     "release": "npm-run-all -s clean ci && turbo run release",
-    "test:all": "npm-run-all -s test test:matrix"
+    "test:all": "npm-run-all -s test test:matrix",
+    "check:exports": "turbo run check:exports"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@biomejs/biome": "^2.5.7",
     "@swc/cli": "^0.8.1",
     "@swc/core": "^1.15.47",
@@ -106,5 +115,6 @@
   "overrides": {
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.3"
-  }
+  },
+  "packageManager": "npm@11.17.0"
 }

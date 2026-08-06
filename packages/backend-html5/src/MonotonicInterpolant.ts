@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+// biome-ignore-all lint/style/noNonNullAssertion: this is a numeric
+// interpolation over parallel arrays whose indices are bounded by the
+// surrounding loops; asserting is clearer than threading guards through it.
 export class MonotonicInterpolant {
 	private xs: number[]
 	private ys: number[]
@@ -20,8 +22,8 @@ export class MonotonicInterpolant {
 		const dys = []
 		const dxs = []
 		const ms = []
-		let dx
-		let dy
+		let dx: number
+		let dy: number
 		for (let i = 0; i < length - 1; i++) {
 			dx = (xs[i + 1] as number) - (xs[i] as number)
 			dy = (ys[i + 1] as number) - (ys[i] as number)
@@ -51,7 +53,7 @@ export class MonotonicInterpolant {
 		// Get degree-2 and degree-3 coefficients
 		const c2s = []
 		const c3s = []
-		let m
+		let m: number
 		for (let i = 0; i < c1s.length - 1; i++) {
 			m = ms[i] as number
 			const c1 = c1s[i] as number
@@ -80,7 +82,7 @@ export class MonotonicInterpolant {
 		// Search for the interval x is in, returning the corresponding y if x is one of the original xs
 		let low = 0
 		let high = c3s.length - 1
-		let mid
+		let mid: number
 		while (low <= high) {
 			mid = Math.floor(0.5 * (low + high))
 			const xHere = xs[mid]!

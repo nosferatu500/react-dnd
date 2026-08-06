@@ -2,12 +2,12 @@
   "name": "test-suite-next",
   "version": "16.0.1",
   "private": true,
-  "description": "Verifies react-dnd consumes cleanly from Next.js (App Router + RSC boundary)",
+  "description": "Verifies react-dnd consumes cleanly from Next.js (pages router, SSR boundary)",
   "scripts": {
     "clean": "shx rm -rf .next .turbo",
     "start:next": "next dev",
     "build": "next build",
-    "check": "biome check app"
+    "check": "biome check pages"
   },
   "dependencies": {
     "next": "^16.3.0",

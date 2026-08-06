@@ -1,22 +1,26 @@
 {
-	"$schema": "https://turborepo.com/schema.json",
-	"ui": "stream",
-	"tasks": {
-		"clean": {
-			"cache": false
-		},
-		"build": {
-			"dependsOn": ["^build"],
-			"inputs": ["src/**", "tsconfig*.json", ".swcrc", "package.json"],
-			"outputs": ["dist/**", "build/**", ".next/**"]
-		},
-		"check": {
-			"dependsOn": ["^build"],
-			"outputs": []
-		},
-		"release": {
-			"dependsOn": ["build"],
-			"cache": false
-		}
-	}
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "tasks": {
+    "clean": {
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig*.json", ".swcrc", "package.json"],
+      "outputs": ["dist/**", "build/**", ".next/**"]
+    },
+    "check": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "release": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "check:exports": {
+      "dependsOn": ["build"],
+      "outputs": []
+    }
+  }
 }

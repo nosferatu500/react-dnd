@@ -32,6 +32,8 @@ export class Game {
 
 	private emitChange() {
 		const pos = this.knightPosition
-		this.observers.forEach((o) => o?.(pos))
+		this.observers.forEach((o) => {
+			o?.(pos)
+		})
 	}
 }

@@ -24,7 +24,7 @@ function AppGuts() {
 				onChange={useCallback(
 					(evt: React.ChangeEvent<HTMLSelectElement>) =>
 						setName(evt.target.value),
-					[setName],
+					[],
 				)}
 			>
 				{exampleNames.map((n) => (

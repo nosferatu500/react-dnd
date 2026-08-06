@@ -12,9 +12,11 @@ function list(files: File[]) {
 }
 
 export const FileList: FC<FileListProps> = ({ files }) => {
+	// Must run before the early return below: a hook after a conditional return
+	// changes the hook order between renders.
+	const fileList = useMemo(() => list(files), [files])
 	if (files.length === 0) {
 		return <div>Nothing to display</div>
 	}
-	const fileList = useMemo(() => list(files), [files])
 	return <div>{fileList}</div>
 }

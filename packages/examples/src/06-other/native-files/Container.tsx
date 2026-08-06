@@ -7,15 +7,12 @@ import { TargetBox } from './TargetBox.js'
 export const Container: FC = () => {
 	const [droppedFiles, setDroppedFiles] = useState<File[]>([])
 
-	const handleFileDrop = useCallback(
-		(item: { files: any[] }) => {
-			if (item) {
-				const files = item.files
-				setDroppedFiles(files)
-			}
-		},
-		[setDroppedFiles],
-	)
+	const handleFileDrop = useCallback((item: { files: any[] }) => {
+		if (item) {
+			const files = item.files
+			setDroppedFiles(files)
+		}
+	}, [])
 
 	return (
 		<>

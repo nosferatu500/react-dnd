@@ -1,10 +1,4 @@
-import {
-	BEGIN_DRAG,
-	DROP,
-	END_DRAG,
-	HOVER,
-	PUBLISH_DRAG_SOURCE,
-} from '../actions/dragDrop/index.js'
+import { HOVER } from '../actions/dragDrop/index.js'
 import {
 	ADD_SOURCE,
 	ADD_TARGET,
@@ -24,7 +18,6 @@ export interface DirtyHandlerIdPayload {
 }
 
 export function reduce(
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	_state: State = NONE,
 	action: Action<DirtyHandlerIdPayload>,
 ): State {
@@ -36,10 +29,6 @@ export function reduce(
 		case REMOVE_TARGET:
 		case REMOVE_SOURCE:
 			return NONE
-		case BEGIN_DRAG:
-		case PUBLISH_DRAG_SOURCE:
-		case END_DRAG:
-		case DROP:
 		default:
 			return ALL
 	}

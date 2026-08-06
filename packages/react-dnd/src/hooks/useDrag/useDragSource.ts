@@ -12,10 +12,10 @@ export function useDragSource<O, R, P>(
 ) {
 	const handler = useMemo(
 		() => new DragSourceImpl(spec, monitor, connector),
-		[monitor, connector],
+		[monitor, connector, spec],
 	)
 	useEffect(() => {
 		handler.spec = spec
-	}, [spec])
+	}, [spec, handler])
 	return handler
 }

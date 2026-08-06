@@ -1,90 +1,127 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
-	"vcs": {
-		"enabled": true,
-		"clientKind": "git",
-		"useIgnoreFile": true
-	},
-	"files": {
-		"includes": [
-			"**",
-			"!**/coverage",
-			"!**/dist",
-			"!**/build",
-			"!**/public",
-			"!**/.turbo",
-			"!**/.next",
-			"!**/.cache",
-			"!**/CHANGELOG.md",
-			"!packages/docsite/static/**"
-		]
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab",
-		"lineWidth": 80
-	},
-	"javascript": {
-		"formatter": {
-			"semicolons": "asNeeded",
-			"quoteStyle": "single",
-			"trailingCommas": "all",
-			"quoteProperties": "asNeeded"
-		}
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true,
-			"suspicious": {
-				"noExplicitAny": "off"
-			},
-			"correctness": {
-				"useExhaustiveDependencies": "warn",
-				"useHookAtTopLevel": "error",
-				"noUnusedImports": "error",
-				"noUnusedVariables": "error"
-			},
-			"style": {
-				"useImportType": "error",
-				"useConsistentArrayType": {
-					"level": "error",
-					"options": { "syntax": "shorthand" }
-				}
-			},
-			"performance": {
-				"noBarrelFile": "off",
-				"noReExportAll": "off"
-			}
-		}
-	},
-	"assist": {
-		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
-		}
-	},
-	"overrides": [
-		{
-			"includes": ["**/*.spec.ts", "**/*.spec.tsx", "**/__tests__/**"],
-			"linter": {
-				"rules": {
-					"correctness": {
-						"useHookAtTopLevel": "off"
-					}
-				}
-			}
-		},
-		{
-			"includes": ["module_test/**", "scripts/**"],
-			"linter": {
-				"rules": {
-					"style": { "useNodejsImportProtocol": "off" },
-					"correctness": { "noUndeclaredDependencies": "off" }
-				}
-			}
-		}
-	]
+  "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "**",
+      "!**/coverage",
+      "!**/dist",
+      "!**/build",
+      "!**/public",
+      "!**/.turbo",
+      "!**/.next",
+      "!**/.cache",
+      "!**/CHANGELOG.md",
+      "!**/*.svg",
+      "!packages/docsite"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "tab",
+    "lineWidth": 80
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded",
+      "quoteStyle": "single",
+      "trailingCommas": "all",
+      "quoteProperties": "asNeeded"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "suspicious": {
+        "noExplicitAny": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "error",
+        "noUnusedPrivateClassMembers": "off",
+        "useHookAtTopLevel": "error",
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error"
+      },
+      "style": {
+        "useImportType": "error",
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": { "syntax": "shorthand" }
+        }
+      },
+      "complexity": {
+        "useLiteralKeys": "off"
+      },
+      "performance": {
+        "noBarrelFile": "off",
+        "noReExportAll": "off"
+      }
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "packages/examples/**",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/__tests__/**"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useValidAriaRole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.json", "**/*.jsonc"],
+      "json": {
+        "formatter": {
+          "indentStyle": "space",
+          "indentWidth": 2
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/__tests__/**",
+        "**/__compat__/**"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "useHookAtTopLevel": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["module_test/**", "scripts/**"],
+      "linter": {
+        "rules": {
+          "style": { "useNodejsImportProtocol": "off" },
+          "correctness": { "noUndeclaredDependencies": "off" }
+        }
+      }
+    }
+  ]
 }

@@ -15,11 +15,9 @@ export interface ContainerState {
 }
 
 export const Container: FC = () => {
-	{
-		return (
-			<div style={style}>
-				<BoxWithHandle />
-			</div>
-		)
-	}
+	return (
+		<div style={style}>
+			<BoxWithHandle />
+		</div>
+	)
 }

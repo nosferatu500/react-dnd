@@ -31,32 +31,32 @@ export interface DraggableBoxProps {
 	top: number
 }
 
-export const DraggableBox: FC<DraggableBoxProps> = memo(function DraggableBox(
-	props,
-) {
-	const { id, title, left, top } = props
-	const [{ isDragging }, drag, preview] = useDrag(
-		() => ({
-			type: ItemTypes.BOX,
-			item: { id, left, top, title },
-			collect: (monitor: DragSourceMonitor) => ({
-				isDragging: monitor.isDragging(),
+export const DraggableBox: FC<DraggableBoxProps> = memo(
+	function DraggableBox(props) {
+		const { id, title, left, top } = props
+		const [{ isDragging }, drag, preview] = useDrag(
+			() => ({
+				type: ItemTypes.BOX,
+				item: { id, left, top, title },
+				collect: (monitor: DragSourceMonitor) => ({
+					isDragging: monitor.isDragging(),
+				}),
 			}),
-		}),
-		[id, left, top, title],
-	)
+			[id, left, top, title],
+		)
 
-	useEffect(() => {
-		preview(getEmptyImage(), { captureDraggingState: true })
-	}, [])
+		useEffect(() => {
+			preview(getEmptyImage(), { captureDraggingState: true })
+		}, [preview])
 
-	return (
-		<div
-			ref={drag}
-			style={getStyles(left, top, isDragging)}
-			role="DraggableBox"
-		>
-			<Box title={title} />
-		</div>
-	)
-})
+		return (
+			<div
+				role="DraggableBox"
+				ref={drag}
+				style={getStyles(left, top, isDragging)}
+			>
+				<Box title={title} />
+			</div>
+		)
+	},
+)

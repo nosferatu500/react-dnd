@@ -1,7 +1,7 @@
 export function shallowEqual<T>(
 	objA: T,
 	objB: T,
-	compare?: (a: T, b: T, key?: string) => boolean | void,
+	compare?: (a: T, b: T, key?: string) => boolean | undefined,
 	compareContext?: any,
 ) {
 	let compareResult = compare

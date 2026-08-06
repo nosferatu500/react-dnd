@@ -1,7 +1,6 @@
 import { shallowEqual } from '../index.js'
 
-describe('shallowequal', function () {
-	// eslint-disable-next-line no-sparse-arrays
+describe('shallowequal', () => {
 	const falsey = [undefined, '', 0, false, NaN, null, undefined]
 
 	// test cases copied from https://github.com/facebook/fbjs/blob/82247de1c33e6f02a199778203643eaee16ea4dc/src/core/__tests__/shallowEqual-test.js
@@ -66,7 +65,7 @@ describe('shallowequal', function () {
 			[object1.b, object2.b, 'b'],
 		]
 
-		shallowEqual(object1, object2, function (...args) {
+		shallowEqual(object1, object2, (...args) => {
 			argsList.push(args)
 		})
 

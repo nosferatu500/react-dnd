@@ -31,8 +31,7 @@ const LIB_SCRIPTS = {
 	_build_cjs:
 		'swc src -d dist/cjs --strip-leading-paths -C module.type=commonjs',
 	_build_pkgjson: 'node ../../scripts/write-dist-manifests.mjs',
-	build:
-		'run-p _build_types _build_esm _build_cjs && npm run _build_pkgjson',
+	build: 'run-p _build_types _build_esm _build_cjs && npm run _build_pkgjson',
 	check: 'biome check src',
 	release: 'npm publish --access public',
 }
@@ -62,7 +61,9 @@ const HOISTED_TOOLING = new Set([
 ])
 
 function sortKeys(obj) {
-	return Object.fromEntries(Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)))
+	return Object.fromEntries(
+		Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)),
+	)
 }
 
 /** yarn-only `portal:` links become plain workspace links. */

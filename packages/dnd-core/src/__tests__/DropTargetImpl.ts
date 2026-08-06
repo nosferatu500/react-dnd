@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { DragDropMonitor, DropTarget, Identifier } from '../interfaces.js'
 
 export class DropTargetImpl implements DropTarget {

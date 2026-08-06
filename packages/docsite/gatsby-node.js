@@ -1,5 +1,5 @@
 /* eslint-disable */
-const path = require('path')
+const path = require('node:path')
 
 /**
  * Dynamically creates pages in the static website

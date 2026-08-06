@@ -1,12 +1,22 @@
 {
-  "extends": "./tsconfig.json",
+  /* Extends the base rather than ./tsconfig.json: that one is a composite
+     project (for `tsc -b` project references) and composite forbids
+     `declaration: false`. This build has a different job — emit the examples
+     with JSX preserved so the docsite can show readable source. */
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": false,
+    "incremental": false,
     "jsx": "preserve",
-    "outDir": "dist/docs",
-    "baseUrl": "./",
     "declaration": false,
+    "declarationMap": false,
     "emitDeclarationOnly": false,
-    "removeComments": false
+    "removeComments": false,
+    "noImplicitOverride": false,
+    "types": ["node"],
+    "rootDir": "./src",
+    "outDir": "./dist/docs"
   },
-  "include": ["./src/index.ts"]
+  "include": ["./src"],
+  "exclude": ["./src/**/__tests__/**"]
 }

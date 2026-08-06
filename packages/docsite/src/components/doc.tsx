@@ -1,4 +1,4 @@
-import { FC, memo } from 'react'
+import { type FC, memo } from 'react'
 import styled from 'styled-components'
 
 import { renderHtmlAst } from '../util/renderHtmlAst'

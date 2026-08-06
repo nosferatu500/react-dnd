@@ -15,18 +15,23 @@
   "sideEffects": false,
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./dist/cjs/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./dist/esm/index.js"
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     },
     "./package.json": "./package.json"
   },
   "files": [
-    "dist",
+    "dist/cjs",
+    "dist/esm",
     "README.md",
     "LICENSE"
   ],
@@ -42,10 +47,11 @@
     "_build_types": "tsc -b tsconfig.json",
     "_build_esm": "swc src -d dist/esm --strip-leading-paths -C module.type=es6 -C module.ignoreDynamic=true",
     "_build_cjs": "swc src -d dist/cjs --strip-leading-paths -C module.type=commonjs",
-    "_build_pkgjson": "node ../../scripts/write-dist-manifests.mjs",
-    "build": "run-p _build_types _build_esm _build_cjs && npm run _build_pkgjson",
+    "build": "run-p _build_types _build_esm _build_cjs && npm run _finalize",
     "check": "biome check src",
-    "release": "npm publish --access public"
+    "release": "npm publish --access public",
+    "_finalize": "node ../../scripts/finalize-dist.mjs",
+    "check:exports": "attw --pack . --profile node16"
   },
   "devDependencies": {
     "dnd-core": "^16.0.1",

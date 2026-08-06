@@ -5,9 +5,9 @@
     "emitDeclarationOnly": true,
     "rootDir": "./src",
     "outDir": "./dist/types",
-    "tsBuildInfoFile": "./dist/types/.tsbuildinfo"
+    "tsBuildInfoFile": "./dist/types/.tsbuildinfo",
+    "types": ["node"]
   },
-  "include": [
-    "./src/index.ts"
-  ]
+  "include": ["./src"],
+  "exclude": ["./src/**/__tests__/**", "./src/**/__compat__/**"]
 }

@@ -3,8 +3,7 @@
  * Only four Jest APIs appear in the suite, so a targeted transform is safer
  * (and reviewable) compared to a general-purpose codemod.
  */
-import { readFile, writeFile } from 'node:fs/promises'
-import { glob } from 'node:fs/promises'
+import { glob, readFile, writeFile } from 'node:fs/promises'
 
 const REPLACEMENTS = [
 	[/\bjest\.fn\b/g, 'vi.fn'],
@@ -16,7 +15,9 @@ const REPLACEMENTS = [
 ]
 
 let changed = 0
-for await (const file of glob('packages/*/src/**/__tests__/**/*.spec.{ts,tsx}')) {
+for await (const file of glob(
+	'packages/*/src/**/__tests__/**/*.spec.{ts,tsx}',
+)) {
 	const original = await readFile(file, 'utf8')
 	let next = original
 	for (const [pattern, replacement] of REPLACEMENTS) {

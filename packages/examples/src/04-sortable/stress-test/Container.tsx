@@ -35,8 +35,8 @@ function buildCardData() {
 	}
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
-export interface ContainerProps {}
+/** This example takes no props. */
+export type ContainerProps = Record<string, never>
 
 export class Container extends Component<
 	ContainerProps,
@@ -60,18 +60,16 @@ export class Container extends Component<
 		const { cardsByIndex } = this.cardState
 
 		return (
-			<>
-				<div style={style}>
-					{cardsByIndex.map((card) => (
-						<Card
-							key={card.id}
-							id={card.id}
-							text={card.text}
-							moveCard={this.moveCard}
-						/>
-					))}
-				</div>
-			</>
+			<div style={style}>
+				{cardsByIndex.map((card) => (
+					<Card
+						key={card.id}
+						id={card.id}
+						text={card.text}
+						moveCard={this.moveCard}
+					/>
+				))}
+			</div>
 		)
 	}
 

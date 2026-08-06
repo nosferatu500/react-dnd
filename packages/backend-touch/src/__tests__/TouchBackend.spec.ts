@@ -14,9 +14,9 @@ describe('TouchBackend', () => {
 		expect(backend).toBeDefined()
 		const profile = backend.profile()
 		expect(profile).toBeDefined()
-		Object.keys(profile).forEach((profilingKey) =>
-			expect(profile[profilingKey]).toEqual(0),
-		)
+		for (const profilingKey of Object.keys(profile)) {
+			expect(profile[profilingKey]).toEqual(0)
+		}
 	})
 
 	it('can determine target ids', () => {

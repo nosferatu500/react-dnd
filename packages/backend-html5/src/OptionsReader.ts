@@ -14,7 +14,9 @@ export class OptionsReader {
 	}
 
 	public get window(): Window | undefined {
-		return this.globalContext ?? (typeof window !== 'undefined' ? window : undefined)
+		return (
+			this.globalContext ?? (typeof window !== 'undefined' ? window : undefined)
+		)
 	}
 
 	public get document(): Document | undefined {

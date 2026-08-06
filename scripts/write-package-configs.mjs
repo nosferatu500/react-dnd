@@ -6,33 +6,41 @@
 import { writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-/** entry -> the file tsc walks to decide what gets a declaration. */
+/**
+ * Per-package build config. `refs` are TypeScript project references mirroring
+ * the runtime dependency graph, so `tsc -b` orders the declaration builds.
+ */
 const PACKAGES = {
-	'util-asap': { entry: './src/index.ts', refs: [] },
-	'util-invariant': { entry: './src/index.ts', refs: [] },
-	'util-shallowequal': { entry: './src/index.ts', refs: [] },
+	// `types` is set explicitly wherever globals are needed: a composite build in
+	// a monorepo otherwise picks up every @types package hoisted to the root,
+	// including vitest's globals, which must not leak into published .d.ts.
+	'util-asap': { refs: [], extra: { types: ['node'] } },
+	'util-invariant': { refs: [], extra: { types: ['node'] } },
+	'util-shallowequal': { refs: [] },
 	'dnd-core': {
-		entry: './src/index.ts',
 		refs: ['../util-asap', '../util-invariant'],
+		extra: { types: ['node'] },
 	},
 	'react-dnd': {
-		entry: './src/index.ts',
 		refs: ['../dnd-core', '../util-invariant', '../util-shallowequal'],
+		extra: { types: ['node'] },
 	},
-	'backend-html5': { entry: './src/index.ts', refs: ['../dnd-core'] },
+	'backend-html5': { refs: ['../dnd-core'], extra: { types: ['node'] } },
 	'backend-touch': {
-		entry: './src/index.ts',
 		refs: ['../dnd-core', '../util-invariant'],
 	},
-	'backend-test': { entry: './src/index.ts', refs: ['../dnd-core'] },
+	'backend-test': { refs: ['../dnd-core'] },
 	'test-utils': {
-		entry: './src/index.ts',
-		refs: ['../dnd-core', '../react-dnd', '../backend-html5', '../backend-test'],
+		refs: [
+			'../dnd-core',
+			'../react-dnd',
+			'../backend-html5',
+			'../backend-test',
+		],
 	},
 	examples: {
-		entry: './src/index.ts',
 		refs: ['../dnd-core', '../react-dnd', '../backend-html5'],
-		extra: { noImplicitOverride: false },
+		extra: { noImplicitOverride: false, types: ['node'] },
 	},
 }
 
@@ -48,7 +56,7 @@ const SWCRC = {
 	},
 }
 
-for (const [dir, { entry, refs, extra }] of Object.entries(PACKAGES)) {
+for (const [dir, { refs, extra }] of Object.entries(PACKAGES)) {
 	const tsconfig = {
 		extends: '../../tsconfig.base.json',
 		compilerOptions: {
@@ -59,7 +67,11 @@ for (const [dir, { entry, refs, extra }] of Object.entries(PACKAGES)) {
 			tsBuildInfoFile: './dist/types/.tsbuildinfo',
 			...extra,
 		},
-		include: [entry],
+		// A composite project must enumerate every file it owns, hence all of src/.
+		// The suites are excluded: tsconfig.test.json typechecks those, and they
+		// must not produce declarations in dist/types.
+		include: ['./src'],
+		exclude: ['./src/**/__tests__/**', './src/**/__compat__/**'],
 		...(refs.length ? { references: refs.map((path) => ({ path })) } : {}),
 	}
 

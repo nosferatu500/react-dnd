@@ -2,6 +2,10 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
+    /* vitest.aliases.mjs is plain JS with JSDoc types; check it in place rather
+       than shipping a hand-written .d.ts for a build-tooling helper. */
+    "allowJs": true,
+    "checkJs": true,
     "composite": false,
     "incremental": false,
     "declaration": false,
@@ -35,7 +39,8 @@
     "packages/util-shallowequal/src/**/*",
     "vitest.config.mts",
     "vitest.compat17.config.mts",
-    "vitest.setup.mts"
+    "vitest.setup.mts",
+    "vitest.aliases.mjs"
   ],
   "exclude": ["**/node_modules/**", "**/dist/**"]
 }

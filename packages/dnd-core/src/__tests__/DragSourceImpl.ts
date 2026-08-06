@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { DragDropMonitor, DragSource, Identifier } from '../interfaces.js'
 
 export class DragSourceImpl implements DragSource {

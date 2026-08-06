@@ -1,4 +1,5 @@
 import { cleanup, render } from '@testing-library/react'
+import type { DragDropManager } from 'dnd-core'
 import { createDragDropManager } from 'dnd-core'
 import { TestBackend } from 'react-dnd-test-backend'
 
@@ -10,7 +11,7 @@ describe('DndProvider', () => {
 	afterEach(cleanup)
 
 	it('reuses DragDropManager provided to it', () => {
-		let capturedManager
+		let capturedManager: DragDropManager | undefined
 		const manager = createDragDropManager(TestBackend, {}, {})
 
 		render(
@@ -28,7 +29,7 @@ describe('DndProvider', () => {
 	})
 
 	it('stores DragDropManager in global context and cleans up on unmount', () => {
-		let capturedManager
+		let capturedManager: DragDropManager | undefined
 
 		const mountProvider = () =>
 			render(

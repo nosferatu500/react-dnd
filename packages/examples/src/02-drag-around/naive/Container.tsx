@@ -5,8 +5,8 @@ import type { XYCoord } from 'react-dnd'
 import { useDrop } from 'react-dnd'
 
 import { Box } from './Box.js'
-import type { DragItem } from './interfaces.js'
 import { ItemTypes } from './ItemTypes.js'
+import type { DragItem } from './interfaces.js'
 
 const styles: CSSProperties = {
 	width: 300,
@@ -45,7 +45,7 @@ export const Container: FC<ContainerProps> = ({ hideSourceOnDrag }) => {
 				}),
 			)
 		},
-		[boxes, setBoxes],
+		[boxes],
 	)
 
 	const [, drop] = useDrop(

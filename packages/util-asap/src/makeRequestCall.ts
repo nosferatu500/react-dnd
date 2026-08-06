@@ -46,42 +46,42 @@ export function makeRequestCallFromMutationObserver(callback: () => void) {
 export const makeRequestCall =
 	typeof BrowserMutationObserver === 'function'
 		? // MutationObservers are desirable because they have high priority and work
-		  // reliably everywhere they are implemented.
-		  // They are implemented in all modern browsers.
-		  //
-		  // - Android 4-4.3
-		  // - Chrome 26-34
-		  // - Firefox 14-29
-		  // - Internet Explorer 11
-		  // - iPad Safari 6-7.1
-		  // - iPhone Safari 7-7.1
-		  // - Safari 6-7
-		  makeRequestCallFromMutationObserver
+			// reliably everywhere they are implemented.
+			// They are implemented in all modern browsers.
+			//
+			// - Android 4-4.3
+			// - Chrome 26-34
+			// - Firefox 14-29
+			// - Internet Explorer 11
+			// - iPad Safari 6-7.1
+			// - iPhone Safari 7-7.1
+			// - Safari 6-7
+			makeRequestCallFromMutationObserver
 		: // MessageChannels are desirable because they give direct access to the HTML
-		  // task queue, are implemented in Internet Explorer 10, Safari 5.0-1, and Opera
-		  // 11-12, and in web workers in many engines.
-		  // Although message channels yield to any queued rendering and IO tasks, they
-		  // would be better than imposing the 4ms delay of timers.
-		  // However, they do not work reliably in Internet Explorer or Safari.
+			// task queue, are implemented in Internet Explorer 10, Safari 5.0-1, and Opera
+			// 11-12, and in web workers in many engines.
+			// Although message channels yield to any queued rendering and IO tasks, they
+			// would be better than imposing the 4ms delay of timers.
+			// However, they do not work reliably in Internet Explorer or Safari.
 
-		  // Internet Explorer 10 is the only browser that has setImmediate but does
-		  // not have MutationObservers.
-		  // Although setImmediate yields to the browser's renderer, it would be
-		  // preferrable to falling back to setTimeout since it does not have
-		  // the minimum 4ms penalty.
-		  // Unfortunately there appears to be a bug in Internet Explorer 10 Mobile (and
-		  // Desktop to a lesser extent) that renders both setImmediate and
-		  // MessageChannel useless for the purposes of ASAP.
-		  // https://github.com/kriskowal/q/issues/396
+			// Internet Explorer 10 is the only browser that has setImmediate but does
+			// not have MutationObservers.
+			// Although setImmediate yields to the browser's renderer, it would be
+			// preferrable to falling back to setTimeout since it does not have
+			// the minimum 4ms penalty.
+			// Unfortunately there appears to be a bug in Internet Explorer 10 Mobile (and
+			// Desktop to a lesser extent) that renders both setImmediate and
+			// MessageChannel useless for the purposes of ASAP.
+			// https://github.com/kriskowal/q/issues/396
 
-		  // Timers are implemented universally.
-		  // We fall back to timers in workers in most engines, and in foreground
-		  // contexts in the following browsers.
-		  // However, note that even this simple case requires nuances to operate in a
-		  // broad spectrum of browsers.
-		  //
-		  // - Firefox 3-13
-		  // - Internet Explorer 6-9
-		  // - iPad Safari 4.3
-		  // - Lynx 2.8.7
-		  makeRequestCallFromTimer
+			// Timers are implemented universally.
+			// We fall back to timers in workers in most engines, and in foreground
+			// contexts in the following browsers.
+			// However, note that even this simple case requires nuances to operate in a
+			// broad spectrum of browsers.
+			//
+			// - Firefox 3-13
+			// - Internet Explorer 6-9
+			// - iPad Safari 4.3
+			// - Lynx 2.8.7
+			makeRequestCallFromTimer

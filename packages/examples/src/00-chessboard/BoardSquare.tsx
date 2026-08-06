@@ -36,8 +36,8 @@ export const BoardSquare: FC<BoardSquareProps> = ({
 	return (
 		<div
 			ref={drop}
-			role="Space"
 			data-testid={`(${x},${y})`}
+			role="Space"
 			style={{
 				position: 'relative',
 				width: '100%',

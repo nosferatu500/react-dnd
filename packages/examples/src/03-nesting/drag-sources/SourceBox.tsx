@@ -35,7 +35,7 @@ export const SourceBox: FC<SourceBoxProps> = memo(function SourceBox({
 
 	const onToggleForbidDrag = useCallback(() => {
 		setForbidDrag(!forbidDrag)
-	}, [forbidDrag, setForbidDrag])
+	}, [forbidDrag])
 
 	const backgroundColor = useMemo(() => {
 		switch (color) {
@@ -59,7 +59,7 @@ export const SourceBox: FC<SourceBoxProps> = memo(function SourceBox({
 	)
 
 	return (
-		<div ref={drag} style={containerStyle} role="SourceBox" data-color={color}>
+		<div role="SourceBox" ref={drag} style={containerStyle} data-color={color}>
 			<input
 				type="checkbox"
 				checked={forbidDrag}

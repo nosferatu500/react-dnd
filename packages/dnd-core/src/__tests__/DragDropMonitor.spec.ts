@@ -1,13 +1,12 @@
-import { deferred } from './deferred.js'
 import type { ITestBackend } from 'react-dnd-test-backend'
 import { TestBackend } from 'react-dnd-test-backend'
-
 import { createDragDropManager } from '../createDragDropManager.js'
 import type {
 	DragDropManager,
 	DragDropMonitor,
 	HandlerRegistry,
 } from '../interfaces.js'
+import { deferred } from './deferred.js'
 import { NonDraggableSource, NormalSource, NumberSource } from './sources.js'
 import {
 	NonDroppableTarget,

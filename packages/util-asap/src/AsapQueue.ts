@@ -1,20 +1,15 @@
-/* eslint-disable no-restricted-globals, @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars, @typescript-eslint/no-non-null-assertion */
 import { makeRequestCall, makeRequestCallFromTimer } from './makeRequestCall.js'
 import type { Task } from './types.js'
 
 export class AsapQueue {
 	private queue: Task[] = []
-	// We queue errors to ensure they are thrown in right order (FIFO).
-	// Array-as-queue is good enough here, since we are just dealing with exceptions.
-	private pendingErrors: any[] = []
-	// Once a flush has been requested, no further calls to `requestFlush` are
-	// necessary until the next `flush` completes.
-	// @ts-ignore
-	private flushing = false
 	// `requestFlush` is an implementation-specific method that attempts to kick
 	// off a `flush` event as quickly as possible. `flush` will attempt to exhaust
 	// the event queue before yielding to the browser's own event loop.
 	private requestFlush: () => void
+	// We queue errors to ensure they are thrown in right order (FIFO).
+	// Array-as-queue is good enough here, since we are just dealing with exceptions.
+	private pendingErrors: any[] = []
 
 	private requestErrorThrow: () => void
 	// The position of the next task to execute in the task queue. This is
@@ -57,9 +52,12 @@ export class AsapQueue {
 	// call `rawAsap.requestFlush` if an exception is thrown.
 	public enqueueTask(task: Task): void {
 		const { queue: q, requestFlush } = this
+		// Upstream `asap` guards on a `flushing` flag; this port guards on the
+		// queue being empty instead, which holds the same invariant because
+		// `flush` always drains to `q.length === 0`. The flag it also carried was
+		// written but never read, so it has been dropped.
 		if (!q.length) {
 			requestFlush()
-			this.flushing = true
 		}
 		// Equivalent to push, but avoids a function call.
 		q[q.length] = task
@@ -78,7 +76,7 @@ export class AsapQueue {
 			// Advance the index before calling the task. This ensures that we will
 			// begin flushing on the next task the task throws an error.
 			this.index++
-			q[currentIndex]!.call()
+			q[currentIndex]?.call()
 			// Prevent leaking memory for long chains of recursive calls to `asap`.
 			// If we call `asap` within tasks scheduled by `asap`, the queue will
 			// grow, but to avoid an O(n) walk for every task we execute, we don't
@@ -92,7 +90,9 @@ export class AsapQueue {
 					scan < newLength;
 					scan++
 				) {
-					q[scan] = q[scan + this.index]!
+					// scan + index stays below the original length, so the source slot
+					// is always populated; the cast avoids a non-null assertion.
+					q[scan] = q[scan + this.index] as Task
 				}
 				q.length -= this.index
 				this.index = 0
@@ -100,7 +100,6 @@ export class AsapQueue {
 		}
 		q.length = 0
 		this.index = 0
-		this.flushing = false
 	}
 
 	// In a web browser, exceptions are not fatal. However, to avoid

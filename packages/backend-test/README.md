@@ -1,9 +1,26 @@
-# react-dnd-test-backend [![npm package](https://img.shields.io/npm/v/react-dnd-test-backend.svg?style=flat-square)](https://www.npmjs.org/package/react-dnd-test-backend)
+# react-dnd-test-backend
 
-The test backend for [React DnD](http://github.com/react-dnd/react-dnd/).
+A backend that scripts drag interactions, for testing React DnD apps.
 
-See [the docs](http://react-dnd.github.io/react-dnd/docs/backends/test) for usage information.
+Part of [React DnD](https://github.com/nosferatu500/react-dnd) — a maintained
+fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).
+
+## Install
+
+```sh
+npm install react-dnd-test-backend
+```
+
+## Supported React versions
+
+`^17.0.2 || ^18.0.0 || ^19.0.0`
+
+React 16 is not supported; use the upstream `16.0.1` release if you need it.
+
+## Documentation
+
+https://github.com/nosferatu500/react-dnd#readme
 
 ## License
 
-MIT
+MIT. See [LICENSE](./LICENSE); the original React DnD copyright is retained.

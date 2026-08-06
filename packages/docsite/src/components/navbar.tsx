@@ -1,5 +1,5 @@
 import { Link as GatsbyLink } from 'gatsby'
-import { FC, memo } from 'react'
+import { type FC, memo } from 'react'
 import styled from 'styled-components'
 
 import { theme } from '../theme'

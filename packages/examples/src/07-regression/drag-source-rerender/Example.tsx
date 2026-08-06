@@ -29,7 +29,9 @@ const Child: FC<ChildProps> = ({ drag, children }) => {
 				width: 400,
 			}}
 		>
-			<button onClick={toggle}>{open ? 'Hide' : 'Show'}</button>
+			<button type="button" onClick={toggle}>
+				{open ? 'Hide' : 'Show'}
+			</button>
 			{open ? (
 				<div
 					ref={drag}

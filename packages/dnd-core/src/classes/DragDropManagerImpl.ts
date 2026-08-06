@@ -41,7 +41,6 @@ export class DragDropManagerImpl implements DragDropManager {
 	}
 
 	public getActions(): DragDropActions {
-		/* eslint-disable-next-line @typescript-eslint/no-this-alias */
 		const manager = this
 		const { dispatch } = this.store
 

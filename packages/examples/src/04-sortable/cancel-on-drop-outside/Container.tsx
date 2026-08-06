@@ -74,7 +74,7 @@ export const Container: FC = memo(function Container() {
 				}),
 			)
 		},
-		[findCard, cards, setCards],
+		[findCard, cards],
 	)
 
 	const [, drop] = useDrop(() => ({ accept: ItemTypes.CARD }))

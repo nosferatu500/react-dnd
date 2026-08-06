@@ -16,5 +16,5 @@ export function useAccept<O, R, P>(
 	return useMemo(() => {
 		invariant(spec.accept != null, 'accept must be defined')
 		return Array.isArray(accept) ? accept : [accept]
-	}, [accept])
+	}, [accept, spec.accept])
 }

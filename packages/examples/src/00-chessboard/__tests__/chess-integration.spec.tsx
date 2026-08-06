@@ -119,7 +119,9 @@ describe('The Chess Example', () => {
 			})
 
 			// Red cell is current knight position when hold dragging
-			expect(screen.getByRole(OverlayType.IllegalMoveHover)).toHaveStyle('background-color: rgb(255, 0, 0)')
+			expect(screen.getByRole(OverlayType.IllegalMoveHover)).toHaveStyle(
+				'background-color: rgb(255, 0, 0)',
+			)
 		})
 	})
 })

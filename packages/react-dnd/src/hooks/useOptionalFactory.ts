@@ -1,3 +1,6 @@
+// biome-ignore-all lint/correctness/useExhaustiveDependencies: the dependency
+// list is supplied by the caller as part of the public useDrag/useDrop API, so
+// it is necessarily dynamic and can never be an array literal here.
 import { useMemo } from 'react'
 
 import type { FactoryOrInstance } from './types.js'

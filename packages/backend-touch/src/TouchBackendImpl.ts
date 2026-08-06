@@ -215,7 +215,7 @@ export class TouchBackendImpl implements Backend {
 	) {
 		const options = supportsPassive ? { capture, passive: false } : capture
 
-		this.listenerTypes.forEach(function (listenerType) {
+		this.listenerTypes.forEach((listenerType) => {
 			const evt = eventNames[listenerType][event]
 
 			if (evt) {
@@ -232,7 +232,7 @@ export class TouchBackendImpl implements Backend {
 	) {
 		const options = supportsPassive ? { capture, passive: false } : capture
 
-		this.listenerTypes.forEach(function (listenerType) {
+		this.listenerTypes.forEach((listenerType) => {
 			const evt = eventNames[listenerType][event]
 
 			if (evt) {
@@ -280,7 +280,7 @@ export class TouchBackendImpl implements Backend {
 				return
 			}
 
-			let coords
+			let coords: { x: number; y: number } | undefined
 
 			/**
 			 * Grab the coordinates for the current mouse/touch position
@@ -446,8 +446,7 @@ export class TouchBackendImpl implements Backend {
 		// If we're not dragging and we've moved a little, that counts as a drag start
 		if (
 			!this.monitor.isDragging() &&
-			// eslint-disable-next-line no-prototype-builtins
-			this._mouseClientOffset.hasOwnProperty('x') &&
+			Object.hasOwn(this._mouseClientOffset, 'x') &&
 			moveStartSourceIds &&
 			distance(
 				this._mouseClientOffset.x || 0,
@@ -488,13 +487,12 @@ export class TouchBackendImpl implements Backend {
 					clientOffset.x,
 					clientOffset.y,
 					dragOverTargetNodes,
-			  )
+				)
 			: this.document.elementsFromPoint(clientOffset.x, clientOffset.y)
 		// Extend list with parents that are not receiving elementsFromPoint events (size 0 elements and svg groups)
 		const elementsAtPointExtended: Element[] = []
 		for (const nodeId in elementsAtPoint) {
-			// eslint-disable-next-line no-prototype-builtins
-			if (!elementsAtPoint.hasOwnProperty(nodeId)) {
+			if (!Object.hasOwn(elementsAtPoint, nodeId)) {
 				continue
 			}
 			let currentNode: Element | undefined | null = elementsAtPoint[nodeId]
@@ -526,8 +524,7 @@ export class TouchBackendImpl implements Backend {
 				const targetNode = this.targetNodes.get(targetId)
 				if (
 					sourceNode &&
-					targetNode &&
-					targetNode.contains(sourceNode) &&
+					targetNode?.contains(sourceNode) &&
 					orderedDragOverTargetIds.indexOf(targetId) === -1
 				) {
 					orderedDragOverTargetIds.unshift(targetId)

@@ -1,9 +1,9 @@
 /* eslint-disable */
-import fs from 'fs'
-import path from 'path'
+import fs from 'node:fs'
+import { createRequire } from 'node:module'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { removeImportExtensions } from '../../scripts/removeImportExtensions.mjs'
-import { createRequire } from 'module'
-import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -112,8 +112,8 @@ const makePackageJson = (index, isTS) => {
 			eject: 'react-scripts eject',
 		},
 		dependencies: {
-			...craTesterPkgJson['dependencies'],
-			...examplesPkgJson['dependencies'],
+			...craTesterPkgJson.dependencies,
+			...examplesPkgJson.dependencies,
 			'react-dnd': reactDndPkgJson.version,
 			'react-dnd-html5-backend': reactDndHtml5BackendVersion,
 			'prop-types': '*',
@@ -121,7 +121,7 @@ const makePackageJson = (index, isTS) => {
 			'react-dnd-examples': undefined,
 		},
 		devDependencies: {
-			...craTesterPkgJson['devDependencies'],
+			...craTesterPkgJson.devDependencies,
 		},
 		eslintConfig: {
 			extends: ['react-app', 'react-app/jest'],
@@ -159,9 +159,9 @@ function walk_examples(dir, look_for, done) {
 		list.forEach((file) => {
 			file = path.resolve(dir, file)
 
-			fs.stat(file, (err, stat) => {
+			fs.stat(file, (_err, stat) => {
 				if (stat?.isDirectory()) {
-					walk_examples(file, look_for, (err, res) => {
+					walk_examples(file, look_for, (_err, res) => {
 						results = results.concat(res)
 						if (!--pending) done(null, results)
 					})

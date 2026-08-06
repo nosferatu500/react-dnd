@@ -2,10 +2,17 @@
 import './layout.css'
 import 'prismjs/themes/prism.css'
 
-import { FC, memo, ReactNode, useCallback, useMemo, useState } from 'react'
+import {
+	type FC,
+	memo,
+	type ReactNode,
+	useCallback,
+	useMemo,
+	useState,
+} from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { TouchBackend, TouchBackendOptions } from 'react-dnd-touch-backend'
+import { TouchBackend, type TouchBackendOptions } from 'react-dnd-touch-backend'
 import { Helmet } from 'react-helmet'
 import styled from 'styled-components'
 

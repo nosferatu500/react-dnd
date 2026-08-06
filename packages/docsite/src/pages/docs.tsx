@@ -1,5 +1,5 @@
 import { navigate } from 'gatsby'
-import { FC, memo } from 'react'
+import { type FC, memo } from 'react'
 
 import { Layout } from '../components/layout'
 

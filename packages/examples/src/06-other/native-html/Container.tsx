@@ -7,18 +7,16 @@ import { TargetBox } from './TargetBox.js'
 export const Container: FC = () => {
 	const [droppedHTML, setDroppedHTML] = useState<string>('')
 
-	const handleHTMLDrop = useCallback(
-		(item: { html: any }) => {
-			if (item) {
-				setDroppedHTML(item.html)
-			}
-		},
-		[setDroppedHTML],
-	)
+	const handleHTMLDrop = useCallback((item: { html: any }) => {
+		if (item) {
+			setDroppedHTML(item.html)
+		}
+	}, [])
 
 	return (
 		<>
 			<iframe
+				title="Draggable image source"
 				srcDoc={`<img src='https://react-dnd.github.io/react-dnd/favicon-32x32.png' />`}
 			/>
 			<TargetBox onDrop={handleHTMLDrop} />

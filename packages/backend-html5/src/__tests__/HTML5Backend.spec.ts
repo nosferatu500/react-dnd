@@ -27,9 +27,9 @@ describe('The HTML5 Backend', () => {
 			// Expect an initially empty profile
 			const profile = backend.profile()
 			expect(profile).toBeDefined()
-			Object.keys(profile).forEach((profilingKey) =>
-				expect(profile[profilingKey]).toEqual(0),
-			)
+			for (const profilingKey of Object.keys(profile)) {
+				expect(profile[profilingKey]).toEqual(0)
+			}
 		})
 
 		it('uses the ambient window global', () => {

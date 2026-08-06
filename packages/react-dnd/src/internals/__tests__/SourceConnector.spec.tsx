@@ -1,6 +1,5 @@
-import type { Mocked } from 'vitest'
 import type { Backend } from 'dnd-core'
-
+import type { Mocked } from 'vitest'
 
 import { SourceConnector } from '../SourceConnector.js'
 

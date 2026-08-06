@@ -38,7 +38,11 @@ for (const file of FILES) {
 
 		lines.splice(end, 0, `${body}await promise`)
 		lines[i] = `${indent}it(${title}, async () => {`
-		lines.splice(i + 1, 0, `${body}const { promise, resolve: done } = deferred()`)
+		lines.splice(
+			i + 1,
+			0,
+			`${body}const { promise, resolve: done } = deferred()`,
+		)
 	}
 
 	let out = lines.join('\n')

@@ -82,7 +82,7 @@ function hoverAllTargets(
 	registry: HandlerRegistry,
 ) {
 	// Finally call hover on all matching targets.
-	targetIds.forEach(function (targetId) {
+	targetIds.forEach((targetId) => {
 		const target = registry.getTarget(targetId)
 		target.hover(monitor, targetId)
 	})

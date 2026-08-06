@@ -92,7 +92,7 @@ function verifyInvariants(
 	registry: HandlerRegistry,
 ) {
 	invariant(!monitor.isDragging(), 'Cannot call beginDrag while dragging.')
-	sourceIds.forEach(function (sourceId) {
+	sourceIds.forEach((sourceId) => {
 		invariant(
 			registry.getSource(sourceId),
 			'Expected sourceIds to be registered.',

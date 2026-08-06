@@ -1,6 +1,6 @@
-# dnd-core
+# react-dnd-touch-backend
 
-The backend-agnostic drag-and-drop state machine behind React DnD.
+Touch and pointer backend for React DnD.
 
 Part of [React DnD](https://github.com/nosferatu500/react-dnd) — a maintained
 fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).
@@ -8,7 +8,7 @@ fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).
 ## Install
 
 ```sh
-npm install dnd-core
+npm install react-dnd-touch-backend
 ```
 
 ## Supported React versions

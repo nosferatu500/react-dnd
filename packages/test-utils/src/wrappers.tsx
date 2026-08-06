@@ -42,15 +42,16 @@ export function wrapWithBackend<T>(
 	// re-published the ref as a `forwardedRef` prop. That indirection stopped
 	// typechecking under @types/react@19 and was never needed: forwardRef can
 	// hand the ref straight to the decorated component.
-	const Wrapped = forwardRef<unknown, T & object>(
-		function TestContextWrapper(props, ref: Ref<any>) {
-			return (
-				<DndProvider backend={Backend} options={backendOptions}>
-					<DecoratedComponent ref={ref} {...(props as unknown as T)} />
-				</DndProvider>
-			)
-		},
-	)
+	const Wrapped = forwardRef<unknown, T & object>(function TestContextWrapper(
+		props,
+		ref: Ref<any>,
+	) {
+		return (
+			<DndProvider backend={Backend} options={backendOptions}>
+				<DecoratedComponent ref={ref} {...(props as unknown as T)} />
+			</DndProvider>
+		)
+	})
 
 	Wrapped.displayName = `TestContextWrapper(${
 		DecoratedComponent.displayName || DecoratedComponent.name || 'Component'

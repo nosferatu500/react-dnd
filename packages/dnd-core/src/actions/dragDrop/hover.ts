@@ -1,5 +1,3 @@
-import { invariant } from '@react-dnd/invariant'
-
 import type {
 	Action,
 	DragDropManager,
@@ -9,6 +7,7 @@ import type {
 	HoverPayload,
 	Identifier,
 } from '../../interfaces.js'
+import { invariant } from '../../utils/invariant.js'
 import { matchesType } from '../../utils/matchesType.js'
 import { HOVER } from './types.js'
 

@@ -1,4 +1,4 @@
-import { invariant } from '@react-dnd/invariant'
+import { invariant } from 'dnd-core'
 import { isValidElement } from 'react'
 
 /**

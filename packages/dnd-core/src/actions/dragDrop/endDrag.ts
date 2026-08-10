@@ -1,10 +1,9 @@
-import { invariant } from '@react-dnd/invariant'
-
 import type {
 	DragDropManager,
 	DragDropMonitor,
 	SentinelAction,
 } from '../../interfaces.js'
+import { invariant } from '../../utils/invariant.js'
 import { END_DRAG } from './types.js'
 
 export function createEndDrag(manager: DragDropManager) {

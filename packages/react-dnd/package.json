@@ -48,8 +48,6 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "@react-dnd/invariant": "^4.0.2",
-    "@react-dnd/shallowequal": "^4.0.2",
     "dnd-core": "^16.0.1",
     "fast-deep-equal": "^3.1.3"
   },

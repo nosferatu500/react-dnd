@@ -1,7 +1,8 @@
 {
   "core": {
+    "HandlerRole": true,
     "createDragDropManager": true,
-    "HandlerRole": true
+    "invariant": true
   },
   "dnd": {
     "DndContext": true,

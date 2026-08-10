@@ -1,5 +1,5 @@
-import { shallowEqual } from '@react-dnd/shallowequal'
 import type { Backend, Identifier, Unsubscribe } from 'dnd-core'
+import equal from 'fast-deep-equal'
 import type { Ref, RefObject } from 'react'
 
 import type { DragPreviewOptions, DragSourceOptions } from '../types/index.js'
@@ -177,17 +177,11 @@ export class SourceConnector implements Connector {
 	}
 
 	private didDragSourceOptionsChange(): boolean {
-		return !shallowEqual(
-			this.lastConnectedDragSourceOptions,
-			this.dragSourceOptions,
-		)
+		return !equal(this.lastConnectedDragSourceOptions, this.dragSourceOptions)
 	}
 
 	private didDragPreviewOptionsChange(): boolean {
-		return !shallowEqual(
-			this.lastConnectedDragPreviewOptions,
-			this.dragPreviewOptions,
-		)
+		return !equal(this.lastConnectedDragPreviewOptions, this.dragPreviewOptions)
 	}
 
 	public disconnectDragSource() {

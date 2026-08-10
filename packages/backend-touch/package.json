@@ -49,7 +49,6 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "@react-dnd/invariant": "^4.0.2",
     "dnd-core": "^16.0.1"
   }
 }

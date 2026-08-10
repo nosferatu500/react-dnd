@@ -9,10 +9,5 @@
     "types": ["node"]
   },
   "include": ["./src"],
-  "exclude": ["./src/**/__tests__/**", "./src/**/__compat__/**"],
-  "references": [
-    {
-      "path": "../util-invariant"
-    }
-  ]
+  "exclude": ["./src/**/__tests__/**", "./src/**/__compat__/**"]
 }

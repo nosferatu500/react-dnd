@@ -1,5 +1,3 @@
-import { invariant } from '@react-dnd/invariant'
-
 import type {
 	Action,
 	BeginDragOptions,
@@ -10,6 +8,7 @@ import type {
 	Identifier,
 	XYCoord,
 } from '../../interfaces.js'
+import { invariant } from '../../utils/invariant.js'
 import { isObject } from '../../utils/js_utils.js'
 import { setClientOffset } from './local/setClientOffset.js'
 import { BEGIN_DRAG, INIT_COORDS } from './types.js'

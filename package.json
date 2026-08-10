@@ -55,9 +55,7 @@
     "packages/react-dnd",
     "packages/test-suite-next",
     "packages/test-suite-vite",
-    "packages/test-utils",
-    "packages/util-invariant",
-    "packages/util-shallowequal"
+    "packages/test-utils"
   ],
   "scripts": {
     "clean": "turbo run clean && shx rm -rf coverage .turbo",

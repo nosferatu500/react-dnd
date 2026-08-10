@@ -1,5 +1,5 @@
-import { invariant } from '@react-dnd/invariant'
 import type { Identifier } from 'dnd-core'
+import { invariant } from 'dnd-core'
 import { useMemo } from 'react'
 
 import type { DragSourceHookSpec } from '../types.js'

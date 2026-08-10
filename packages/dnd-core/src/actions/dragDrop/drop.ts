@@ -1,5 +1,3 @@
-import { invariant } from '@react-dnd/invariant'
-
 import type {
 	Action,
 	DragDropManager,
@@ -8,6 +6,7 @@ import type {
 	HandlerRegistry,
 	Identifier,
 } from '../../interfaces.js'
+import { invariant } from '../../utils/invariant.js'
 import { isObject } from '../../utils/js_utils.js'
 import { DROP } from './types.js'
 

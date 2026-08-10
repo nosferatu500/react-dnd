@@ -1,5 +1,5 @@
-import { shallowEqual } from '@react-dnd/shallowequal'
 import type { Backend, Identifier, Unsubscribe } from 'dnd-core'
+import equal from 'fast-deep-equal'
 import type { RefObject } from 'react'
 
 import type { DropTargetOptions } from '../types/index.js'
@@ -99,10 +99,7 @@ export class TargetConnector implements Connector {
 	}
 
 	private didOptionsChange(): boolean {
-		return !shallowEqual(
-			this.lastConnectedDropTargetOptions,
-			this.dropTargetOptions,
-		)
+		return !equal(this.lastConnectedDropTargetOptions, this.dropTargetOptions)
 	}
 
 	public disconnectDropTarget() {

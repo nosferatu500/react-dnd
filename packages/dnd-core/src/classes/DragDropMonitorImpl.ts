@@ -1,5 +1,3 @@
-import { invariant } from '@react-dnd/invariant'
-
 import type {
 	DragDropMonitor,
 	HandlerRegistry,
@@ -14,6 +12,7 @@ import {
 	getSourceClientOffset,
 } from '../utils/coords.js'
 import { areDirty } from '../utils/dirtiness.js'
+import { invariant } from '../utils/invariant.js'
 import { matchesType } from '../utils/matchesType.js'
 
 export class DragDropMonitorImpl implements DragDropMonitor {

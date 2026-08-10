@@ -15,8 +15,6 @@ const PACKAGE_DIRS = {
 	'react-dnd-test-backend': 'backend-test',
 	'react-dnd-test-utils': 'test-utils',
 	'react-dnd-examples': 'examples',
-	'@react-dnd/invariant': 'util-invariant',
-	'@react-dnd/shallowequal': 'util-shallowequal',
 }
 
 /**

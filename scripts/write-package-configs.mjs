@@ -14,20 +14,19 @@ const PACKAGES = {
 	// `types` is set explicitly wherever globals are needed: a composite build in
 	// a monorepo otherwise picks up every @types package hoisted to the root,
 	// including vitest's globals, which must not leak into published .d.ts.
-	'util-invariant': { refs: [], extra: { types: ['node'] } },
-	'util-shallowequal': { refs: [] },
 	'dnd-core': {
-		refs: ['../util-invariant'],
+		refs: [],
 		extra: { types: ['node'] },
 	},
 	'react-dnd': {
-		refs: ['../dnd-core', '../util-invariant', '../util-shallowequal'],
+		refs: ['../dnd-core'],
 		extra: { types: ['node'] },
 	},
 	'backend-html5': { refs: ['../dnd-core'], extra: { types: ['node'] } },
 	'backend-touch': {
-		refs: ['../dnd-core', '../util-invariant'],
+		refs: ['../dnd-core'],
 	},
+	'backend-keyboard': { refs: ['../dnd-core', '../react-dnd'] },
 	'backend-test': { refs: ['../dnd-core'] },
 	'test-utils': {
 		refs: [

@@ -13,12 +13,6 @@
   "references": [
     {
       "path": "../dnd-core"
-    },
-    {
-      "path": "../util-invariant"
-    },
-    {
-      "path": "../util-shallowequal"
     }
   ]
 }

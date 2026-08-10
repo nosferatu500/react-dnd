@@ -12,9 +12,6 @@
   "references": [
     {
       "path": "../dnd-core"
-    },
-    {
-      "path": "../util-invariant"
     }
   ]
 }

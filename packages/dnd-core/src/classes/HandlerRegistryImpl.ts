@@ -1,5 +1,3 @@
-import { invariant } from '@react-dnd/invariant'
-
 import {
 	addSource,
 	addTarget,
@@ -22,6 +20,7 @@ import type {
 import { HandlerRole } from '../interfaces.js'
 import type { DndStore } from '../reducers/index.js'
 import { getNextUniqueId } from '../utils/getNextUniqueId.js'
+import { invariant } from '../utils/invariant.js'
 
 function getNextHandlerId(role: HandlerRole): string {
 	const id = getNextUniqueId().toString()

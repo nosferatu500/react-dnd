@@ -42,7 +42,8 @@ in v14. Replace spec.begin() with spec.item()"* and linked the old docs site. Th
 API it guarded was removed two majors before this fork started; a `begin` in your
 spec is now simply an unknown property.
 
-**`@react-dnd/asap` is no longer published.** See below.
+**`@react-dnd/asap`, `@react-dnd/invariant` and `@react-dnd/shallowequal` are
+no longer published.** See below.
 
 **Connectors no longer accept a React element.** This was the calling convention
 the `DragSource`/`DropTarget` decorators generated:
@@ -271,7 +272,7 @@ TypeScript resolution is now correct for the first time — upstream's `exports`
 map had no `types` condition at all (in fact no `exports` map), so users on
 `moduleResolution: node16`/`nodenext`/`bundler` could not resolve declarations.
 `npm run check:exports` runs [`attw`](https://arethetypeswrong.github.io) with
-its `esm-only` profile over all nine packages in CI, so this cannot regress.
+its `esm-only` profile over all seven packages in CI, so this cannot regress.
 
 ### The packages target ES2025, and require Node >= 22.12
 
@@ -321,7 +322,42 @@ place, to defer a handler-map delete by one microtask. `@react-dnd/asap` was a
 standard existed. `queueMicrotask` has been in every browser since 2018 and Node
 11, with the same two guarantees the package was built for: the task runs in its
 own turn before the next macrotask, and a throwing task does not prevent the rest
-from running. `dnd-core` no longer depends on the package at all.
+from running. `dnd-core` no longer depends on the package at all, and the package
+itself is no longer published.
+
+### `@react-dnd/invariant` and `@react-dnd/shallowequal` are no longer published
+
+Nine published packages, down to seven. Both were tiny — 40 and 55 lines — and
+neither was ever part of the API this repo tests: the entrypoint conformance test
+covers seven packages and never mentioned either. Publishing a package costs a
+build target, an `attw` run, a README, a release step and a version to keep in
+sync, which is a lot of ceremony for a `throw` helper.
+
+**`invariant` moved into `dnd-core`, which exports it.** It is genuinely part of
+the backend-authoring contract — every backend asserts its own preconditions and
+they should all report them the same way — so it belongs somewhere backends
+already depend on:
+
+```diff
+- import { invariant } from '@react-dnd/invariant'
++ import { invariant } from 'dnd-core'
+```
+
+Behavior is unchanged, including the `typeof process !== 'undefined'` guard that
+saves bundlers from needing a `process` shim, and the production path where the
+check survives but the message is stripped. It has tests now, which it never had
+as a package.
+
+**`shallowEqual` is gone entirely rather than inlined.** Its only three call
+sites compared flat option objects, and `fast-deep-equal` — already a dependency,
+for collected props — gives the same answer there and a more correct one if
+anyone nests an option value. One equality implementation instead of a dependency
+*plus* a package. If you imported `@react-dnd/shallowequal` directly, any
+shallow-equal utility will do.
+
+That swap also closed a coverage gap: nothing tested that a connector reconnects
+when its options change, so changing the comparator would have been invisible.
+That path is covered now.
 
 ### `react-dnd` no longer depends on `hoist-non-react-statics`
 
@@ -523,6 +559,9 @@ directory and mirrors the declarations next to both JavaScript flavors.
 | `packages/jest-config` | Jest replaced by Vitest |
 | `packages/test-suite-cra` | Create React App is archived; Vite and Next cover bundler integration |
 | `packages/compat-react18` | pinned React 18 for the cross-version suite; React 18 is no longer supported |
+| `packages/util-asap` | a deprecated one-line wrapper around `queueMicrotask`, imported by nothing |
+| `packages/util-invariant` | moved into `dnd-core`, which exports it |
+| `packages/util-shallowequal` | replaced by `fast-deep-equal`, already a dependency |
 
 ---
 

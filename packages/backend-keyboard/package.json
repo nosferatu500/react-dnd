@@ -1,6 +1,6 @@
 {
   "name": "@nosferatu500/react-dnd-keyboard-backend",
-  "version": "19.0.0",
+  "version": "19.1.0",
   "description": "Keyboard and screen-reader accessible backend for react-dnd",
   "license": "MIT",
   "author": "Vitalii Shvetsov",

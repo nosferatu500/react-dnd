@@ -109,7 +109,7 @@ for (const dir of PUBLISHED) {
 		},
 		files: ['dist', 'README.md', 'LICENSE'],
 		engines: { node: '>=20.19.0' },
-		publishConfig: { access: 'public', provenance: true },
+		publishConfig: { access: 'public' },
 		scripts: LIB_SCRIPTS,
 		dependencies: normalizeDeps(pkg.dependencies),
 		devDependencies: normalizeDeps(pkg.devDependencies),

@@ -99,6 +99,9 @@ withKeyboard(HTML5Backend, {
 	// Default: aria-label, falling back to trimmed text content
 	describeNode: (node) => node.dataset.label ?? 'item',
 
+	// Notified of every arrow key, whether or not the hover moves.
+	onNavigate: (event) => {},
+
 	// Any subset of the spoken strings. See `defaultAnnouncements`.
 	announcements: {
 		drop: ({ source, target }) => `${source} moved to ${target}.`,
@@ -148,6 +151,52 @@ withKeyboard(HTML5Backend, {
 		// of the candidates, or null to stay put.
 	},
 })
+```
+
+### Sub-position: `onNavigate`
+
+Some drags have somewhere to go that is not another drop target — the indent
+level of a row in a tree, the insertion point between two cards, anything that
+is "the same target, somewhere else within it".
+
+A drop target cannot express that. dnd-core treats a `hover` whose target ids
+are unchanged as no change at all, so re-hovering the same target dispatches
+nothing that any collector re-renders for. Sub-position is *application* state,
+and `onNavigate` is the event that drives it:
+
+```tsx
+withKeyboard(HTML5Backend, {
+	onNavigate: (event) => {
+		// Left and right indent; up and down keep moving between rows.
+		if (event.direction === 'left' || event.direction === 'right') {
+			setDepth((d) => clamp(d + (event.direction === 'right' ? 1 : -1)))
+			event.preventDefault()
+		}
+	},
+})
+```
+
+It fires on **every** arrow key press during a drag, before the hover moves and
+whether or not it moves at all — including at the ends of a list, where the
+default navigation stays put. `preventDefault()` keeps the key press for the
+application: `getNextTarget` is not consulted and the hover stays where it is.
+The key is taken from the page either way, so a list never scrolls underneath a
+drag.
+
+The event carries the same `{ direction, current, candidates, allTargets,
+source }` that `getNextTarget` gets, and `current` is where the hover was as the
+key was pressed.
+
+**Say what you did.** The backend announces only its own moves, so a key press
+the application handled is silent unless it speaks:
+
+```tsx
+onNavigate: (event) => {
+	if (event.direction === 'right') {
+		announce(`Indented to level ${next}.`)
+		event.preventDefault()
+	}
+}
 ```
 
 ## Announcing what the app knows

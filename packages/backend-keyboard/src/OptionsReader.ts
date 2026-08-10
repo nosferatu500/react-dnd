@@ -4,6 +4,7 @@ import type {
 	GetNextTarget,
 	KeyboardBackendContext,
 	KeyboardBackendOptions,
+	OnNavigate,
 } from './interfaces.js'
 import { documentOrderNavigation } from './navigation.js'
 
@@ -58,6 +59,10 @@ export class OptionsReader {
 
 	public get getNextTarget(): GetNextTarget {
 		return this.args.getNextTarget ?? documentOrderNavigation
+	}
+
+	public get onNavigate(): OnNavigate | undefined {
+		return this.args.onNavigate
 	}
 
 	public get describeNode(): (node: HTMLElement) => string {

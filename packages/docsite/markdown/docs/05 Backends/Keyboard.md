@@ -145,6 +145,41 @@ continue to go to the wrapped backend untouched.
   layout-aware navigation needs to see the shape of the grid. Return one of the
   candidates, or `null` to stay put.
 
+- **onNavigate**
+
+  Notified of every arrow key press during a drag, before the hover moves and
+  whether or not it moves at all.
+
+  This is where sub-position lives — the indent level of a row in a tree, the
+  insertion point between two cards, anything that is "the same drop target,
+  somewhere else within it". A drop target cannot express that: dnd-core treats
+  a `hover` whose target ids are unchanged as no change, so re-hovering the same
+  target dispatches nothing any collector re-renders for. Sub-position is
+  application state, and this is the event that drives it.
+
+  ```jsx
+  withKeyboard(HTML5Backend, {
+    onNavigate: (event) => {
+      // Left and right indent; up and down keep moving between rows.
+      if (event.direction === 'left' || event.direction === 'right') {
+        setDepth((d) => clamp(d + (event.direction === 'right' ? 1 : -1)))
+        event.preventDefault()
+      }
+    },
+  })
+  ```
+
+  `event.preventDefault()` keeps the key press for your application:
+  `getNextTarget` is not consulted and the hover stays where it is. The key is
+  taken from the page either way, so a list never scrolls underneath a drag.
+
+  The event carries the same `{ direction, current, candidates, allTargets,
+  source }` that `getNextTarget` receives, with `current` being where the hover
+  was as the key was pressed.
+
+  The backend announces only the moves it makes itself, so a key press you
+  handle here is silent unless you say something with `useDragDropAnnounce()`.
+
 - **describeNode** (default: `aria-label`, falling back to text content)
 
   Turns a connected element into the text used in announcements.

@@ -77,6 +77,39 @@ export type GetNextTarget = (
 	request: NavigationRequest,
 ) => NavigationCandidate | null
 
+/** A {@link NavigationRequest} the application can take over. */
+export interface NavigationEvent extends NavigationRequest {
+	/**
+	 * Keeps this arrow key for the application: {@link GetNextTarget} is not
+	 * consulted and the hover stays exactly where it is.
+	 *
+	 * The key press is still taken from the page either way — a drag in progress
+	 * owns the arrow keys, so they never scroll the list underneath it.
+	 */
+	preventDefault(): void
+}
+
+/**
+ * Called on every arrow key press during a drag, before the hover is moved.
+ *
+ * This is where sub-position lives — the indent level of a row in a tree, the
+ * insertion point between two cards, anything that is "the same drop target,
+ * somewhere else within it". A drop target cannot express that: dnd-core's
+ * dirtiness reducer treats a `hover` whose `targetIds` are unchanged as no
+ * change at all, so re-hovering the same target dispatches nothing that any
+ * collector will re-render for. Sub-position is application state, and this is
+ * the event that drives it.
+ *
+ * Call {@link NavigationEvent.preventDefault} to keep the key press — a tree
+ * typically takes left and right for indentation and lets up and down move the
+ * hover as usual.
+ *
+ * The backend announces only what it did itself, so an application that handles
+ * a key here should say what happened with `useDragDropAnnounce()`. Silence
+ * after a key press is indistinguishable from a key that did nothing.
+ */
+export type OnNavigate = (event: NavigationEvent) => void
+
 export interface AnnouncementContext {
 	/** The dragged item, as returned by the drag source's `item()`. */
 	item: unknown
@@ -115,6 +148,12 @@ export interface KeyboardBackendOptions {
 	rootElement?: Node | undefined
 	/** Defaults to {@link documentOrderNavigation}. */
 	getNextTarget?: GetNextTarget | undefined
+	/**
+	 * Notified of every arrow key press during a drag, whether or not the hover
+	 * ends up moving, and able to take the key press for itself. See
+	 * {@link OnNavigate}.
+	 */
+	onNavigate?: OnNavigate | undefined
 	/**
 	 * Turns a connected element into the text used in announcements. Defaults to
 	 * its `aria-label`, falling back to its trimmed text content.

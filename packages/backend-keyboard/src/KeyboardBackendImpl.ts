@@ -16,6 +16,7 @@ import type {
 	KeyboardBackendOptions,
 	NavigationCandidate,
 	NavigationDirection,
+	NavigationRequest,
 } from './interfaces.js'
 import { initialCandidate, sortByDocumentOrder } from './navigation.js'
 import { OptionsReader } from './OptionsReader.js'
@@ -446,19 +447,44 @@ export class KeyboardBackendImpl implements Backend {
 		const current =
 			candidates.find((c) => c.targetId === this.hoveredTargetId) ?? null
 
-		const next = this.options.getNextTarget({
+		const request: NavigationRequest = {
 			direction,
 			current,
 			candidates,
 			allTargets: this.mountedTargets(),
 			source: this.draggingSource(),
-		})
+		}
+
+		// Before the move rather than after it, and regardless of whether the move
+		// happens at all: the application's own sub-position is exactly the thing
+		// a hover cannot express.
+		if (this.notifyNavigate(request)) {
+			return
+		}
+
+		const next = this.options.getNextTarget(request)
 		if (!next || next.targetId === this.hoveredTargetId) {
 			return
 		}
 
 		this.hoverOn(next)
 		this.announceEvent('move', candidates)
+	}
+
+	/** @returns whether the application took the key press for itself. */
+	private notifyNavigate(request: NavigationRequest): boolean {
+		const onNavigate = this.options.onNavigate
+		if (!onNavigate) {
+			return false
+		}
+		let prevented = false
+		onNavigate({
+			...request,
+			preventDefault: () => {
+				prevented = true
+			},
+		})
+		return prevented
 	}
 
 	private hoverOn(candidate: NavigationCandidate): void {

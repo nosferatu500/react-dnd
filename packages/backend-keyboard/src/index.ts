@@ -19,7 +19,9 @@ export type {
 	KeyboardDragBackend,
 	NavigationCandidate,
 	NavigationDirection,
+	NavigationEvent,
 	NavigationRequest,
+	OnNavigate,
 } from './interfaces.js'
 export { isKeyboardDrag } from './isKeyboardDrag.js'
 export type { GridNavigationOptions } from './navigation.js'

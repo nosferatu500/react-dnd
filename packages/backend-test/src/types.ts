@@ -1,4 +1,4 @@
-import type { Backend, Identifier } from 'dnd-core'
+import type { Backend, Identifier } from '@nosferatu500/dnd-core'
 
 export interface TestBackendContext {
 	window?: Window

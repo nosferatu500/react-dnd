@@ -1,4 +1,4 @@
-import type { Backend, Unsubscribe } from 'dnd-core'
+import type { Backend, Unsubscribe } from '@nosferatu500/dnd-core'
 
 import type { AnnouncingBackend } from './interfaces.js'
 

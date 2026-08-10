@@ -1,4 +1,4 @@
-import type { SourceType, TargetType } from 'dnd-core'
+import type { SourceType, TargetType } from '@nosferatu500/dnd-core'
 
 import type {
 	DragPreviewOptions,

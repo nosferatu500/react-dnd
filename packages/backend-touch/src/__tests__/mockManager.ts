@@ -1,4 +1,4 @@
-import type { DragDropManager } from 'dnd-core'
+import type { DragDropManager } from '@nosferatu500/dnd-core'
 
 /**
  * Minimal DragDropManager stand-in for backend construction tests.

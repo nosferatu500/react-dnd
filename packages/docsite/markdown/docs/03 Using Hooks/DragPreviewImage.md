@@ -12,7 +12,7 @@ A Component to render an HTML Image element as a disconnected drag preview.
 ### Usage
 
 ```jsx
-import { DragPreviewImage, useDrag } from 'react-dnd'
+import { DragPreviewImage, useDrag } from '@nosferatu500/react-dnd'
 
 function DraggableHouse() {
   const [, drag, preview] = useDrag(() => ({ type: 'house' }))

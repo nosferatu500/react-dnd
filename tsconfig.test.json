@@ -14,13 +14,21 @@
     /* Typecheck against sources, matching how Vitest resolves the suite, so a
        stale dist/ can never mask or invent an error. */
     "paths": {
-      "dnd-core": ["./packages/dnd-core/src/index.ts"],
-      "react-dnd": ["./packages/react-dnd/src/index.ts"],
-      "react-dnd-html5-backend": ["./packages/backend-html5/src/index.ts"],
-      "react-dnd-touch-backend": ["./packages/backend-touch/src/index.ts"],
-      "react-dnd-test-backend": ["./packages/backend-test/src/index.ts"],
-      "react-dnd-test-utils": ["./packages/test-utils/src/index.ts"],
-      "react-dnd-examples": ["./packages/examples/src/index.ts"]
+      "@nosferatu500/dnd-core": ["./packages/dnd-core/src/index.ts"],
+      "@nosferatu500/react-dnd": ["./packages/react-dnd/src/index.ts"],
+      "@nosferatu500/react-dnd-html5-backend": [
+        "./packages/backend-html5/src/index.ts"
+      ],
+      "@nosferatu500/react-dnd-touch-backend": [
+        "./packages/backend-touch/src/index.ts"
+      ],
+      "@nosferatu500/react-dnd-test-backend": [
+        "./packages/backend-test/src/index.ts"
+      ],
+      "@nosferatu500/react-dnd-test-utils": [
+        "./packages/test-utils/src/index.ts"
+      ],
+      "@nosferatu500/react-dnd-examples": ["./packages/examples/src/index.ts"]
     }
   },
   "include": [

@@ -8,7 +8,7 @@ fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).
 ## Install
 
 ```sh
-npm install react-dnd-test-utils
+npm install @nosferatu500/react-dnd-test-utils
 ```
 
 ## Supported React versions
@@ -18,7 +18,7 @@ npm install react-dnd-test-utils
 React 16, 17 and 18 are not supported. Use the upstream `16.0.1` release for
 React 16/17.
 
-`react-dnd-test-utils` uses `act` from the `react` entrypoint. React 19 removed
+`@nosferatu500/react-dnd-test-utils` uses `act` from the `react` entrypoint. React 19 removed
 `react-dom/test-utils`, which was the only other place `act` ever lived.
 
 ## Module format

@@ -1,4 +1,4 @@
-import type { DragDropMonitor } from 'dnd-core'
+import type { DragDropMonitor } from '@nosferatu500/dnd-core'
 
 import type { Connector } from '../../../internals/index.js'
 import type { DragSourceMonitor } from '../../../types/index.js'

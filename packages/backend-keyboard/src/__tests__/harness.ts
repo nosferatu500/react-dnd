@@ -1,5 +1,5 @@
-import type { DragDropManager } from 'dnd-core'
-import { createDragDropManager } from 'dnd-core'
+import type { DragDropManager } from '@nosferatu500/dnd-core'
+import { createDragDropManager } from '@nosferatu500/dnd-core'
 import type { KeyboardBackendOptions } from '../interfaces.js'
 import type { KeyboardBackendImpl } from '../KeyboardBackendImpl.js'
 

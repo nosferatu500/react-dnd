@@ -1,8 +1,8 @@
+import { createDragDropManager } from '@nosferatu500/dnd-core'
+import { TestBackend } from '@nosferatu500/react-dnd-test-backend'
 import { act, render } from '@testing-library/react'
-import { createDragDropManager } from 'dnd-core'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import { TestBackend } from 'react-dnd-test-backend'
 import { describe, expect, it, vi } from 'vitest'
 
 import { DndProvider } from '../../core/index.js'

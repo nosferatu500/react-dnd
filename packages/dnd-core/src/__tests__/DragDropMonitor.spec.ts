@@ -1,5 +1,5 @@
-import type { ITestBackend } from 'react-dnd-test-backend'
-import { TestBackend } from 'react-dnd-test-backend'
+import type { ITestBackend } from '@nosferatu500/react-dnd-test-backend'
+import { TestBackend } from '@nosferatu500/react-dnd-test-backend'
 import { createDragDropManager } from '../createDragDropManager.js'
 import type {
 	DragDropManager,

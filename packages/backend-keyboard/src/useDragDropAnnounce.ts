@@ -1,5 +1,5 @@
+import { useDragDropManager } from '@nosferatu500/react-dnd'
 import { useCallback } from 'react'
-import { useDragDropManager } from 'react-dnd'
 
 import type { AnnouncingBackend } from './interfaces.js'
 

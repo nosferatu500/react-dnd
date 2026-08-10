@@ -6,8 +6,8 @@ import type {
 	Identifier,
 	Unsubscribe,
 	XYCoord,
-} from 'dnd-core'
-import { invariant } from 'dnd-core'
+} from '@nosferatu500/dnd-core'
+import { invariant } from '@nosferatu500/dnd-core'
 
 import type {
 	EventName,

@@ -7,10 +7,11 @@
  * Runs under StrictMode like the rest of the suite, so the double mount that
  * connectors go through is covered too.
  */
+
+import { DndProvider, useDrag, useDrop } from '@nosferatu500/react-dnd'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
 import { fireEvent, render, screen } from '@testing-library/react'
 import type { FC } from 'react'
-import { DndProvider, useDrag, useDrop } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import { withKeyboard } from '../index.js'
 

@@ -1,5 +1,5 @@
+import { fireDrag, wrapWithBackend } from '@nosferatu500/react-dnd-test-utils'
 import { cleanup, fireEvent, render } from '@testing-library/react'
-import { fireDrag, wrapWithBackend } from 'react-dnd-test-utils'
 
 import { Box } from '../Box.js'
 

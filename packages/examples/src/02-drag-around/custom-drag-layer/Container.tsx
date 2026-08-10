@@ -1,7 +1,7 @@
+import { useDrop } from '@nosferatu500/react-dnd'
 import update from 'immutability-helper'
 import type { CSSProperties, FC } from 'react'
 import { useCallback, useState } from 'react'
-import { useDrop } from 'react-dnd'
 
 import { DraggableBox } from './DraggableBox.js'
 import { ItemTypes } from './ItemTypes.js'

@@ -7,6 +7,39 @@ do about it.
 
 ## For consumers of the published packages
 
+### The packages are renamed, and start at 19.0.0
+
+Everything publishes under the `@nosferatu500` scope, so this fork is
+unmistakable on npm and can never be mistaken for an upstream release:
+
+| Before | Now |
+| --- | --- |
+| `react-dnd` | `@nosferatu500/react-dnd` |
+| `react-dnd-html5-backend` | `@nosferatu500/react-dnd-html5-backend` |
+| `react-dnd-touch-backend` | `@nosferatu500/react-dnd-touch-backend` |
+| `react-dnd-test-backend` | `@nosferatu500/react-dnd-test-backend` |
+| `react-dnd-test-utils` | `@nosferatu500/react-dnd-test-utils` |
+| `dnd-core` | `@nosferatu500/dnd-core` |
+| — | `@nosferatu500/react-dnd-keyboard-backend` (new) |
+
+Only the package names change; every import *name* is the same.
+
+```diff
+- import { DndProvider, useDrag, useDrop } from 'react-dnd'
+- import { HTML5Backend } from 'react-dnd-html5-backend'
++ import { DndProvider, useDrag, useDrop } from '@nosferatu500/react-dnd'
++ import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+```
+
+`@react-dnd/asap`, `@react-dnd/invariant` and `@react-dnd/shallowequal` have no
+scoped equivalents — they are gone entirely (see below).
+
+**The version jumps 16 → 19.** The major tracks the React major this targets,
+which is the thing most likely to make an install wrong. 17 and 18 are skipped
+rather than published as versions that never existed; this fork has no release
+before 19.0.0, so there is no older build of it to fall back to. For React 16 or
+17, use upstream `react-dnd@16.0.1`.
+
 ### React 19 only
 
 `peerDependencies.react` is now `^19.0.0`. Upstream advertised `>= 16.14` but

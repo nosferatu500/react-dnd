@@ -1,20 +1,20 @@
 /**
  * Maps every published workspace specifier onto its TypeScript source.
  *
- * Shared by vitest.config.mts and vitest.compat17.config.mts so the two suites
+ * Shared by vitest.config.mts and vitest.react-root.config.mts so the two suites
  * can never drift onto different copies of the library. Running against `src/`
  * (rather than a previously built `dist/`) keeps `npm test` independent of
  * `npm run build` and makes coverage describe the real code.
  */
 const PACKAGE_DIRS = {
-	'dnd-core': 'dnd-core',
-	'react-dnd': 'react-dnd',
-	'react-dnd-html5-backend': 'backend-html5',
-	'react-dnd-touch-backend': 'backend-touch',
-	'react-dnd-keyboard-backend': 'backend-keyboard',
-	'react-dnd-test-backend': 'backend-test',
-	'react-dnd-test-utils': 'test-utils',
-	'react-dnd-examples': 'examples',
+	'@nosferatu500/dnd-core': 'dnd-core',
+	'@nosferatu500/react-dnd': 'react-dnd',
+	'@nosferatu500/react-dnd-html5-backend': 'backend-html5',
+	'@nosferatu500/react-dnd-touch-backend': 'backend-touch',
+	'@nosferatu500/react-dnd-keyboard-backend': 'backend-keyboard',
+	'@nosferatu500/react-dnd-test-backend': 'backend-test',
+	'@nosferatu500/react-dnd-test-utils': 'test-utils',
+	'@nosferatu500/react-dnd-examples': 'examples',
 }
 
 /**

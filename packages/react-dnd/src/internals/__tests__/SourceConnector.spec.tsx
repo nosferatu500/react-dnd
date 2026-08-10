@@ -1,4 +1,4 @@
-import type { Backend } from 'dnd-core'
+import type { Backend } from '@nosferatu500/dnd-core'
 import type { Mocked } from 'vitest'
 
 import { SourceConnector } from '../SourceConnector.js'

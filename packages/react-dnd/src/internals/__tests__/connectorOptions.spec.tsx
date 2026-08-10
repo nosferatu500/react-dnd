@@ -12,8 +12,9 @@
  * whole contract: whatever the spec said must be the third argument to
  * `connectDropTarget`/`connectDragSource` every time.
  */
+
+import type { Backend, BackendFactory } from '@nosferatu500/dnd-core'
 import { fireEvent, render, screen } from '@testing-library/react'
-import type { Backend, BackendFactory } from 'dnd-core'
 import type { FC } from 'react'
 import { useState } from 'react'
 

@@ -23,11 +23,11 @@ whichever backend suits the test — [the test backend](/docs/backends/test) whe
 you want to script the drag, the [HTML5 backend](/docs/backends/html5) when you
 want to fire real DOM events.
 
-`react-dnd-test-utils` has a helper that does the wrapping:
+`@nosferatu500/react-dnd-test-utils` has a helper that does the wrapping:
 
 ```jsx
 import { render } from '@testing-library/react'
-import { wrapWithBackend } from 'react-dnd-test-utils'
+import { wrapWithBackend } from '@nosferatu500/react-dnd-test-utils'
 
 import Box from './components/Box'
 
@@ -43,13 +43,13 @@ instance — it returns `[Component, getBackend]`.
 
 ### Testing the interaction with DOM events
 
-Fire the real drag events. `react-dnd-test-utils` bundles the sequences, each
+Fire the real drag events. `@nosferatu500/react-dnd-test-utils` bundles the sequences, each
 wrapped in `act` and awaited, so collected props have settled by the time the
 call returns:
 
 ```jsx
 import { render } from '@testing-library/react'
-import { fireDragDrop, wrapWithBackend } from 'react-dnd-test-utils'
+import { fireDragDrop, wrapWithBackend } from '@nosferatu500/react-dnd-test-utils'
 
 import Example from './Example'
 
@@ -87,7 +87,7 @@ plumbing:
 
 ```jsx
 import { render } from '@testing-library/react'
-import { simulateDragDrop, wrapWithTestBackend } from 'react-dnd-test-utils'
+import { simulateDragDrop, wrapWithTestBackend } from '@nosferatu500/react-dnd-test-utils'
 
 import Box from './components/Box'
 import Bin from './components/Bin'

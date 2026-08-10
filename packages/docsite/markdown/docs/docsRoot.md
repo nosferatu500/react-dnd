@@ -8,7 +8,7 @@ React DnD is a set of React utilities to help you build complex drag and drop in
 ## Installation
 
 ```bash
-npm install react-dnd react-dnd-html5-backend
+npm install @nosferatu500/react-dnd @nosferatu500/react-dnd-html5-backend
 ```
 
 The second package will allow React DnD [the HTML5 drag and drop API](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_and_drop) under the hood. You may choose to use a third-party backend instead, such as [the touch backend](https://npmjs.com/package/react-dnd-touch-backend).
@@ -19,7 +19,7 @@ The second package will allow React DnD [the HTML5 drag and drop API](https://de
 // Let's make <Card text='Write the docs' /> draggable!
 
 import React from 'react'
-import { useDrag } from 'react-dnd'
+import { useDrag } from '@nosferatu500/react-dnd'
 import { ItemTypes } from './Constants'
 
 /**

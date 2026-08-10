@@ -9,7 +9,7 @@ _New to React DnD? [Read the overview](/docs/overview) before jumping into the d
 
 HTML5 drag and drop is inaccessible by construction: the browser exposes no
 keyboard gesture for it, and nothing about a drag is announced. The
-`react-dnd-keyboard-backend` package adds a keyboard interaction and a spoken
+`@nosferatu500/react-dnd-keyboard-backend` package adds a keyboard interaction and a spoken
 narration on top of the drag sources and drop targets you already have.
 
 It is not an alternative to the HTML5 or Touch backends — it wraps one of them,
@@ -18,15 +18,15 @@ so pointer and keyboard both work.
 ### Installation
 
 ```
-npm install react-dnd-keyboard-backend
+npm install @nosferatu500/react-dnd-keyboard-backend
 ```
 
 ### Usage
 
 ```jsx
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { withKeyboard } from 'react-dnd-keyboard-backend'
+import { DndProvider } from '@nosferatu500/react-dnd'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+import { withKeyboard } from '@nosferatu500/react-dnd-keyboard-backend'
 
 class YourApp {
   <DndProvider backend={withKeyboard(HTML5Backend)}>
@@ -103,7 +103,7 @@ continue to go to the wrapped backend untouched.
   traveling the way you asked until it reaches one that does.
 
   ```jsx
-  import { gridNavigation, withKeyboard } from 'react-dnd-keyboard-backend'
+  import { gridNavigation, withKeyboard } from '@nosferatu500/react-dnd-keyboard-backend'
 
   withKeyboard(HTML5Backend, { getNextTarget: gridNavigation({ columns: 8 }) })
   ```
@@ -114,7 +114,7 @@ continue to go to the wrapped backend untouched.
   height.
 
   ```jsx
-  import { spatialNavigation, withKeyboard } from 'react-dnd-keyboard-backend'
+  import { spatialNavigation, withKeyboard } from '@nosferatu500/react-dnd-keyboard-backend'
 
   withKeyboard(HTML5Backend, { getNextTarget: spatialNavigation() })
   ```
@@ -165,7 +165,7 @@ region, so your messages and the backend's queue in one place rather than in two
 regions read in an order nobody controls.
 
 ```jsx
-import { useDragDropAnnounce } from 'react-dnd-keyboard-backend'
+import { useDragDropAnnounce } from '@nosferatu500/react-dnd-keyboard-backend'
 
 function Column({ title, cards }) {
   const announce = useDragDropAnnounce()

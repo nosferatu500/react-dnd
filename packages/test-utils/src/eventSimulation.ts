@@ -1,5 +1,5 @@
-import type { Identifier } from 'dnd-core'
-import type { ITestBackend } from 'react-dnd-test-backend'
+import type { Identifier } from '@nosferatu500/dnd-core'
+import type { ITestBackend } from '@nosferatu500/react-dnd-test-backend'
 
 import { act } from './act.js'
 

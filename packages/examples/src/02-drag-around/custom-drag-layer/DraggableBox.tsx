@@ -1,8 +1,8 @@
+import type { DragSourceMonitor } from '@nosferatu500/react-dnd'
+import { useDrag } from '@nosferatu500/react-dnd'
+import { getEmptyImage } from '@nosferatu500/react-dnd-html5-backend'
 import type { CSSProperties, FC } from 'react'
 import { memo, useEffect } from 'react'
-import type { DragSourceMonitor } from 'react-dnd'
-import { useDrag } from 'react-dnd'
-import { getEmptyImage } from 'react-dnd-html5-backend'
 
 import { Box } from './Box.js'
 import { ItemTypes } from './ItemTypes.js'

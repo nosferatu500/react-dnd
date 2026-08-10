@@ -1,8 +1,8 @@
+import type { BackendFactory } from '@nosferatu500/dnd-core'
+import { DndProvider, useDrop } from '@nosferatu500/react-dnd'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
 import { fireEvent, render, screen } from '@testing-library/react'
-import type { BackendFactory } from 'dnd-core'
 import type { FC, ReactNode } from 'react'
-import { DndProvider, useDrop } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 
 import { KeyboardBackend, useDragDropAnnounce, withKeyboard } from '../index.js'
 

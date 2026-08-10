@@ -1,7 +1,7 @@
-import type { Identifier, XYCoord } from 'dnd-core'
+import type { Identifier, XYCoord } from '@nosferatu500/dnd-core'
+import { useDrag, useDrop } from '@nosferatu500/react-dnd'
 import type { FC } from 'react'
 import { useRef } from 'react'
-import { useDrag, useDrop } from 'react-dnd'
 
 import { ItemTypes } from './ItemTypes.js'
 

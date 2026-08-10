@@ -1,5 +1,5 @@
+import { useDrop } from '@nosferatu500/react-dnd'
 import type { FC, ReactNode } from 'react'
-import { useDrop } from 'react-dnd'
 
 import type { Game } from './Game'
 import { ItemTypes } from './ItemTypes.js'

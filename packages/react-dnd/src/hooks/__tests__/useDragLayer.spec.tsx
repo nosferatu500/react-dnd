@@ -1,7 +1,7 @@
+import { TestBackend } from '@nosferatu500/react-dnd-test-backend'
+import { fireDrag } from '@nosferatu500/react-dnd-test-utils'
 import { cleanup, render } from '@testing-library/react'
 import type { FC } from 'react'
-import { TestBackend } from 'react-dnd-test-backend'
-import { fireDrag } from 'react-dnd-test-utils'
 
 import { DndProvider } from '../../index.js'
 import { useDrag } from '../useDrag/index.js'

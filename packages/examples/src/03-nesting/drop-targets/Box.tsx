@@ -1,5 +1,5 @@
+import { useDrag } from '@nosferatu500/react-dnd'
 import type { FC } from 'react'
-import { useDrag } from 'react-dnd'
 
 import { ItemTypes } from './ItemTypes.js'
 

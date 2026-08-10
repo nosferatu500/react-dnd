@@ -9,8 +9,8 @@
  * comments below record which real behaviour each pattern is standing in for.
  */
 
-import type { DragDropManager } from 'dnd-core'
-import { createDragDropManager } from 'dnd-core'
+import type { DragDropManager } from '@nosferatu500/dnd-core'
+import { createDragDropManager } from '@nosferatu500/dnd-core'
 
 import type { HTML5BackendImpl } from '../HTML5BackendImpl.js'
 import { HTML5Backend } from '../index.js'

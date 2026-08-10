@@ -1,13 +1,13 @@
 /**
  * Verifies the ESM entrypoints load and export exactly the recorded public API.
  */
-import * as core from 'dnd-core'
-import * as dnd from 'react-dnd'
-import * as htmlBackend from 'react-dnd-html5-backend'
-import * as keyboardBackend from 'react-dnd-keyboard-backend'
-import * as testBackend from 'react-dnd-test-backend'
-import * as testUtils from 'react-dnd-test-utils'
-import * as touchBackend from 'react-dnd-touch-backend'
+import * as core from '@nosferatu500/dnd-core'
+import * as dnd from '@nosferatu500/react-dnd'
+import * as htmlBackend from '@nosferatu500/react-dnd-html5-backend'
+import * as keyboardBackend from '@nosferatu500/react-dnd-keyboard-backend'
+import * as testBackend from '@nosferatu500/react-dnd-test-backend'
+import * as testUtils from '@nosferatu500/react-dnd-test-utils'
+import * as touchBackend from '@nosferatu500/react-dnd-touch-backend'
 
 import { check } from './common.cjs'
 

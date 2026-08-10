@@ -1,5 +1,5 @@
+import { useDrag } from '@nosferatu500/react-dnd'
 import type { CSSProperties, FC } from 'react'
-import { useDrag } from 'react-dnd'
 
 const style: CSSProperties = {
 	border: '1px dashed gray',

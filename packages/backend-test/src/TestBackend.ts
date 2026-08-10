@@ -6,7 +6,7 @@ import type {
 	HoverOptions,
 	Identifier,
 	Unsubscribe,
-} from 'dnd-core'
+} from '@nosferatu500/dnd-core'
 
 import type { ITestBackend, TestBackendContext } from './types.js'
 

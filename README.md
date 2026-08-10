@@ -10,6 +10,10 @@ Drag and Drop for React.
 > rather than emulating any of it. See [MIGRATION.md](./MIGRATION.md) for what changed and
 > [docs/upstream-triage.md](./docs/upstream-triage.md) for how upstream's open
 > issues map onto this codebase.
+>
+> **Published as `@nosferatu500/*`, starting at `19.0.0`.** The scope keeps it
+> clearly distinct from upstream on npm; the major matches the React version it
+> targets, and skips 17 and 18 rather than implying releases that never existed.
 
 ## Supported versions
 
@@ -21,20 +25,21 @@ Drag and Drop for React.
 | Module format | **ESM only** (`require()` still works via `require(esm)`) |
 | Language level | **ES2025**, shipped un-downleveled |
 
-React 16, 17 and 18 are **no longer supported**. For React 16/17 use
-`react-dnd@16.0.1` from upstream;
+React 16, 17 and 18 are **no longer supported**. Use upstream `react-dnd@16.0.1`
+if you need them — this fork has no earlier release, so there is no older version
+of it to fall back to.
 
 ## Install
 
 ```sh
-npm install react-dnd react-dnd-html5-backend
+npm install @nosferatu500/react-dnd @nosferatu500/react-dnd-html5-backend
 ```
 
 ## Quick start
 
 ```tsx
-import { DndProvider, useDrag, useDrop } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider, useDrag, useDrop } from '@nosferatu500/react-dnd'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
 
 function Card({ id }: { id: string }) {
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -73,13 +78,13 @@ callback (or pass them a shared ref object):
 
 | Package | Description |
 | --- | --- |
-| [`react-dnd`](./packages/react-dnd) | React bindings: `DndProvider`, `useDrag`, `useDrop`, `useDragLayer` |
-| [`react-dnd-html5-backend`](./packages/backend-html5) | HTML5 drag-and-drop backend |
-| [`react-dnd-touch-backend`](./packages/backend-touch) | Touch/pointer backend |
-| [`react-dnd-keyboard-backend`](./packages/backend-keyboard) | Keyboard and screen-reader accessible backend; wraps another backend |
-| [`react-dnd-test-backend`](./packages/backend-test) | Backend that scripts drags for tests |
-| [`react-dnd-test-utils`](./packages/test-utils) | Test helpers |
-| [`dnd-core`](./packages/dnd-core) | Backend-agnostic drag-and-drop state machine |
+| [`@nosferatu500/react-dnd`](./packages/react-dnd) | React bindings: `DndProvider`, `useDrag`, `useDrop`, `useDragLayer` |
+| [`@nosferatu500/react-dnd-html5-backend`](./packages/backend-html5) | HTML5 drag-and-drop backend |
+| [`@nosferatu500/react-dnd-touch-backend`](./packages/backend-touch) | Touch/pointer backend |
+| [`@nosferatu500/react-dnd-keyboard-backend`](./packages/backend-keyboard) | Keyboard and screen-reader accessible backend; wraps another backend |
+| [`@nosferatu500/react-dnd-test-backend`](./packages/backend-test) | Backend that scripts drags for tests |
+| [`@nosferatu500/react-dnd-test-utils`](./packages/test-utils) | Test helpers |
+| [`@nosferatu500/dnd-core`](./packages/dnd-core) | Backend-agnostic drag-and-drop state machine |
 
 ## Developing
 

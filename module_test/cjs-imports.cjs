@@ -9,13 +9,13 @@
  * This is the specific risk of going ESM-only, so it is worth a test rather than
  * an assumption. If it ever fails, the ESM-only decision needs revisiting.
  */
-const core = require('dnd-core')
-const dnd = require('react-dnd')
-const htmlBackend = require('react-dnd-html5-backend')
-const keyboardBackend = require('react-dnd-keyboard-backend')
-const testBackend = require('react-dnd-test-backend')
-const testUtils = require('react-dnd-test-utils')
-const touchBackend = require('react-dnd-touch-backend')
+const core = require('@nosferatu500/dnd-core')
+const dnd = require('@nosferatu500/react-dnd')
+const htmlBackend = require('@nosferatu500/react-dnd-html5-backend')
+const keyboardBackend = require('@nosferatu500/react-dnd-keyboard-backend')
+const testBackend = require('@nosferatu500/react-dnd-test-backend')
+const testUtils = require('@nosferatu500/react-dnd-test-utils')
+const touchBackend = require('@nosferatu500/react-dnd-touch-backend')
 
 const { check } = require('./common.cjs')
 

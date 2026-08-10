@@ -15,12 +15,12 @@
  * Run by `npm run test:react-root`, not by `npm test` — it needs a config
  * without the Testing Library setup file.
  */
-import type { Identifier } from 'dnd-core'
+import type { Identifier } from '@nosferatu500/dnd-core'
+import type { ITestBackend } from '@nosferatu500/react-dnd-test-backend'
+import { TestBackend } from '@nosferatu500/react-dnd-test-backend'
 import type { FC, ReactNode } from 'react'
 import * as React from 'react'
 import { act } from 'react'
-import type { ITestBackend } from 'react-dnd-test-backend'
-import { TestBackend } from 'react-dnd-test-backend'
 import type { Root } from 'react-dom/client'
 import { createRoot } from 'react-dom/client'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'

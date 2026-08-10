@@ -1,8 +1,8 @@
+import type { XYCoord } from '@nosferatu500/react-dnd'
+import { useDrop } from '@nosferatu500/react-dnd'
 import update from 'immutability-helper'
 import type { CSSProperties, FC } from 'react'
 import { useCallback, useState } from 'react'
-import type { XYCoord } from 'react-dnd'
-import { useDrop } from 'react-dnd'
 
 import { Box } from './Box.js'
 import { ItemTypes } from './ItemTypes.js'

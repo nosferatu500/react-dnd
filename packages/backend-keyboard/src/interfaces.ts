@@ -1,4 +1,4 @@
-import type { Identifier } from 'dnd-core'
+import type { Identifier } from '@nosferatu500/dnd-core'
 
 /**
  * A backend that can speak to assistive technology. Implemented by

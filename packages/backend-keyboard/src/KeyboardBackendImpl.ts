@@ -6,7 +6,7 @@ import type {
 	Identifier,
 	Unsubscribe,
 	XYCoord,
-} from 'dnd-core'
+} from '@nosferatu500/dnd-core'
 
 import { Announcer } from './Announcer.js'
 import type {

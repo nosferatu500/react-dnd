@@ -31,8 +31,8 @@ function makeStoreInstance(debugMode: boolean): DndStore {
 		reduce,
 		debugMode &&
 			reduxDevTools?.({
-				name: 'dnd-core',
-				instanceId: 'dnd-core',
+				name: '@nosferatu500/dnd-core',
+				instanceId: '@nosferatu500/dnd-core',
 			}),
 	)
 }

@@ -1,8 +1,26 @@
 {
-  "name": "react-dnd-keyboard-backend",
-  "version": "16.0.1",
+  "name": "@nosferatu500/react-dnd-keyboard-backend",
+  "version": "19.0.0",
   "description": "Keyboard and screen-reader accessible backend for react-dnd",
   "license": "MIT",
+  "author": "Vitalii Shvetsov",
+  "contributors": [
+    "Dan Abramov and the React DnD contributors"
+  ],
+  "keywords": [
+    "react",
+    "drag",
+    "drop",
+    "drag-and-drop",
+    "dnd",
+    "react-dnd",
+    "keyboard",
+    "backend",
+    "accessibility",
+    "a11y",
+    "screen-reader",
+    "aria"
+  ],
   "homepage": "https://github.com/nosferatu500/react-dnd#readme",
   "repository": {
     "type": "git",
@@ -48,14 +66,14 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "dnd-core": "^16.0.1"
+    "@nosferatu500/dnd-core": "^19.0.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dnd": "^16.0.1"
+    "@nosferatu500/react-dnd": "^19.0.0",
+    "react": "^19.0.0"
   },
   "devDependencies": {
-    "react": "^19.2.8",
-    "react-dnd": "^16.0.1"
+    "@nosferatu500/react-dnd": "^19.0.0",
+    "react": "^19.2.8"
   }
 }

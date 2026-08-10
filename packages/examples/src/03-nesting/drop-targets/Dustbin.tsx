@@ -1,6 +1,6 @@
+import { useDrop } from '@nosferatu500/react-dnd'
 import type { CSSProperties, FC, ReactNode } from 'react'
 import { useState } from 'react'
-import { useDrop } from 'react-dnd'
 
 import { ItemTypes } from './ItemTypes.js'
 

@@ -1,5 +1,5 @@
+import { wrapWithBackend } from '@nosferatu500/react-dnd-test-utils'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { wrapWithBackend } from 'react-dnd-test-utils'
 
 import Example from '../index.js'
 

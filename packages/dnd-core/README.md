@@ -8,7 +8,7 @@ fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).
 ## Install
 
 ```sh
-npm install dnd-core
+npm install @nosferatu500/dnd-core
 ```
 
 ## Supported React versions

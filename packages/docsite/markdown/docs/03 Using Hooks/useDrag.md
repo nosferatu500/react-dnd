@@ -12,7 +12,7 @@ _New to React DnD? [Read the overview](/docs/overview) before jumping into the d
 The `useDrag`hook provides a way to wire your component into the DnD system as a _drag source_. By passing in a specification into `useDrag`, you declaratively describe the `type` of draggable being generated, the `item` object representing the drag source, what props to `collect`, and more. The `useDrag` hooks returns a few key items: a set of collected props, and refs that may be attached to _drag source_ and _drag preview_ elements
 
 ```jsx
-import { useDrag } from 'react-dnd'
+import { useDrag } from '@nosferatu500/react-dnd'
 
 function DraggableComponent(props) {
   const [collected, drag, dragPreview] = useDrag(() => ({

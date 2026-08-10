@@ -1,6 +1,6 @@
 {
-  "name": "react-dnd-examples",
-  "version": "16.0.1",
+  "name": "@nosferatu500/react-dnd-examples",
+  "version": "19.0.0",
   "private": true,
   "description": "React DnD example gallery (source of truth for the docsite)",
   "license": "MIT",
@@ -37,16 +37,16 @@
   },
   "dependencies": {
     "@faker-js/faker": "^10.1.0",
-    "dnd-core": "^16.0.1",
+    "@nosferatu500/dnd-core": "^19.0.0",
+    "@nosferatu500/react-dnd": "^19.0.0",
+    "@nosferatu500/react-dnd-html5-backend": "^19.0.0",
     "immutability-helper": "^3.1.1",
     "lodash-es": "^4.17.21",
-    "react-dnd": "^16.0.1",
-    "react-dnd-html5-backend": "^16.0.1",
     "react-frame-component": "^5.2.7"
   },
   "devDependencies": {
-    "@types/lodash-es": "^4.17.12",
-    "react-dnd-test-utils": "^16.0.1"
+    "@nosferatu500/react-dnd-test-utils": "^19.0.0",
+    "@types/lodash-es": "^4.17.12"
   },
   "peerDependencies": {
     "react": "^19.0.0",

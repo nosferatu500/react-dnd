@@ -8,7 +8,7 @@ fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).
 ## Install
 
 ```sh
-npm install react-dnd-test-backend
+npm install @nosferatu500/react-dnd-test-backend
 ```
 
 ## Supported React versions

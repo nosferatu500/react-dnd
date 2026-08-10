@@ -1,6 +1,10 @@
-import type { Backend, BackendFactory, DragDropManager } from 'dnd-core'
-import { createDragDropManager } from 'dnd-core'
-import { HTML5Backend } from 'react-dnd-html5-backend'
+import type {
+	Backend,
+	BackendFactory,
+	DragDropManager,
+} from '@nosferatu500/dnd-core'
+import { createDragDropManager } from '@nosferatu500/dnd-core'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
 
 import { CompositeBackend, withKeyboard } from '../index.js'
 import { TYPE } from './harness.js'

@@ -6,7 +6,7 @@ import type {
 	SourceType,
 	TargetType,
 	Unsubscribe,
-} from 'dnd-core'
+} from '@nosferatu500/dnd-core'
 
 export function registerTarget(
 	type: TargetType,

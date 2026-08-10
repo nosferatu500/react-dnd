@@ -12,7 +12,7 @@ This is the primary backend supported by React-DnD. It uses [the HTML5 drag and 
 ### Installation
 
 ```
-npm install react-dnd-html5-backend
+npm install @nosferatu500/react-dnd-html5-backend
 ```
 
 ### Extras
@@ -26,8 +26,8 @@ Aside from the default export, the HTML5 backend module also provides a few extr
 ### Usage
 
 ```jsx
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+import { DndProvider } from '@nosferatu500/react-dnd'
 
 export default function MyReactApp() {
   return (

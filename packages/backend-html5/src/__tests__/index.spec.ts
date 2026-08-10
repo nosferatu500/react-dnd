@@ -1,4 +1,4 @@
-import type { DragDropManager } from 'dnd-core'
+import type { DragDropManager } from '@nosferatu500/dnd-core'
 
 import { HTML5Backend } from '../index.js'
 

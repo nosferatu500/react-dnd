@@ -1,9 +1,24 @@
 {
-  "name": "react-dnd-touch-backend",
-  "version": "16.0.1",
+  "name": "@nosferatu500/react-dnd-touch-backend",
+  "version": "19.0.0",
   "description": "Touch backend for react-dnd",
   "license": "MIT",
-  "author": "Long Ho <holevietlong@gmail.com>",
+  "author": "Vitalii Shvetsov",
+  "contributors": [
+    "Long Ho <holevietlong@gmail.com>",
+    "Dan Abramov and the React DnD contributors"
+  ],
+  "keywords": [
+    "react",
+    "drag",
+    "drop",
+    "drag-and-drop",
+    "dnd",
+    "react-dnd",
+    "touch",
+    "backend",
+    "mobile"
+  ],
   "homepage": "https://github.com/nosferatu500/react-dnd#readme",
   "repository": {
     "type": "git",
@@ -49,6 +64,6 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "dnd-core": "^16.0.1"
+    "@nosferatu500/dnd-core": "^19.0.0"
   }
 }

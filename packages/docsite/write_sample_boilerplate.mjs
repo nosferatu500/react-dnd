@@ -19,8 +19,8 @@ const reactDndHtml5BackendVersion =
 const APP_FILE_CONTENT = `
 	import { render } from 'react-dom'
 	import Example from './example'
-	import { DndProvider } from 'react-dnd'
-	import { HTML5Backend } from 'react-dnd-html5-backend'
+	import { DndProvider } from '@nosferatu500/react-dnd'
+	import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
 
 	function App() {
 		return (
@@ -114,8 +114,8 @@ const makePackageJson = (index, isTS) => {
 		dependencies: {
 			...craTesterPkgJson.dependencies,
 			...examplesPkgJson.dependencies,
-			'react-dnd': reactDndPkgJson.version,
-			'react-dnd-html5-backend': reactDndHtml5BackendVersion,
+			'@nosferatu500/react-dnd': reactDndPkgJson.version,
+			'@nosferatu500/react-dnd-html5-backend': reactDndHtml5BackendVersion,
 			'prop-types': '*',
 			'dnd-core': undefined,
 			'react-dnd-examples': undefined,

@@ -1,7 +1,7 @@
+import { DndProvider } from '@nosferatu500/react-dnd'
+import { componentIndex } from '@nosferatu500/react-dnd-examples'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
 import { memo, useCallback, useMemo, useState } from 'react'
-import { DndProvider } from 'react-dnd'
-import { componentIndex } from 'react-dnd-examples'
-import { HTML5Backend } from 'react-dnd-html5-backend'
 
 const exampleNames = Object.keys(componentIndex)
 

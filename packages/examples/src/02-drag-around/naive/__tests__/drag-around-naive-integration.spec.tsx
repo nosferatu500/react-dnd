@@ -1,10 +1,10 @@
-import { cleanup, fireEvent, render } from '@testing-library/react'
 import {
 	fireDrag,
 	fireReleaseDrag,
 	tick,
 	wrapWithBackend,
-} from 'react-dnd-test-utils'
+} from '@nosferatu500/react-dnd-test-utils'
+import { cleanup, fireEvent, render } from '@testing-library/react'
 
 import Example from '../index.js'
 

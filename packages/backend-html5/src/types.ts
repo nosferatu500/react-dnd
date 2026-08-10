@@ -1,4 +1,4 @@
-import type { DropEffect } from 'dnd-core'
+import type { DropEffect } from '@nosferatu500/dnd-core'
 
 export type HTML5BackendContext = Window | undefined
 

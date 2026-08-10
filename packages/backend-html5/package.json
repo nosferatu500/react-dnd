@@ -1,8 +1,23 @@
 {
-  "name": "react-dnd-html5-backend",
-  "version": "16.0.1",
+  "name": "@nosferatu500/react-dnd-html5-backend",
+  "version": "19.0.0",
   "description": "HTML5 backend for React DnD",
   "license": "MIT",
+  "author": "Vitalii Shvetsov",
+  "contributors": [
+    "Dan Abramov and the React DnD contributors"
+  ],
+  "keywords": [
+    "react",
+    "drag",
+    "drop",
+    "drag-and-drop",
+    "dnd",
+    "react-dnd",
+    "html5",
+    "backend",
+    "dataTransfer"
+  ],
   "homepage": "https://github.com/nosferatu500/react-dnd#readme",
   "repository": {
     "type": "git",
@@ -48,6 +63,6 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "dnd-core": "^16.0.1"
+    "@nosferatu500/dnd-core": "^19.0.0"
   }
 }

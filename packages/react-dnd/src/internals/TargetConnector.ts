@@ -1,4 +1,4 @@
-import type { Backend, Identifier, Unsubscribe } from 'dnd-core'
+import type { Backend, Identifier, Unsubscribe } from '@nosferatu500/dnd-core'
 import equal from 'fast-deep-equal'
 import type { RefObject } from 'react'
 

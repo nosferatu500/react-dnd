@@ -1,10 +1,10 @@
-import type { RenderResult } from '@testing-library/react'
-import { cleanup, render, screen } from '@testing-library/react'
 import {
 	fireDragDrop,
 	fireDragHover,
 	wrapWithBackend,
-} from 'react-dnd-test-utils'
+} from '@nosferatu500/react-dnd-test-utils'
+import type { RenderResult } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 
 import { Board } from '../Board.js'
 import { Game } from '../Game.js'

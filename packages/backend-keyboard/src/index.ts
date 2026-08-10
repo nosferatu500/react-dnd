@@ -1,4 +1,4 @@
-import type { BackendFactory, DragDropManager } from 'dnd-core'
+import type { BackendFactory, DragDropManager } from '@nosferatu500/dnd-core'
 
 import { CompositeBackend } from './CompositeBackend.js'
 import type {
@@ -49,8 +49,8 @@ export const KeyboardBackend: BackendFactory = function createBackend(
  * of `useDrag`/`useDrop` in the app.
  *
  * ```tsx
- * import { HTML5Backend } from 'react-dnd-html5-backend'
- * import { withKeyboard } from 'react-dnd-keyboard-backend'
+ * import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+ * import { withKeyboard } from '@nosferatu500/react-dnd-keyboard-backend'
  *
  * <DndProvider backend={withKeyboard(HTML5Backend)}>
  *   <App />

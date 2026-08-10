@@ -14,8 +14,7 @@ _New to React DnD? [Read the overview](/docs/overview) before jumping into the d
 ### How can I install React DnD?
 
 ```
-npm install --save react-dnd
-npm install --save react-dnd-html5-backend
+npm install --save @nosferatu500/react-dnd npm install --save @nosferatu500/react-dnd-html5-backend
 ```
 
 ### How do I test React DnD components and their interaction?

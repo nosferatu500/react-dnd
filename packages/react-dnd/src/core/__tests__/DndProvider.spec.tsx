@@ -1,7 +1,7 @@
+import type { DragDropManager } from '@nosferatu500/dnd-core'
+import { createDragDropManager } from '@nosferatu500/dnd-core'
+import { TestBackend } from '@nosferatu500/react-dnd-test-backend'
 import { cleanup, render } from '@testing-library/react'
-import type { DragDropManager } from 'dnd-core'
-import { createDragDropManager } from 'dnd-core'
-import { TestBackend } from 'react-dnd-test-backend'
 
 import type { DndContextType } from '../DndContext.js'
 import { DndContext } from '../DndContext.js'

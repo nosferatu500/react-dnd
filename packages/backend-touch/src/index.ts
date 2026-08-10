@@ -1,4 +1,4 @@
-import type { BackendFactory, DragDropManager } from 'dnd-core'
+import type { BackendFactory, DragDropManager } from '@nosferatu500/dnd-core'
 
 import type { TouchBackendContext, TouchBackendOptions } from './interfaces.js'
 import { TouchBackendImpl } from './TouchBackendImpl.js'

@@ -1,6 +1,6 @@
+import type { XYCoord } from '@nosferatu500/react-dnd'
+import { useDragLayer } from '@nosferatu500/react-dnd'
 import type { CSSProperties, FC } from 'react'
-import type { XYCoord } from 'react-dnd'
-import { useDragLayer } from 'react-dnd'
 
 import { BoxDragPreview } from './BoxDragPreview.js'
 import { ItemTypes } from './ItemTypes.js'

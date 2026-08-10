@@ -1,9 +1,9 @@
+import type { DragDropManager } from '@nosferatu500/dnd-core'
+import type { ITestBackend } from '@nosferatu500/react-dnd-test-backend'
+import { TestBackend } from '@nosferatu500/react-dnd-test-backend'
 import { act, render } from '@testing-library/react'
-import type { DragDropManager } from 'dnd-core'
 import type { FC } from 'react'
 import { StrictMode } from 'react'
-import type { ITestBackend } from 'react-dnd-test-backend'
-import { TestBackend } from 'react-dnd-test-backend'
 import { describe, expect, it } from 'vitest'
 
 import { DndProvider } from '../../core/index.js'

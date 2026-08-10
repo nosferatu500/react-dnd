@@ -1,7 +1,7 @@
+import type { ConnectDragSource } from '@nosferatu500/react-dnd'
+import { useDrag } from '@nosferatu500/react-dnd'
 import type { FC, ReactNode } from 'react'
 import { useCallback, useState } from 'react'
-import type { ConnectDragSource } from 'react-dnd'
-import { useDrag } from 'react-dnd'
 
 export const Example: FC = () => {
 	const [{ isDragging }, drag] = useDrag(() => ({

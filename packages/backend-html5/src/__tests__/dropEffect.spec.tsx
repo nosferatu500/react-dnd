@@ -10,11 +10,12 @@
  * `dropEffect`. That is the whole mechanism: the browser reads that property to
  * pick the cursor and to decide what its own default drop would do.
  */
+
+import type { DropEffect } from '@nosferatu500/react-dnd'
+import { DndProvider, useDrag, useDrop } from '@nosferatu500/react-dnd'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
-import type { DropEffect } from 'react-dnd'
-import { DndProvider, useDrag, useDrop } from 'react-dnd'
 
 import { HTML5Backend } from '../index.js'
 import * as NativeTypes from '../NativeTypes.js'

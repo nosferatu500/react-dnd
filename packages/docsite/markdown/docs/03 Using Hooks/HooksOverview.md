@@ -21,7 +21,7 @@ There are three primary hooks that are provided to wire your components into Rea
 To start using hooks, let's make a box draggable.
 
 ```jsx
-import { useDrag } from 'react-dnd'
+import { useDrag } from '@nosferatu500/react-dnd'
 
 function Box() {
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({

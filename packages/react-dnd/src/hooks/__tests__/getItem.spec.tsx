@@ -6,11 +6,12 @@
  * render. These tests pin the runtime contract the type now describes, in the
  * three places a monitor is reachable.
  */
+
+import type { Identifier } from '@nosferatu500/dnd-core'
+import type { ITestBackend } from '@nosferatu500/react-dnd-test-backend'
+import { TestBackend } from '@nosferatu500/react-dnd-test-backend'
 import { act, render, screen } from '@testing-library/react'
-import type { Identifier } from 'dnd-core'
 import type { FC } from 'react'
-import type { ITestBackend } from 'react-dnd-test-backend'
-import { TestBackend } from 'react-dnd-test-backend'
 
 import { DndProvider } from '../../core/index.js'
 import { useDrag } from '../useDrag/index.js'

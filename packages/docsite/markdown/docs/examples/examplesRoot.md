@@ -17,8 +17,8 @@ If you use a pattern that is not covered here, please consider submitting a Pull
 
 For these examples, the following flags are available. To enable them add them to the end the example URL.
 
-- `?debug` - Enables **debug mode** of `dnd-core`. This registers `dnd-core` with the [Redux Devtools Chrome extension](https://github.com/zalmoxisus/redux-devtools-extension).
-- `?touch` - Swaps out the backend used in the examples from `react-dnd-html5-backend` to the `react-dnd-touch-backend`.
+- `?debug` - Enables **debug mode** of `@nosferatu500/dnd-core`. This registers `@nosferatu500/dnd-core` with the [Redux Devtools Chrome extension](https://github.com/zalmoxisus/redux-devtools-extension).
+- `?touch` - Swaps out the backend used in the examples from `@nosferatu500/react-dnd-html5-backend` to the `@nosferatu500/react-dnd-touch-backend`.
 
 ## Running Locally
 

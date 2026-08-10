@@ -1,4 +1,4 @@
-import type { Identifier, Unsubscribe } from 'dnd-core'
+import type { Identifier, Unsubscribe } from '@nosferatu500/dnd-core'
 
 export interface XYCoord {
 	x: number

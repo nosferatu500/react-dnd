@@ -11,7 +11,7 @@ you already have — without changing a line of `useDrag` or `useDrop`.
 ## Install
 
 ```sh
-npm install react-dnd-keyboard-backend
+npm install @nosferatu500/react-dnd-keyboard-backend
 ```
 
 ## Supported React versions
@@ -27,9 +27,9 @@ Wrap the pointer backend you already use. Keyboard support is *additional* to
 pointer support, never a replacement for it.
 
 ```tsx
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { withKeyboard } from 'react-dnd-keyboard-backend'
+import { DndProvider } from '@nosferatu500/react-dnd'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+import { withKeyboard } from '@nosferatu500/react-dnd-keyboard-backend'
 
 export function App() {
 	return (
@@ -144,7 +144,7 @@ through the same live region, so app messages and backend messages queue in one
 place instead of two competing regions:
 
 ```tsx
-import { useDragDropAnnounce } from 'react-dnd-keyboard-backend'
+import { useDragDropAnnounce } from '@nosferatu500/react-dnd-keyboard-backend'
 
 function Column({ title }) {
 	const announce = useDragDropAnnounce()

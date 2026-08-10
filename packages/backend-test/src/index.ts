@@ -1,4 +1,4 @@
-import type { BackendFactory, DragDropManager } from 'dnd-core'
+import type { BackendFactory, DragDropManager } from '@nosferatu500/dnd-core'
 
 import { TestBackendImpl } from './TestBackend.js'
 import type {

@@ -1,5 +1,5 @@
-import type { DragDropManager } from 'dnd-core'
-import { invariant } from 'dnd-core'
+import type { DragDropManager } from '@nosferatu500/dnd-core'
+import { invariant } from '@nosferatu500/dnd-core'
 import { useContext } from 'react'
 
 import { DndContext } from '../core/index.js'

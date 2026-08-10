@@ -1,4 +1,4 @@
-import type { DropTarget } from 'dnd-core'
+import type { DropTarget } from '@nosferatu500/dnd-core'
 
 import type { DropTargetMonitor } from '../../types/index.js'
 import type { DropTargetHookSpec } from '../types.js'

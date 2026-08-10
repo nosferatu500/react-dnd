@@ -10,9 +10,9 @@ import {
 	useMemo,
 	useState,
 } from 'react'
-import { DndProvider } from 'react-dnd'
-import { HTML5Backend } from 'react-dnd-html5-backend'
-import { TouchBackend, type TouchBackendOptions } from 'react-dnd-touch-backend'
+import { DndProvider } from '@nosferatu500/react-dnd'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+import { TouchBackend, type TouchBackendOptions } from '@nosferatu500/react-dnd-touch-backend'
 import { Helmet } from 'react-helmet'
 import styled from 'styled-components'
 

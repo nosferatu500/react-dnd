@@ -131,6 +131,17 @@ export class KeyboardBackendImpl implements Backend {
 		}
 	}
 
+	/**
+	 * Whether the drag in progress was started from the keyboard.
+	 *
+	 * `monitor.isDragging()` cannot answer this: to dnd-core a drag is a drag,
+	 * whichever backend opened it. Reach it with {@link isKeyboardDrag} rather
+	 * than through `getBackend()`, and read `profile()` only for diagnostics.
+	 */
+	public isKeyboardDragging(): boolean {
+		return this.draggingSourceId !== null
+	}
+
 	// public for test
 	public get window(): Window | undefined {
 		return this.options.window

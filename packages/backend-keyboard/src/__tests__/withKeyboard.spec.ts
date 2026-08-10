@@ -6,7 +6,7 @@ import type {
 import { createDragDropManager } from '@nosferatu500/dnd-core'
 import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
 
-import { CompositeBackend, withKeyboard } from '../index.js'
+import { CompositeBackend, isKeyboardDrag, withKeyboard } from '../index.js'
 import { TYPE } from './harness.js'
 
 function press(node: EventTarget, key: string) {
@@ -114,6 +114,18 @@ describe('withKeyboard over the HTML5 backend', () => {
 		expect(s.sourceNode.hasAttribute('tabindex')).toBe(false)
 	})
 
+	it('reports a keyboard drag through the composite', () => {
+		const s = setup()
+
+		expect(isKeyboardDrag(s.manager)).toBe(false)
+		press(s.sourceNode, ' ')
+		expect(isKeyboardDrag(s.manager)).toBe(true)
+		press(s.sourceNode, 'Escape')
+		expect(isKeyboardDrag(s.manager)).toBe(false)
+
+		s.cleanup()
+	})
+
 	it('reports both backends in one profile', () => {
 		const s = setup()
 		const profile = s.backend.profile()
@@ -164,6 +176,13 @@ describe('CompositeBackend', () => {
 		])
 
 		expect(composite.profile()).toEqual({ nodes: 5, other: 1 })
+	})
+
+	it('says no keyboard drag when no backend can answer', () => {
+		// Two pointer backends: nobody to ask, and "no" is the honest answer.
+		const composite = new CompositeBackend([stub(), stub()])
+
+		expect(composite.isKeyboardDragging()).toBe(false)
 	})
 
 	it('is a BackendFactory-compatible result', () => {

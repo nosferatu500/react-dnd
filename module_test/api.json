@@ -30,6 +30,7 @@
     "defaultDescribeNode": true,
     "documentOrderNavigation": true,
     "gridNavigation": true,
+    "isKeyboardDrag": true,
     "spatialNavigation": true,
     "useDragDropAnnounce": true,
     "withKeyboard": true

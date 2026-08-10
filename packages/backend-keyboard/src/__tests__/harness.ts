@@ -29,6 +29,8 @@ export interface Harness {
 	manager: DragDropManager
 	backend: KeyboardBackendImpl
 	sourceNode: HTMLElement
+	/** The registered drag source, for driving dnd-core without the keyboard. */
+	sourceId: string
 	targetNodes: HTMLElement[]
 	/** Every `hover` the backend dispatched, by target label. */
 	hovered: string[]
@@ -158,6 +160,7 @@ export function harness(
 		manager,
 		backend,
 		sourceNode,
+		sourceId: sourceId as string,
 		targetNodes,
 		hovered,
 		dropped,

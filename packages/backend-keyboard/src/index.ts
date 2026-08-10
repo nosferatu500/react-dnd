@@ -16,10 +16,12 @@ export type {
 	GetNextTarget,
 	KeyboardBackendContext,
 	KeyboardBackendOptions,
+	KeyboardDragBackend,
 	NavigationCandidate,
 	NavigationDirection,
 	NavigationRequest,
 } from './interfaces.js'
+export { isKeyboardDrag } from './isKeyboardDrag.js'
 export type { GridNavigationOptions } from './navigation.js'
 export {
 	documentOrderNavigation,

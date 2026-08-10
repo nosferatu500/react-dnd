@@ -1,6 +1,6 @@
 import type { Backend, Unsubscribe } from '@nosferatu500/dnd-core'
 
-import type { AnnouncingBackend } from './interfaces.js'
+import type { AnnouncingBackend, KeyboardDragBackend } from './interfaces.js'
 
 /**
  * Presents several backends to dnd-core as one.
@@ -88,6 +88,17 @@ export class CompositeBackend implements Backend {
 			const announcing = backend as Partial<AnnouncingBackend>
 			announcing.announce?.(message)
 		}
+	}
+
+	/**
+	 * True if any composed backend reports a keyboard drag. Another capability
+	 * check: a composite of two pointer backends has nobody to ask, and "no" is
+	 * the right answer there rather than an error.
+	 */
+	public isKeyboardDragging(): boolean {
+		return this.backends.some((backend) =>
+			(backend as Partial<KeyboardDragBackend>).isKeyboardDragging?.(),
+		)
 	}
 
 	public profile(): Record<string, number> {

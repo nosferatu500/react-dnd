@@ -205,6 +205,46 @@ Call it unconditionally: it does nothing when the provider is not using a
 keyboard backend, or when that backend has `announce: false`. Keep the messages
 short — a live region is read out in full.
 
+### Telling a keyboard drag from a pointer drag
+
+`monitor.isDragging()` deliberately does not distinguish — to dnd-core a drag is
+a drag, whichever backend opened it. `isKeyboardDrag(manager)` does, for the
+behavior that genuinely differs by modality. A tree that reads drop depth from
+the pointer's horizontal offset, for instance, has no pointer to read during a
+keyboard drag:
+
+```jsx
+import { useDragDropManager } from '@nosferatu500/react-dnd'
+import { isKeyboardDrag } from '@nosferatu500/react-dnd-keyboard-backend'
+
+function Row({ item }) {
+  const manager = useDragDropManager()
+
+  const [, drop] = useDrop(() => ({
+    accept: 'item',
+    hover: (dragged, monitor) => {
+      const depth = isKeyboardDrag(manager)
+        ? dragged.keyboardDepth
+        : depthFromOffset(monitor.getClientOffset())
+      // ...
+    },
+  }))
+
+  return <div ref={drop}>{/* ... */}</div>
+}
+```
+
+Call it whatever backend the provider is using: a pointer-only backend has
+nobody to ask, and the answer is `false`.
+
+Ask it inside a callback rather than rendering from it. It reads current state
+through the backend and publishes no subscription, so a component that renders
+from it will not re-render when the answer changes. Drive the render from a
+collected prop and use this only to decide what to show.
+
+`backend.profile()` also reports a `keyboardDragging` count, but `profile()` is
+diagnostics — its keys are not API and may change between versions.
+
 ### Keyboard only
 
 `KeyboardBackend` is the backend without a pointer backend under it. It is

@@ -1,4 +1,4 @@
-import { KeyboardBackend } from '../index.js'
+import { isKeyboardDrag, KeyboardBackend } from '../index.js'
 import { harness } from './harness.js'
 
 describe('picking a source up', () => {
@@ -236,6 +236,77 @@ describe('dropping', () => {
 		expect(h.announcements()).toContain('Cannot drop')
 
 		h.cleanup()
+	})
+})
+
+describe('isKeyboardDrag', () => {
+	it('is false until something is picked up, and again once it lands', () => {
+		const h = harness(KeyboardBackend)
+
+		expect(isKeyboardDrag(h.manager)).toBe(false)
+
+		h.press(' ')
+		expect(isKeyboardDrag(h.manager)).toBe(true)
+
+		h.press(' ')
+		expect(isKeyboardDrag(h.manager)).toBe(false)
+
+		h.cleanup()
+	})
+
+	it('is false again after a cancel', () => {
+		const h = harness(KeyboardBackend)
+		h.press(' ')
+		h.press('Escape')
+
+		expect(isKeyboardDrag(h.manager)).toBe(false)
+
+		h.cleanup()
+	})
+
+	it('answers during the drop callback, which is where it is asked', () => {
+		// The reason this exists: a target deciding what a drop means needs to
+		// know the modality *while* it is handling the drop, and `endDrag` has not
+		// run yet at that point.
+		const seen: boolean[] = []
+		const h = harness(KeyboardBackend, {
+			targets: [
+				{
+					drop: () => {
+						seen.push(isKeyboardDrag(h.manager))
+						return { ok: true }
+					},
+				},
+			],
+		})
+
+		h.press(' ')
+		h.press(' ')
+
+		expect(seen).toEqual([true])
+
+		h.cleanup()
+	})
+
+	it('does not answer for a drag the keyboard did not start', () => {
+		// dnd-core cannot tell the difference — `isDragging()` is true either way.
+		const h = harness(KeyboardBackend)
+
+		h.manager.getActions().beginDrag([h.sourceId])
+
+		expect(h.manager.getMonitor().isDragging()).toBe(true)
+		expect(isKeyboardDrag(h.manager)).toBe(false)
+
+		h.manager.getActions().endDrag()
+		h.cleanup()
+	})
+
+	it('is false for a backend that has never heard of the keyboard', () => {
+		const manager = {
+			getBackend: () => ({ profile: () => ({}) }),
+		} as unknown as Parameters<typeof isKeyboardDrag>[0]
+
+		expect(isKeyboardDrag(manager)).toBe(false)
 	})
 })
 

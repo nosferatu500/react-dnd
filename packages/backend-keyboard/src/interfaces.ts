@@ -10,6 +10,18 @@ export interface AnnouncingBackend {
 	announce(message: string): void
 }
 
+/**
+ * A backend that knows whether the drag in progress is being driven from the
+ * keyboard. Implemented by `KeyboardBackendImpl` and forwarded by
+ * `CompositeBackend`, the same way {@link AnnouncingBackend} is.
+ *
+ * Prefer {@link isKeyboardDrag}, which asks the question through the manager
+ * rather than making the caller reach for `getBackend()` and know what it got.
+ */
+export interface KeyboardDragBackend {
+	isKeyboardDragging(): boolean
+}
+
 export interface KeyboardBackendContext {
 	window?: Window
 	document?: Document

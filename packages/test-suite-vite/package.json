@@ -16,6 +16,7 @@
     "react-dnd": "^16.0.1",
     "react-dnd-examples": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-keyboard-backend": "^16.0.1",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {

@@ -162,7 +162,7 @@ TypeScript resolution is now correct for the first time — upstream's `exports`
 map had no `types` condition at all (in fact no `exports` map), so users on
 `moduleResolution: node16`/`nodenext`/`bundler` could not resolve declarations.
 `npm run check:exports` runs [`attw`](https://arethetypeswrong.github.io) with
-its `esm-only` profile over all nine packages in CI, so this cannot regress.
+its `esm-only` profile over all ten packages in CI, so this cannot regress.
 
 ### The packages target ES2025, and require Node >= 22.12
 
@@ -295,6 +295,48 @@ target did not accept the dragged type. Uniqueness is now checked against the
 array as passed; the *registration* check stays behind the filter, so a target
 unregistered mid-drag is still dropped silently rather than throwing. This only
 affects backends passing malformed input.
+
+---
+
+### New package: `react-dnd-keyboard-backend`
+
+HTML5 drag and drop has no keyboard gesture and announces nothing, so an app
+built on the HTML5 backend alone is unusable without a pointer. The new package
+adds a keyboard interaction and a spoken narration to the drag sources and drop
+targets an app already has:
+
+```tsx
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { withKeyboard } from 'react-dnd-keyboard-backend'
+
+;<DndProvider backend={withKeyboard(HTML5Backend)}>
+	<App />
+</DndProvider>
+```
+
+That is the whole integration — `useDrag` and `useDrop` do not change. Space or
+enter picks an item up, the arrow keys choose a drop target, space or enter
+drops, escape cancels. Focus stays on the dragged element throughout and only
+the *hover* moves, so `isOver`/`canDrop` behave exactly as they do under the
+mouse and existing highlight styles keep working.
+
+It is a wrapper rather than an alternative backend on purpose: react-dnd takes
+one backend per provider, and keyboard support has to be *additional* to pointer
+support. `withKeyboard` composes the two behind a `CompositeBackend`.
+
+Give drag sources a visible focus style — with focus held for the whole
+interaction, it is the only cue a sighted keyboard user gets:
+
+```css
+[aria-roledescription='draggable item']:focus-visible {
+	outline: 3px solid #4c9aff;
+	outline-offset: 2px;
+}
+```
+
+See the [package README](./packages/backend-keyboard/README.md) for the
+navigation models, the announcement strings, and how to turn either automatic
+behavior off.
 
 ---
 

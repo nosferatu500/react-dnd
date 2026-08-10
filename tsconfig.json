@@ -7,6 +7,7 @@
     { "path": "./packages/dnd-core" },
     { "path": "./packages/react-dnd" },
     { "path": "./packages/backend-html5" },
+    { "path": "./packages/backend-keyboard" },
     { "path": "./packages/backend-touch" },
     { "path": "./packages/backend-test" },
     { "path": "./packages/test-utils" },

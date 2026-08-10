@@ -4,11 +4,26 @@ import { memo, useCallback, useMemo, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { componentIndex } from 'react-dnd-examples'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { spatialNavigation, withKeyboard } from 'react-dnd-keyboard-backend'
 
 const exampleNames = Object.keys(componentIndex)
 
+/**
+ * Every example in the gallery is keyboard operable, and not one of them was
+ * written with the keyboard in mind — swapping the backend here is the whole
+ * integration. That is the claim `react-dnd-keyboard-backend` makes, and this
+ * app is where it is checked by hand against a real browser and a real screen
+ * reader.
+ *
+ * `spatialNavigation` rather than the default document order because the
+ * gallery leads with the chessboard: on a grid, down should cross a row.
+ */
+const backend = withKeyboard(HTML5Backend, {
+	getNextTarget: spatialNavigation(),
+})
+
 const App = memo(() => (
-	<DndProvider backend={HTML5Backend}>
+	<DndProvider backend={backend}>
 		<AppGuts />
 	</DndProvider>
 ))
@@ -33,6 +48,10 @@ function AppGuts() {
 					</option>
 				))}
 			</select>
+			<p className="hint">
+				Tab to an item, then press space to pick it up, the arrow keys to move
+				it, space to drop, escape to cancel.
+			</p>
 			<Example />
 		</div>
 	)

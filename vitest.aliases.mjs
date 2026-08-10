@@ -11,6 +11,7 @@ const PACKAGE_DIRS = {
 	'react-dnd': 'react-dnd',
 	'react-dnd-html5-backend': 'backend-html5',
 	'react-dnd-touch-backend': 'backend-touch',
+	'react-dnd-keyboard-backend': 'backend-keyboard',
 	'react-dnd-test-backend': 'backend-test',
 	'react-dnd-test-utils': 'test-utils',
 	'react-dnd-examples': 'examples',

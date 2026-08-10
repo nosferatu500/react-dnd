@@ -40,3 +40,19 @@
 button {
 	font-size: calc(10px + 2vmin);
 }
+
+.hint {
+	margin: 0.5rem 0 1rem;
+	font-size: 0.85rem;
+	opacity: 0.75;
+}
+
+/*
+ * A keyboard drag is invisible without this: the drag source keeps focus for
+ * the whole interaction, so the focus ring is the only thing telling a sighted
+ * keyboard user what they are carrying.
+ */
+[aria-roledescription="draggable item"]:focus-visible {
+	outline: 3px solid #4c9aff;
+	outline-offset: 2px;
+}

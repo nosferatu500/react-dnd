@@ -76,6 +76,7 @@ callback (or pass them a shared ref object):
 | [`react-dnd`](./packages/react-dnd) | React bindings: `DndProvider`, `useDrag`, `useDrop`, `useDragLayer` |
 | [`react-dnd-html5-backend`](./packages/backend-html5) | HTML5 drag-and-drop backend |
 | [`react-dnd-touch-backend`](./packages/backend-touch) | Touch/pointer backend |
+| [`react-dnd-keyboard-backend`](./packages/backend-keyboard) | Keyboard and screen-reader accessible backend; wraps another backend |
 | [`react-dnd-test-backend`](./packages/backend-test) | Backend that scripts drags for tests |
 | [`react-dnd-test-utils`](./packages/test-utils) | Test helpers (requires React >= 18.3) |
 | [`dnd-core`](./packages/dnd-core) | Backend-agnostic drag-and-drop state machine |

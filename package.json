@@ -47,6 +47,7 @@
   "homepage": "https://github.com/nosferatu500/react-dnd#readme",
   "workspaces": [
     "packages/backend-html5",
+    "packages/backend-keyboard",
     "packages/backend-test",
     "packages/backend-touch",
     "packages/compat-react18",

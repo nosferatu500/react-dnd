@@ -1,4 +1,14 @@
 export type Identifier = string | symbol
+/**
+ * What a drop does, as far as the user's cursor is concerned — the four values
+ * `DataTransfer.dropEffect` accepts.
+ *
+ * Declared here rather than in `react-dnd` because both the React layer (which
+ * takes it as a source/target option) and the backends (which resolve it and
+ * write it to the event) need the same vocabulary, and a backend must not
+ * depend on React.
+ */
+export type DropEffect = 'none' | 'copy' | 'link' | 'move'
 export type SourceType = Identifier
 export type TargetType = Identifier | Identifier[]
 export type Unsubscribe = () => void

@@ -37,7 +37,22 @@ function myDropTarget(props) {
 
 - **`accept`**: Required. A string, a symbol, or an array of either. This drop target will only react to the items produced by the [drag sources](/docs/api/drag-source) of the specified type or types. Read the [overview](/docs/overview) to learn more about the items and types.
 
-* **`options`**: Optional. A plain object. If some of the props to your component are not scalar (that is, are not primitive values or functions), specifying a custom `arePropsEqual(props, otherProps)` function inside the `options` object can improve the performance. Unless you have performance problems, don't worry about it.
+* **`options`**: Optional. A plain object optionally containing:
+
+  - **`dropEffect`**: Optional. What dropping on this target does: `'move'`, `'copy'`, `'link'` or `'none'`. The browser uses it to pick the cursor, and it is reported back to the drag source as `monitor.getDropResult().dropEffect`.
+
+    This takes precedence over the drag source's own `dropEffect` and over the copy modifier, because the target is what knows what dropping *there* means — the same card dropped on "Archive" moves and dropped on "Duplicate to…" copies. It mirrors how the platform splits the two: a source constrains with `effectAllowed`, a target states `dropEffect`.
+
+    With nested targets, only the innermost one that accepts the item is consulted.
+
+    There is no callback form; the spec is already re-evaluated wherever you write it:
+
+    ```jsx
+    const [, drop] = useDrop(
+      () => ({ accept: 'card', options: { dropEffect: locked ? 'copy' : 'move' } }),
+      [locked],
+    )
+    ```
 
 * **`drop(item, monitor)`**: Optional. Called when a compatible item is dropped on the target. You may either return undefined, or a plain object. If you return an object, it is going to become _the drop result_ and will be available to the drag source in its `endDrag` method as `monitor.getDropResult()`. This is useful in case you want to perform different actions depending on which target received the drop. If you have nested drop targets, you can test whether a nested target has already handled `drop` by checking `monitor.didDrop()` and `monitor.getDropResult()`. Both this method and the source's `endDrag` method are good places to fire Flux actions. This method will not be called if `canDrop()` is defined and returns `false`.
 

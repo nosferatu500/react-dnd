@@ -38,6 +38,28 @@ export default function MyReactApp() {
 }
 ```
 
+### Options
+
+- **`rootElement`**: Optional. The DOM node to subscribe to events on. Defaults to `window`.
+
+- **`copyModifier`**: Optional. Which held key switches the drop effect to `'copy'`. Defaults to `'alt'`. Accepts `'alt'`, `'ctrl'`, `'meta'`, `'shift'`, `false` to disable the modifier entirely, or a predicate for anything else.
+
+  Alt is the browser's own convention on Windows and Linux, but it is not universal, and plenty of apps use ctrl.
+
+  ```jsx
+  <DndProvider backend={HTML5Backend} options={{ copyModifier: 'ctrl' }}>
+  ```
+
+  ```jsx
+  // Anything the four names cannot express
+  <DndProvider
+    backend={HTML5Backend}
+    options={{ copyModifier: (event) => event.metaKey && event.shiftKey }}
+  >
+  ```
+
+  The modifier is the *last* thing consulted. An explicit `dropEffect` on the [drop target](/docs/api/use-drop) or the [drag source](/docs/api/use-drag) wins over it, so a held key never silently changes an effect the app has stated.
+
 When you call `getItem()` on a monitor, the HTML5 backend exposes various data from the event, depending on the drop type:
 
 - `NativeTypes.FILE`:

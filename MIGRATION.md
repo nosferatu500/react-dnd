@@ -84,6 +84,49 @@ still return the node they were handed — returning `undefined` would make that
 spelling silently disconnect handlers instead of failing. The public type says
 `void`; do not rely on it.
 
+### New: drop targets can say what dropping does
+
+`useDrop` gained a `dropEffect` option, and the HTML5 backend gained a
+`copyModifier` one. Both close upstream requests that had a PR each and no
+resolution — the most-asked-for feature in the backlog.
+
+```tsx
+// The target knows what dropping *there* means
+useDrop(() => ({ accept: 'card', options: { dropEffect: 'copy' } }))
+
+// And alt is no longer the only key that means copy
+<DndProvider backend={HTML5Backend} options={{ copyModifier: 'ctrl' }}>
+```
+
+`copyModifier` takes `'alt'` (the default, matching the old hard-coded
+behavior), `'ctrl'`, `'meta'`, `'shift'`, `false` to disable it, or a predicate.
+
+The effect is resolved in this order:
+
+1. A native drag (files, a URL) is always `'copy'` — the page does not own those.
+2. The **innermost drop target that accepts the item**, if it set `dropEffect`.
+3. The **drag source's** `dropEffect`, for items that decide for themselves.
+4. The copy modifier.
+5. `'move'`.
+
+**This is backwards compatible.** `DropTargetOptions` was `any` and the backend
+ignored the options it was handed, so nothing could set a target effect before;
+step 2 is new, and steps 3–5 are what the old code did.
+
+**Where this diverges from upstream.** PR #3531 proposed the same feature with
+the *source* ahead of the target. Target-first is the better default and matches
+the platform: `effectAllowed` is the source's business (what is possible) and
+`dropEffect` is the target's (what will happen). A source usually cannot know —
+the same card dropped on "Archive" moves and on "Duplicate to…" copies. A source
+that genuinely does know still gets step 3.
+
+Two type changes come with it: `DragSourceOptions.dropEffect` is now
+`DropEffect` (`'none' | 'copy' | 'link' | 'move'`) rather than `string`, and
+`DropTargetOptions` is a real interface instead of `any` — which immediately
+surfaced two nullability holes the `any` had been hiding in `TargetConnector`
+and `useDropTargetConnector`. `DropEffect` is exported from both `dnd-core` and
+`react-dnd`.
+
 ### Collected props are read with `useSyncExternalStore`
 
 A dnd-core monitor *is* an external store: it holds drag state outside React and

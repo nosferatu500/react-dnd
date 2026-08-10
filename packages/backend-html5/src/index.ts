@@ -5,7 +5,13 @@ import type { HTML5BackendContext, HTML5BackendOptions } from './types.js'
 
 export { getEmptyImage } from './getEmptyImage.js'
 export * as NativeTypes from './NativeTypes.js'
-export type { HTML5BackendContext, HTML5BackendOptions } from './types.js'
+export type {
+	CopyModifier,
+	DragSourceConnectOptions,
+	DropTargetConnectOptions,
+	HTML5BackendContext,
+	HTML5BackendOptions,
+} from './types.js'
 
 export const HTML5Backend: BackendFactory = function createBackend(
 	manager: DragDropManager,

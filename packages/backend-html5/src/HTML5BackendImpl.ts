@@ -3,6 +3,7 @@ import type {
 	DragDropActions,
 	DragDropManager,
 	DragDropMonitor,
+	DropEffect,
 	HandlerRegistry,
 	Identifier,
 	Unsubscribe,
@@ -22,7 +23,12 @@ import {
 	getNodeClientOffset,
 } from './OffsetUtils.js'
 import { OptionsReader } from './OptionsReader.js'
-import type { HTML5BackendContext, HTML5BackendOptions } from './types.js'
+import type {
+	DragSourceConnectOptions,
+	DropTargetConnectOptions,
+	HTML5BackendContext,
+	HTML5BackendOptions,
+} from './types.js'
 
 type RootNode = Node & { __isReactDndBackendSetUp: boolean | undefined }
 
@@ -59,7 +65,8 @@ export class HTML5BackendImpl implements Backend {
 	private sourcePreviewNodes: Map<string, Element> = new Map()
 	private sourcePreviewNodeOptions: Map<string, any> = new Map()
 	private sourceNodes: Map<string, Element> = new Map()
-	private sourceNodeOptions: Map<string, any> = new Map()
+	private sourceNodeOptions: Map<string, DragSourceConnectOptions> = new Map()
+	private dropTargetOptions: Map<string, DropTargetConnectOptions> = new Map()
 
 	private dragStartSourceIds: string[] | null = null
 	private dropTargetIds: string[] = []
@@ -67,7 +74,7 @@ export class HTML5BackendImpl implements Backend {
 	private currentNativeSource: NativeDragSource | null = null
 	private currentNativeHandle: Identifier | null = null
 	private currentDragSourceNode: Element | null = null
-	private altKeyPressed = false
+	private copyModifierPressed = false
 	private mouseMoveTimeoutTimer: number | null = null
 	private asyncEndDragFrameId: number | null = null
 	private dragOverTargetIds: string[] | null = null
@@ -184,16 +191,22 @@ export class HTML5BackendImpl implements Backend {
 		}
 	}
 
-	public connectDropTarget(targetId: string, node: HTMLElement): Unsubscribe {
+	public connectDropTarget(
+		targetId: string,
+		node: HTMLElement,
+		options?: DropTargetConnectOptions,
+	): Unsubscribe {
 		const handleDragEnter = (e: DragEvent) => this.handleDragEnter(e, targetId)
 		const handleDragOver = (e: DragEvent) => this.handleDragOver(e, targetId)
 		const handleDrop = (e: DragEvent) => this.handleDrop(e, targetId)
 
+		this.dropTargetOptions.set(targetId, options ?? {})
 		node.addEventListener('dragenter', handleDragEnter)
 		node.addEventListener('dragover', handleDragOver)
 		node.addEventListener('drop', handleDrop)
 
 		return (): void => {
+			this.dropTargetOptions.delete(targetId)
 			node.removeEventListener('dragenter', handleDragEnter)
 			node.removeEventListener('dragover', handleDragOver)
 			node.removeEventListener('drop', handleDrop)
@@ -282,23 +295,49 @@ export class HTML5BackendImpl implements Backend {
 		)
 	}
 
-	private getCurrentSourceNodeOptions() {
-		const sourceId = this.monitor.getSourceId() as string
-		const sourceNodeOptions = this.sourceNodeOptions.get(sourceId)
-
-		return {
-			dropEffect: this.altKeyPressed ? 'copy' : 'move',
-			...(sourceNodeOptions || {}),
-		}
-	}
-
-	private getCurrentDropEffect() {
+	/**
+	 * Resolves what the drop will do, in this order:
+	 *
+	 * 1. A native drag (files, a URL) is always a copy — the page does not own
+	 *    those, so moving them is not a thing it can offer.
+	 * 2. The innermost target that can accept the item, if it declared a
+	 *    `dropEffect`. The target is what knows what dropping *there* means; this
+	 *    is also how the platform splits it, with `effectAllowed` on the source
+	 *    and `dropEffect` on the target.
+	 * 3. The drag source's `dropEffect`, for items that decide for themselves.
+	 * 4. The copy modifier, alt unless configured otherwise.
+	 * 5. 'move'.
+	 *
+	 * @param targetIds the hovered targets, outermost first — the order dnd-core
+	 * uses everywhere, and the reason this reads from the end.
+	 */
+	private getCurrentDropEffect(targetIds: string[]): DropEffect {
 		if (this.isDraggingNativeItem()) {
-			// It makes more sense to default to 'copy' for native resources
 			return 'copy'
 		}
 
-		return this.getCurrentSourceNodeOptions().dropEffect
+		for (let i = targetIds.length - 1; i >= 0; i--) {
+			const targetId = targetIds[i] as string
+			if (!this.monitor.canDropOnTarget(targetId)) {
+				continue
+			}
+			const dropEffect = this.dropTargetOptions.get(targetId)?.dropEffect
+			if (dropEffect) {
+				return dropEffect
+			}
+			// The innermost target that could accept the drop has no opinion, so
+			// nothing further out gets to have one either: its effect would
+			// describe a drop that is not happening there.
+			break
+		}
+
+		const sourceId = this.monitor.getSourceId() as string
+		const sourceDropEffect = this.sourceNodeOptions.get(sourceId)?.dropEffect
+		if (sourceDropEffect) {
+			return sourceDropEffect
+		}
+
+		return this.copyModifierPressed ? 'copy' : 'move'
 	}
 
 	private getCurrentSourcePreviewNodeOptions() {
@@ -661,7 +700,7 @@ export class HTML5BackendImpl implements Backend {
 			return
 		}
 
-		this.altKeyPressed = e.altKey
+		this.copyModifierPressed = this.options.isCopyModifierPressed(e)
 
 		// If the target changes position as the result of `dragenter`, `dragover` might still
 		// get dispatched despite target being no longer there. The easy solution is to check
@@ -680,7 +719,8 @@ export class HTML5BackendImpl implements Backend {
 			// IE requires this to fire dragover events
 			e.preventDefault()
 			if (e.dataTransfer) {
-				e.dataTransfer.dropEffect = this.getCurrentDropEffect()
+				e.dataTransfer.dropEffect =
+					this.getCurrentDropEffect(dragEnterTargetIds)
 			}
 		}
 	}
@@ -714,7 +754,7 @@ export class HTML5BackendImpl implements Backend {
 			return
 		}
 
-		this.altKeyPressed = e.altKey
+		this.copyModifierPressed = this.options.isCopyModifierPressed(e)
 		this.lastClientOffset = getEventClientOffset(e)
 
 		this.scheduleHover(dragOverTargetIds)
@@ -727,7 +767,9 @@ export class HTML5BackendImpl implements Backend {
 			// Show user-specified drop effect.
 			e.preventDefault()
 			if (e.dataTransfer) {
-				e.dataTransfer.dropEffect = this.getCurrentDropEffect()
+				e.dataTransfer.dropEffect = this.getCurrentDropEffect(
+					dragOverTargetIds || [],
+				)
 			}
 		} else if (this.isDraggingNativeItem()) {
 			// Don't show a nice cursor, but still prevent the default
@@ -801,7 +843,7 @@ export class HTML5BackendImpl implements Backend {
 		this.actions.hover(dropTargetIds, {
 			clientOffset: getEventClientOffset(e),
 		})
-		this.actions.drop({ dropEffect: this.getCurrentDropEffect() })
+		this.actions.drop({ dropEffect: this.getCurrentDropEffect(dropTargetIds) })
 
 		// A target took the drop, so the browser must not also act on it — an
 		// accepted text drop over an editable target would otherwise be inserted

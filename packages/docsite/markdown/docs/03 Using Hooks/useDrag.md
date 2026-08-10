@@ -53,7 +53,9 @@ function DraggableComponent(props) {
 
 * **`options`**: Optional. A plain object optionally containing any of the following properties:
 
-  - **`dropEffect`**: Optional: The type of drop effect to use on this drag. ("move" or "copy" are valid values.)
+  - **`dropEffect`**: Optional. What dragging *this* item does when no drop target says otherwise: `'move'`, `'copy'`, `'link'` or `'none'`.
+
+    Set it when the item decides for itself — dragging out of a read-only list always copies, whatever it lands on. A drop target's own `dropEffect` wins over this. Setting it also opts out of the copy modifier: an explicit effect is not something a keypress should quietly override.
 
 * **`end(item, monitor)`**: Optional. When the dragging stops, `end` is called. For every `begin` call, a corresponding `end` call is guaranteed. You may call `monitor.didDrop()` to check whether or not the drop was handled by a compatible drop target. If it was handled, and the drop target specified a _drop result_ by returning a plain object from its `drop()` method, it will be available as `monitor.getDropResult()`. This method is a good place to fire a Flux action. _Note: If the component is unmounted while dragging, `component` parameter is set to be `null`._
 

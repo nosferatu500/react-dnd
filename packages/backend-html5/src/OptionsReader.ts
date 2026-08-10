@@ -26,4 +26,30 @@ export class OptionsReader {
 	public get rootElement(): Node | undefined {
 		return this.optionsArgs?.rootElement || this.window
 	}
+
+	/**
+	 * Whether the event carries the "copy instead of move" modifier.
+	 * See {@link HTML5BackendOptions.copyModifier}.
+	 */
+	public isCopyModifierPressed(event: DragEvent): boolean {
+		const modifier = this.optionsArgs?.copyModifier ?? 'alt'
+		if (modifier === false) {
+			return false
+		}
+		if (typeof modifier === 'function') {
+			return modifier(event)
+		}
+		switch (modifier) {
+			case 'alt':
+				return event.altKey
+			case 'ctrl':
+				return event.ctrlKey
+			case 'meta':
+				return event.metaKey
+			case 'shift':
+				return event.shiftKey
+			default:
+				return false
+		}
+	}
 }

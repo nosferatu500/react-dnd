@@ -1,6 +1,10 @@
 import type { RefObject } from 'react'
 
-import type { DragPreviewOptions, DragSourceOptions } from './options.js'
+import type {
+	DragPreviewOptions,
+	DragSourceOptions,
+	DropTargetOptions,
+} from './options.js'
 
 export type ConnectableElement = RefObject<any> | Element | null
 
@@ -32,5 +36,5 @@ export type DragElementWrapper<Options> = (
 ) => void
 
 export type ConnectDragSource = DragElementWrapper<DragSourceOptions>
-export type ConnectDropTarget = DragElementWrapper<any>
+export type ConnectDropTarget = DragElementWrapper<DropTargetOptions>
 export type ConnectDragPreview = DragElementWrapper<DragPreviewOptions>

@@ -1,10 +1,21 @@
+import type { DropEffect } from 'dnd-core'
+
+export type { DropEffect }
+
 export interface DragSourceOptions {
 	/**
-	 * Optional. A string. By default, 'move'. In the browsers that support this feature, specifying 'copy'
-	 * shows a special “copying” cursor, while 'move' corresponds to the “move” cursor. You might want to use
-	 * this option to provide a hint to the user about whether an action is destructive.
+	 * Optional. What dragging *this* item does, when no drop target says
+	 * otherwise. 'copy' shows a copying cursor, 'move' the move cursor — a hint
+	 * to the user about whether the action is destructive.
+	 *
+	 * A drop target's own `dropEffect` wins over this, because the target is what
+	 * knows what dropping *there* means. Set this when the item itself decides —
+	 * dragging out of a read-only list always copies, whatever it lands on.
+	 *
+	 * Setting it also opts out of the copy modifier (alt by default): an explicit
+	 * effect is not something a keypress should override.
 	 */
-	dropEffect?: string
+	dropEffect?: DropEffect
 }
 
 export interface DragPreviewOptions {
@@ -45,4 +56,28 @@ export interface DragPreviewOptions {
 	offsetY?: number
 }
 
-export type DropTargetOptions = any
+export interface DropTargetOptions {
+	/**
+	 * Optional. What dropping on this target does. Takes precedence over the drag
+	 * source's `dropEffect` and over the copy modifier.
+	 *
+	 * This mirrors how the platform splits the two: a drag source constrains what
+	 * is possible (`effectAllowed`), and a drop target states what will actually
+	 * happen (`dropEffect`). The same card dropped on "Archive" moves and dropped
+	 * on "Duplicate to…" copies; only the target knows which.
+	 *
+	 * Evaluated wherever your `useDrop` spec is, so compute it there rather than
+	 * looking for a callback form:
+	 *
+	 * ```tsx
+	 * useDrop(
+	 *   () => ({ accept: 'card', options: { dropEffect: locked ? 'copy' : 'move' } }),
+	 *   [locked],
+	 * )
+	 * ```
+	 *
+	 * Only the innermost target that can accept the item is consulted, so an
+	 * outer target's effect does not leak into a nested one.
+	 */
+	dropEffect?: DropEffect
+}

@@ -1,6 +1,6 @@
 # react-dnd-test-utils
 
-Testing helpers for React DnD apps. Requires React >= 18.3.
+Testing helpers for React DnD apps.
 
 Part of [React DnD](https://github.com/nosferatu500/react-dnd) — a maintained
 fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).
@@ -13,15 +13,13 @@ npm install react-dnd-test-utils
 
 ## Supported React versions
 
-`^18.3.0 || ^19.0.0` (stricter than `react-dnd` itself, see below)
+`^19.0.0`
 
-React 16 and 17 are not supported; use the upstream `16.0.1` release if you
-need them.
+React 16, 17 and 18 are not supported. Use the upstream `16.0.1` release for
+React 16/17.
 
-`react-dnd-test-utils` re-exports `act` from the `react` entrypoint, which only
-exists from React 18.3 — React 19 removed `react-dom/test-utils` entirely, and
-that was the only other place `act` ever lived. `react-dnd` itself needs just
-React 18.0, so these helpers are one minor version stricter than the library.
+`react-dnd-test-utils` uses `act` from the `react` entrypoint. React 19 removed
+`react-dom/test-utils`, which was the only other place `act` ever lived.
 
 ## Module format
 

@@ -1,4 +1,3 @@
-import { invariant } from '@react-dnd/invariant'
 import type { ReactElement } from 'react'
 import { cloneElement, isValidElement } from 'react'
 
@@ -67,13 +66,15 @@ function setRef(ref: any, node: any) {
 }
 
 function cloneWithRef(element: any, newRef: any): ReactElement<any> {
-	const previousRef = element.ref
-	invariant(
-		typeof previousRef !== 'string',
-		'Cannot connect React DnD to an element with an existing string ref. ' +
-			'Please convert it to use a callback ref instead, or wrap it into a <span> or <div>. ' +
-			'Read more: https://reactjs.org/docs/refs-and-the-dom.html#callback-refs',
-	)
+	// `element.props.ref`, not `element.ref`. React 19 made `ref` an ordinary
+	// prop and reading it off the element logs "Accessing element.ref was
+	// removed in React 19… It will be removed from the JSX Element type in a
+	// future release."
+	//
+	// The string-ref guard that used to sit here is gone with it: React 19
+	// removed string refs outright, so `previousRef` can only be a function or
+	// a ref object now.
+	const previousRef = element.props?.ref
 
 	if (!previousRef) {
 		// When there is no ref on the element, use the new ref directly

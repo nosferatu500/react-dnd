@@ -14,6 +14,13 @@ you already have — without changing a line of `useDrag` or `useDrop`.
 npm install react-dnd-keyboard-backend
 ```
 
+## Supported React versions
+
+`^19.0.0`
+
+React 16, 17 and 18 are not supported. Use the upstream `16.0.1` release for
+React 16/17.
+
 ## Use
 
 Wrap the pointer backend you already use. Keyboard support is *additional* to

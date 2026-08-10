@@ -49,8 +49,8 @@ jobs:
       - name: Test
         run: npm run test:coverage
 
-      - name: React 17/18/19 conformance matrix
-        run: npm run test:matrix
+      - name: Test against React's own createRoot (no Testing Library)
+        run: npm run test:react-root
 
       - name: Verify built ESM + CJS entrypoints load
         run: npm run test:modules
@@ -67,17 +67,13 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  # The main suite runs on whatever React is installed, so covering React 18
-  # end-to-end (through @testing-library/react, not just the compat harness)
-  # requires a real install swap. Vitest aliases cannot do it: RTL resolves its
-  # own react-dom/client via Node and would load a second React copy.
-  react-install-matrix:
-    name: Full suite on React ${{ matrix.react }}
+  # React 19 is the only supported major, so there is no React install matrix
+  # any more. This job still swaps React in for real rather than trusting the
+  # lockfile, so a peer range that has drifted from what the code needs fails
+  # here instead of in a consumer's install.
+  react-install:
+    name: Full suite on a fresh React 19 install
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        react: ['18', '19']
 
     steps:
       - uses: actions/checkout@v5
@@ -89,12 +85,13 @@ jobs:
 
       - run: npm ci
 
-      - name: Install React ${{ matrix.react }}
+      - name: Install the latest React 19
         run: |
-          npm install --no-save --workspace-root \
-            react@${{ matrix.react }} react-dom@${{ matrix.react }}
+          npm install --no-save --workspace-root react@19 react-dom@19
           node -e "console.log('react', require('react/package.json').version)"
 
       - run: npm run build
 
       - run: npm test
+
+      - run: npm run test:react-root

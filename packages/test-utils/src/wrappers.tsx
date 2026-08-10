@@ -1,6 +1,5 @@
 import type { BackendFactory } from 'dnd-core'
 import type { ComponentType, Ref } from 'react'
-import { forwardRef } from 'react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import type { ITestBackend, TestBackendOptions } from 'react-dnd-test-backend'
@@ -38,20 +37,18 @@ export function wrapWithBackend<T>(
 	Backend: BackendFactory = HTML5Backend,
 	backendOptions?: unknown,
 ): ComponentType<T> {
-	// Previously this forwarded through an intermediate class component that
-	// re-published the ref as a `forwardedRef` prop. That indirection stopped
-	// typechecking under @types/react@19 and was never needed: forwardRef can
-	// hand the ref straight to the decorated component.
-	const Wrapped = forwardRef<unknown, T & object>(function TestContextWrapper(
-		props,
-		ref: Ref<any>,
-	) {
+	// `ref` is an ordinary prop in React 19, so this is a plain function
+	// component. It went through `forwardRef` before that, and before *that*
+	// through an intermediate class that re-published the ref as a
+	// `forwardedRef` prop — neither indirection is needed now, and `forwardRef`
+	// itself is deprecated.
+	function Wrapped({ ref, ...props }: T & object & { ref?: Ref<any> }) {
 		return (
 			<DndProvider backend={Backend} options={backendOptions}>
 				<DecoratedComponent ref={ref} {...(props as unknown as T)} />
 			</DndProvider>
 		)
-	})
+	}
 
 	Wrapped.displayName = `TestContextWrapper(${
 		DecoratedComponent.displayName || DecoratedComponent.name || 'Component'

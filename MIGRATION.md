@@ -7,16 +7,31 @@ do about it.
 
 ## For consumers of the published packages
 
-### React 16 and 17 are no longer supported
+### React 19 only
 
-`peerDependencies.react` is now `^18.0.0 || ^19.0.0`. Upstream advertised
-`>= 16.14` but only ever tested React 16/17 semantics. If you need React 16 or
-17, stay on `react-dnd@16.0.1`.
+`peerDependencies.react` is now `^19.0.0`. Upstream advertised `>= 16.14` but
+only ever tested React 16/17 semantics; this fork briefly supported 18 and 19
+together, and now targets 19 alone.
 
-React 18 is the floor because the library is now built on `useSyncExternalStore`
-(see below), which React added in 18.0. Both supported majors are asserted by the
-same conformance suite — see
-[CONTRIBUTING.md](./CONTRIBUTING.md#testing-across-react-versions).
+If you need React 16 or 17, stay on `react-dnd@16.0.1`. If you need React 18,
+stay on this fork's last release that carried it.
+
+Supporting one major is what lets the library use React 19 directly instead of
+working around the older one:
+
+- **`ref` is an ordinary prop.** `wrapConnectorHooks` reads the existing ref off
+  `element.props.ref`. It used to read `element.ref`, which React 19 removed —
+  every element-form connector call was logging *"Accessing element.ref was
+  removed in React 19… It will be removed from the JSX Element type in a future
+  release."* to stderr.
+- **String refs are gone**, so the invariant that rejected them is gone too. A
+  ref reaching a connector can now only be a function or a ref object.
+- **A context is its own provider.** `DndProvider` renders `<DndContext value=…>`
+  rather than `<DndContext.Provider value=…>`.
+- **`forwardRef` is not needed.** `react-dnd-test-utils`'s wrapper is a plain
+  function component that takes `ref` as a prop.
+
+None of these change the public API.
 
 ### Collected props are read with `useSyncExternalStore`
 
@@ -226,15 +241,11 @@ It was never imported — a leftover from the decorator API removed in v14. The
 dependency, its `@types` peer, and the corresponding `peerDependenciesMeta`
 entry are gone. One fewer transitive package, and one fewer CommonJS dependency.
 
-### `react-dnd-test-utils` now requires React >= 18.3
+### `react-dnd-test-utils` uses `act` from `react`
 
 It used to import `act` from `react-dom/test-utils`, which **React 19 removed**.
-The only spelling that works on both currently maintained majors is `act` from
-the `react` entrypoint, added in 18.3. Its peer range is therefore
-`^18.3.0 || ^19.0.0`, and `@testing-library/react` peer is `>= 16`.
-
-`react-dnd` itself needs only React 18.0, so the test helpers are one minor
-version stricter than the library.
+`act` now comes from the `react` entrypoint. `@testing-library/react` peer is
+`>= 16`.
 
 ### `dnd-core`: `mapContainsValue` no longer throws on an empty map
 
@@ -394,6 +405,11 @@ Spec-level changes you will notice:
 `reactStrictMode: true` is set globally in `vitest.setup.mts`. That is what
 surfaced the `DndProvider` bug above.
 
+React warnings now fail the test that caused them, via
+`vitest.console-guard.mts`. The previous attempt used Vitest's `onConsoleLog`
+hook, which cannot fail a test — it throws inside the log handler, so the message
+printed and the run stayed green. Nothing had ever been caught by it.
+
 ### TypeScript 4.9 → 6.0
 
 - `moduleResolution: "Node"` is rejected by TS6; the base config now uses
@@ -418,11 +434,7 @@ directory and mirrors the declarations next to both JavaScript flavors.
 | `packages/eslint-config` | ESLint replaced by Biome |
 | `packages/jest-config` | Jest replaced by Vitest |
 | `packages/test-suite-cra` | Create React App is archived; Vite and Next cover bundler integration |
-
-### New private packages
-
-`packages/compat-react18` exists only to pin an isolated React 18 tree that the
-compat suite aliases into. It is never published.
+| `packages/compat-react18` | pinned React 18 for the cross-version suite; React 18 is no longer supported |
 
 ---
 

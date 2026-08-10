@@ -15,19 +15,14 @@ export default defineConfig({
 	test: {
 		globals: true,
 		environment: 'jsdom',
-		setupFiles: [local('./vitest.setup.mts')],
+		setupFiles: [
+			local('./vitest.console-guard.mts'),
+			local('./vitest.setup.mts'),
+		],
 		include: ['packages/*/src/**/__tests__/**/*.spec.{ts,tsx}'],
 		exclude: ['**/node_modules/**', '**/dist/**'],
 		clearMocks: true,
 		restoreMocks: true,
-		// A stray act() warning or React deprecation notice is a real defect in a
-		// drag-and-drop library that lives inside effects; fail rather than log.
-		onConsoleLog(log, type) {
-			if (type === 'stderr' && /not wrapped in act|Warning:/.test(log)) {
-				throw new Error(`Unexpected React warning during tests:\n${log}`)
-			}
-			return undefined
-		},
 		coverage: {
 			provider: 'v8',
 			reportsDirectory: './coverage',
@@ -39,6 +34,10 @@ export default defineConfig({
 				'**/index.ts',
 				'**/types/**',
 				'**/interfaces.ts',
+				// The Gatsby docsite is out of the workspace and does not build; its
+				// sources are not library code, and coverage's uncovered-file pass
+				// cannot parse them, so every run logged a wall of parse errors.
+				'packages/docsite/**',
 			],
 		},
 	},

@@ -73,7 +73,9 @@ export const DndProvider: FC<DndProviderProps<unknown, unknown>> = memo(
 			}
 		}, [isGlobalInstance, manager])
 
-		return <DndContext.Provider value={manager}>{children}</DndContext.Provider>
+		// React 19 lets a context be rendered directly as its own provider;
+		// `<DndContext.Provider>` is the pre-19 spelling and is on its way out.
+		return <DndContext value={manager}>{children}</DndContext>
 	},
 )
 
@@ -82,8 +84,8 @@ export const DndProvider: FC<DndProviderProps<unknown, unknown>> = memo(
  * slot (and therefore needs refcounting).
  *
  * The explicit tuple matters: inferred from the array literals this was
- * `(DndContextType | boolean)[]`, so `manager` reached
- * `<DndContext.Provider value={...}>` typed as `boolean | DndContextType`.
+ * `(DndContextType | boolean)[]`, so `manager` reached `<DndContext value={...}>`
+ * typed as `boolean | DndContextType`.
  */
 function getDndContextValue(
 	props: DndProviderProps<unknown, unknown>,

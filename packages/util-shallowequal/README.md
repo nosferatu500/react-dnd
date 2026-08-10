@@ -13,10 +13,10 @@ npm install @react-dnd/shallowequal
 
 ## Supported React versions
 
-`^18.0.0 || ^19.0.0`
+`^19.0.0`
 
-React 16 and 17 are not supported; use the upstream `16.0.1` release if you
-need them.
+React 16, 17 and 18 are not supported. Use the upstream `16.0.1` release for
+React 16/17.
 
 ## Module format
 

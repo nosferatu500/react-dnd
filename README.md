@@ -5,9 +5,9 @@ Drag and Drop for React.
 > **This is a maintained fork of [react-dnd/react-dnd](https://github.com/react-dnd/react-dnd).**
 > Upstream's last release (`16.0.1`, mid-2022) predates React 18's StrictMode
 > effect semantics and React 19's ref-cleanup contract, and it has not shipped a
-> fix for either. This fork targets **React 18 and 19**, with both majors covered
-> by CI, and is built on React 18 primitives (`useSyncExternalStore`) rather than
-> emulating them. See [MIGRATION.md](./MIGRATION.md) for what changed and
+> fix for either. This fork targets **React 19** and builds on it directly —
+> `useSyncExternalStore`, `ref` as a prop, context rendered as its own provider —
+> rather than emulating any of it. See [MIGRATION.md](./MIGRATION.md) for what changed and
 > [docs/upstream-triage.md](./docs/upstream-triage.md) for how upstream's open
 > issues map onto this codebase.
 
@@ -15,14 +15,14 @@ Drag and Drop for React.
 
 | | Supported |
 | --- | --- |
-| React | `^18.0.0 \|\| ^19.0.0` |
+| React | `^19.0.0` |
 | Node | `>= 22.12` (Node 20 reached EOL 2026-04-30) |
 | TypeScript (for consumers) | `>= 5.0` — `exports` carries `types` |
 | Module format | **ESM only** (`require()` still works via `require(esm)`) |
 | Language level | **ES2025**, shipped un-downleveled |
 
-React 16 and 17 are **no longer supported**. If you need them, use
-`react-dnd@16.0.1` from upstream.
+React 16, 17 and 18 are **no longer supported**. For React 16/17 use
+`react-dnd@16.0.1` from upstream;
 
 ## Install
 
@@ -78,7 +78,7 @@ callback (or pass them a shared ref object):
 | [`react-dnd-touch-backend`](./packages/backend-touch) | Touch/pointer backend |
 | [`react-dnd-keyboard-backend`](./packages/backend-keyboard) | Keyboard and screen-reader accessible backend; wraps another backend |
 | [`react-dnd-test-backend`](./packages/backend-test) | Backend that scripts drags for tests |
-| [`react-dnd-test-utils`](./packages/test-utils) | Test helpers (requires React >= 18.3) |
+| [`react-dnd-test-utils`](./packages/test-utils) | Test helpers |
 | [`dnd-core`](./packages/dnd-core) | Backend-agnostic drag-and-drop state machine |
 
 ## Developing
@@ -87,7 +87,7 @@ callback (or pass them a shared ref object):
 npm install          # npm workspaces; there is no Yarn here anymore
 npm run build        # turbo: swc emits ESM, tsc emits declarations alongside
 npm test             # Vitest against src/, on the installed React (19)
-npm run test:matrix  # the same conformance suite on React 18 and 19
+npm run test:react-root # the same suite against createRoot, without Testing Library
 npm run ci           # everything CI runs
 ```
 

@@ -1,14 +1,9 @@
-import { act as reactAct } from 'react'
-
 /**
- * `act` moved entrypoints across React majors:
+ * `act` comes from the `react` entrypoint.
  *
- * - React 17/18 exposed it from `react-dom/test-utils`
- * - React 18.3 added it to the `react` entrypoint and deprecated the old one
- * - React 19 **removed** `react-dom/test-utils` entirely
- *
- * Importing from `react` is the only spelling that works on both currently
- * supported majors, which is why this package requires React >= 18.3 even
- * though `react-dnd` itself still supports React 17.
+ * It used to live in `react-dom/test-utils`, which React 19 deleted outright.
+ * That history is why this module exists at all; now that React 19 is the only
+ * supported major there is nothing to reconcile, and this is a plain re-export
+ * kept so callers have one import site if the entrypoint ever moves again.
  */
-export const act = reactAct
+export { act } from 'react'

@@ -29,7 +29,7 @@ workspace automatically when its version satisfies the range.
 | `npm run check:types` | `tsc` over every source and spec under `@tsconfig/strictest` |
 | `npm run check:exports` | `attw` (`esm-only` profile) — that the entrypoints resolve correct types |
 | `npm test` | Vitest, run against `src/` on the installed React |
-| `npm run test:matrix` | the shared conformance suite on React 18 and 19 |
+| `npm run test:react-root` | the library against React's own `createRoot`, with no Testing Library |
 | `npm run test:modules` | that the built entrypoints load by `import` and by `require(esm)` |
 
 Run `npm run lint:fix` to apply Biome's safe fixes.
@@ -57,24 +57,35 @@ floor to Chrome 122 / Safari 17 / Firefox 127 for no gain over
 > components use as test hooks. Both are configured off or scoped in
 > `biome.json`, but `--unsafe` can still surprise you elsewhere.
 
-## Testing across React versions
+## Testing
 
-The main suite uses `@testing-library/react`, which requires React >= 18, and
-resolves its own `react-dom/client` through Node — so it always runs on whatever
-React is installed at the repo root (currently 19).
+React 19 is the only supported major, so there is no version matrix. The main
+suite runs through `@testing-library/react`, which resolves its own
+`react-dom/client` through Node and therefore always uses the React installed at
+the repo root.
 
-React 18 is covered locally by `packages/react-dnd/src/__compat__`, which drives
-each major's own root API directly and shares one assertion set
-(`harness.tsx`). Each leg has its own Vitest config; the 18 leg aliases React
-into `packages/compat-react18/node_modules`, a private workspace that exists only
-to pin an isolated, self-consistent React 18 tree.
+`packages/react-dnd/src/__compat__` is the one suite that does not use Testing
+Library: it mounts with `createRoot` directly, so a regression RTL happens to
+paper over still fails. It has its own Vitest config
+(`vitest.react-root.config.mts`) purely to skip `vitest.setup.mts`, which imports
+RTL. Run it with `npm run test:react-root`.
 
-Adding an assertion to `harness.tsx` applies it to both majors at once. That is
-the point: behavioral drift between versions shows up as a failure rather than as
-suites that quietly diverged.
+That directory used to hold a cross-version harness with a React 18 leg aliased
+into a private pinned workspace. Both are gone; the RTL-free coverage was worth
+keeping on its own.
 
-Full end-to-end coverage of React 18 (through Testing Library, not just the
-compat harness) happens in CI, which reinstalls React at each matrix version.
+### React must not complain
+
+`vitest.console-guard.mts` is a setup file for both configs. It records anything
+React writes to `console.error`/`console.warn` that looks like a warning or a
+deprecation, and throws from `afterEach`, so the test that caused it fails.
+
+This replaced a `onConsoleLog` hook that had never worked: throwing from that
+hook happens inside Vitest's log handler rather than inside the test, so the
+message printed and the run still went green. That is how "Accessing element.ref
+was removed in React 19" survived on every element-form connector call. If you
+add a case React legitimately warns about, widen the pattern deliberately —
+do not reach for a local `console.error` mock.
 
 ## Releasing
 

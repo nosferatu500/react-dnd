@@ -1,5 +1,7 @@
 import type { Backend, Unsubscribe } from 'dnd-core'
 
+import type { AnnouncingBackend } from './interfaces.js'
+
 /**
  * Presents several backends to dnd-core as one.
  *
@@ -73,6 +75,19 @@ export class CompositeBackend implements Backend {
 				backend.connectDropTarget(targetId, node, options),
 			),
 		)
+	}
+
+	/**
+	 * Forwarded to whichever backend can speak. Nothing in the `Backend`
+	 * contract covers announcing, so this is a capability check rather than a
+	 * method call: a composite of two pointer backends simply has nobody to
+	 * forward to, and saying nothing is the right outcome.
+	 */
+	public announce(message: string): void {
+		for (const backend of this.backends) {
+			const announcing = backend as Partial<AnnouncingBackend>
+			announcing.announce?.(message)
+		}
 	}
 
 	public profile(): Record<string, number> {

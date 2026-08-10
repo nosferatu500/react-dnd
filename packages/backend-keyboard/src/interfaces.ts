@@ -1,5 +1,15 @@
 import type { Identifier } from 'dnd-core'
 
+/**
+ * A backend that can speak to assistive technology. Implemented by
+ * `KeyboardBackendImpl`, and forwarded by `CompositeBackend`, so
+ * `useDragDropAnnounce()` can find it through the manager without knowing which
+ * backend it got.
+ */
+export interface AnnouncingBackend {
+	announce(message: string): void
+}
+
 export interface KeyboardBackendContext {
 	window?: Window
 	document?: Document
@@ -33,6 +43,15 @@ export interface NavigationRequest {
 	 * respected.
 	 */
 	candidates: NavigationCandidate[]
+	/**
+	 * Every connected drop target still in the document, in document order,
+	 * whether or not it accepts the dragged item.
+	 *
+	 * Layout-aware navigators need this: on a board where only the legal moves
+	 * accept the item, `candidates` is a handful of scattered squares and says
+	 * nothing about the shape of the grid they sit in. `allTargets` is the grid.
+	 */
+	allTargets: NavigationCandidate[]
 	/** The node the drag was lifted from. */
 	source: HTMLElement | null
 }

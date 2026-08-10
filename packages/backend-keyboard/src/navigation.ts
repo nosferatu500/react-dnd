@@ -15,7 +15,8 @@ const BACKWARD: NavigationDirection[] = ['backward', 'up', 'left']
  * This is the default because it is the only model that is both deterministic
  * and independent of layout: it needs no measurement, so it behaves identically
  * in a browser and under test. For grids and boards, where up/down should mean
- * a row rather than a step, use {@link spatialNavigation}.
+ * a row rather than a step, use {@link gridNavigation}, or
+ * {@link spatialNavigation} when the layout is not a regular grid.
  */
 export const documentOrderNavigation: GetNextTarget = ({
 	direction,
@@ -41,6 +42,85 @@ export const documentOrderNavigation: GetNextTarget = ({
 	return candidates[index + step] ?? null
 }
 
+export interface GridNavigationOptions {
+	/** Cells per row, counting every drop target, not just the eligible ones. */
+	columns: number
+}
+
+/**
+ * Treats the drop targets as a row-major grid `columns` wide: left and right
+ * move within a row, up and down move by a whole row.
+ *
+ * Unlike {@link spatialNavigation} this measures nothing, so it behaves the same
+ * in a browser and under test. Unlike {@link documentOrderNavigation} it knows
+ * that on a board, down means the next row rather than the next cell.
+ *
+ * The grid is built from `allTargets`, not from the eligible ones — on a
+ * chessboard only the legal moves accept the piece, and navigating the eligible
+ * squares alone would step through scattered cells with no shape. Cells that
+ * cannot be dropped on are skipped over: the hover keeps traveling in the
+ * direction asked for until it reaches one that can, or leaves the grid.
+ *
+ * Neither axis wraps. Left at the start of a row stays put rather than
+ * reappearing at the end of the row above.
+ */
+export function gridNavigation({
+	columns,
+}: GridNavigationOptions): GetNextTarget {
+	if (!Number.isInteger(columns) || columns < 1) {
+		throw new Error(
+			`gridNavigation: columns must be a positive integer, got ${columns}`,
+		)
+	}
+
+	return (request) => {
+		const { direction, current, candidates, allTargets } = request
+		const grid = allTargets.length > 0 ? allTargets : candidates
+		if (grid.length === 0) {
+			return null
+		}
+		if (direction === 'forward' || direction === 'backward' || !current) {
+			return documentOrderNavigation(request)
+		}
+
+		const index = grid.findIndex((c) => c.targetId === current.targetId)
+		if (index === -1) {
+			return documentOrderNavigation(request)
+		}
+
+		const move = {
+			up: -columns,
+			down: columns,
+			left: -1,
+			right: 1,
+		}[direction]
+
+		const row = Math.floor(index / columns)
+		const eligible = new Set(candidates.map((c) => c.targetId))
+
+		for (
+			let next = index + move;
+			next >= 0 && next < grid.length;
+			next += move
+		) {
+			// Horizontal travel must not run off the end of its row into the next
+			// one, which would read as the item teleporting a row.
+			if (
+				(direction === 'left' || direction === 'right') &&
+				Math.floor(next / columns) !== row
+			) {
+				return null
+			}
+			const candidate = grid[next] as NavigationCandidate
+			if (eligible.has(candidate.targetId)) {
+				return candidate
+			}
+		}
+
+		return null
+	}
+}
+
 interface Point {
 	x: number
 	y: number
@@ -58,11 +138,13 @@ function centerOf(node: HTMLElement): Point {
  * diagonal, which is what makes up/down cross a row on a grid.
  *
  * Needs real layout: under jsdom every rect is zero, so every candidate looks
- * like it is in the same place and this degrades to document order. Reach for it
- * in 2D layouts (a board, a kanban, a calendar) and keep the default elsewhere.
+ * like it is in the same place and this degrades to document order. Prefer
+ * {@link gridNavigation} for anything with a fixed column count — it needs no
+ * measurement. This is for layouts a column count cannot describe: masonry,
+ * freely positioned cards, rows of differing height.
  *
  * @param crossAxisPenalty how heavily to punish sideways displacement; higher
- * values insist more strongly on travelling in a straight line.
+ * values insist more strongly on traveling in a straight line.
  */
 export function spatialNavigation(crossAxisPenalty = 3): GetNextTarget {
 	return (request) => {

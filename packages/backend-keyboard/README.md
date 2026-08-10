@@ -109,21 +109,61 @@ in document order — down/right go forward, up/left go back — and stops at th
 ends rather than wrapping. It needs no measurement, so it behaves identically in
 a browser and under test.
 
+`gridNavigation({ columns })` treats the targets as a row-major grid: left and
+right move within a row, up and down move a whole row. It measures nothing, so
+it behaves the same in a browser and under test. Cells that will not accept the
+item are skipped over — on a board where only the legal moves accept a piece,
+the hover keeps traveling in the direction you asked for until it reaches one
+that does.
+
 `spatialNavigation()` picks the nearest eligible target in the direction of the
-arrow key, which is what you want on a grid or a board, where <kbd>↓</kbd> should
-cross a row rather than step one cell. It reads `getBoundingClientRect`, so it
-needs real layout.
+arrow key. Reach for it when the layout is not a regular grid — masonry, a
+calendar with varying row heights, freely positioned cards. It reads
+`getBoundingClientRect`, so it needs real layout and degrades to document order
+under jsdom.
 
 Anything else is a function:
 
 ```ts
 withKeyboard(HTML5Backend, {
-	getNextTarget: ({ direction, current, candidates }) => {
-		// `candidates` holds every target that accepts the item right now,
-		// in document order. Return one of them, or null to stay put.
+	getNextTarget: ({ direction, current, candidates, allTargets }) => {
+		// `candidates` holds every target that accepts the item right now, in
+		// document order; `allTargets` holds every connected target whether it
+		// accepts or not, which is what layout-aware navigation needs. Return one
+		// of the candidates, or null to stay put.
 	},
 })
 ```
+
+## Announcing what the app knows
+
+The backend narrates what it can see — picked up, moved, dropped. It cannot
+narrate what a drop *meant*: that the card is now third in Done, that the move
+was rejected, that four rows were reordered. `useDragDropAnnounce` speaks
+through the same live region, so app messages and backend messages queue in one
+place instead of two competing regions:
+
+```tsx
+import { useDragDropAnnounce } from 'react-dnd-keyboard-backend'
+
+function Column({ title }) {
+	const announce = useDragDropAnnounce()
+
+	const [, drop] = useDrop(() => ({
+		accept: 'card',
+		drop: (item) => {
+			const position = move(item)
+			announce(`${item.title} moved to ${title}, position ${position}.`)
+		},
+	}))
+
+	return <div ref={drop} />
+}
+```
+
+Call it unconditionally. It does nothing if the provider is not using a keyboard
+backend, or if that backend was configured with `announce: false`. Keep messages
+short — they are read out in full.
 
 ## Keyboard-only
 

@@ -4,7 +4,7 @@ import { memo, useCallback, useMemo, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import { componentIndex } from 'react-dnd-examples'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { spatialNavigation, withKeyboard } from 'react-dnd-keyboard-backend'
+import { gridNavigation, withKeyboard } from 'react-dnd-keyboard-backend'
 
 const exampleNames = Object.keys(componentIndex)
 
@@ -15,11 +15,13 @@ const exampleNames = Object.keys(componentIndex)
  * app is where it is checked by hand against a real browser and a real screen
  * reader.
  *
- * `spatialNavigation` rather than the default document order because the
- * gallery leads with the chessboard: on a grid, down should cross a row.
+ * `gridNavigation` rather than the default document order because the gallery
+ * leads with the chessboard: on a grid, down should cross a row. Eight columns,
+ * and squares that will not accept the piece are skipped, so the arrow keys walk
+ * the board's legal moves rather than its cells.
  */
 const backend = withKeyboard(HTML5Backend, {
-	getNextTarget: spatialNavigation(),
+	getNextTarget: gridNavigation({ columns: 8 }),
 })
 
 const App = memo(() => (

@@ -95,10 +95,23 @@ continue to go to the wrapped backend untouched.
   order — down/right forward, up/left back — and stops at the ends rather than
   wrapping.
 
+  `gridNavigation({ columns })` treats the targets as a row-major grid, so left
+  and right move within a row and up and down move a whole row — what a board or
+  a calendar wants. It measures nothing, so it behaves identically in a browser
+  and under test, and it skips cells that will not accept the item: on a
+  chessboard where only the legal moves accept a piece, the hover keeps
+  traveling the way you asked until it reaches one that does.
+
+  ```jsx
+  import { gridNavigation, withKeyboard } from 'react-dnd-keyboard-backend'
+
+  withKeyboard(HTML5Backend, { getNextTarget: gridNavigation({ columns: 8 }) })
+  ```
+
   `spatialNavigation()` picks the nearest eligible target in the direction of
-  the arrow key, which is what a grid or a board wants, where <kbd>↓</kbd>
-  should cross a row rather than step one cell. It measures with
-  `getBoundingClientRect`.
+  the arrow key, measuring with `getBoundingClientRect`. Use it when the layout
+  is not a regular grid — masonry, freely positioned cards, rows of differing
+  height.
 
   ```jsx
   import { spatialNavigation, withKeyboard } from 'react-dnd-keyboard-backend'
@@ -106,9 +119,12 @@ continue to go to the wrapped backend untouched.
   withKeyboard(HTML5Backend, { getNextTarget: spatialNavigation() })
   ```
 
-  Anything else is a function of `{ direction, current, candidates, source }`,
-  where `candidates` holds every target that accepts the item right now, in
-  document order. Return one of them, or `null` to stay put.
+  Anything else is a function of
+  `{ direction, current, candidates, allTargets, source }`. `candidates` holds
+  every target that accepts the item right now, in document order; `allTargets`
+  holds every connected target whether it accepts or not, which is what
+  layout-aware navigation needs to see the shape of the grid. Return one of the
+  candidates, or `null` to stay put.
 
 - **describeNode** (default: `aria-label`, falling back to text content)
 
@@ -136,6 +152,39 @@ continue to go to the wrapped backend untouched.
 - **announce** (default: true)
 
   Whether to create and drive the live region.
+
+### Announcing what only your app knows
+
+The backend narrates what it can see: an item was picked up, the hover moved,
+something was dropped. It cannot narrate what a drop *meant* — that the card is
+now third in the Done column, that the move was rejected, that four rows were
+reordered.
+
+`useDragDropAnnounce` returns a function that speaks through the same live
+region, so your messages and the backend's queue in one place rather than in two
+regions read in an order nobody controls.
+
+```jsx
+import { useDragDropAnnounce } from 'react-dnd-keyboard-backend'
+
+function Column({ title, cards }) {
+  const announce = useDragDropAnnounce()
+
+  const [, drop] = useDrop(() => ({
+    accept: 'card',
+    drop: (item) => {
+      const position = move(item)
+      announce(`${item.title} moved to ${title}, position ${position} of ${cards.length}.`)
+    },
+  }))
+
+  return <div ref={drop}>{/* ... */}</div>
+}
+```
+
+Call it unconditionally: it does nothing when the provider is not using a
+keyboard backend, or when that backend has `announce: false`. Keep the messages
+short — a live region is read out in full.
 
 ### Keyboard only
 

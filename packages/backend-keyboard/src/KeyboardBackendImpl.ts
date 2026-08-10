@@ -131,6 +131,26 @@ export class KeyboardBackendImpl implements Backend {
 		return this.announcer?.lastMessage ?? ''
 	}
 
+	/**
+	 * Speaks an arbitrary message through the same live region the backend uses.
+	 *
+	 * For what the application knows and the backend cannot: the backend can say
+	 * *"Dropped Knight on c3"* because it can read the DOM, but only the app can
+	 * say *"Knight moved to c3, 3 of 8 legal moves remaining"*. Reach it from
+	 * React with `useDragDropAnnounce()`.
+	 *
+	 * A no-op when `announce: false`, and before the backend is set up — the
+	 * live region lives exactly as long as the backend does, so that it is torn
+	 * down with it rather than left in the document.
+	 *
+	 * dnd-core sets a backend up when the first drag source or drop target
+	 * registers, so in practice this is live for as long as the tree has any
+	 * drag and drop in it. Callers never have to check either way.
+	 */
+	public announce(message: string): void {
+		this.announcer?.announce(message)
+	}
+
 	public setup(): void {
 		const root = this.options.rootElement
 		if (!root?.addEventListener || this.isSetUp) {
@@ -374,13 +394,13 @@ export class KeyboardBackendImpl implements Backend {
 		if (candidates.length === 0) {
 			// Nothing accepts it. Say so and unwind, rather than leaving the user
 			// in a drag with no way forward.
-			this.announce('noTargets', candidates)
+			this.announceEvent('noTargets', candidates)
 			this.endDrag()
 			return true
 		}
 
 		this.hoverOn(candidates[0] as NavigationCandidate)
-		this.announce('pickUp', candidates)
+		this.announceEvent('pickUp', candidates)
 		return true
 	}
 
@@ -396,6 +416,7 @@ export class KeyboardBackendImpl implements Backend {
 			direction,
 			current,
 			candidates,
+			allTargets: this.mountedTargets(),
 			source: this.draggingSource(),
 		})
 		if (!next || next.targetId === this.hoveredTargetId) {
@@ -403,7 +424,7 @@ export class KeyboardBackendImpl implements Backend {
 		}
 
 		this.hoverOn(next)
-		this.announce('move', candidates)
+		this.announceEvent('move', candidates)
 	}
 
 	private hoverOn(candidate: NavigationCandidate): void {
@@ -421,14 +442,14 @@ export class KeyboardBackendImpl implements Backend {
 		// drop on it because it is registered until the next microtask.
 		const isEligible = candidates.some((c) => c.targetId === targetId)
 		if (!targetId || !isEligible) {
-			this.announce('cannotDrop', candidates)
+			this.announceEvent('cannotDrop', candidates)
 			return
 		}
 
 		this.actions.drop()
 		// Read while the operation is still open; `endDrag` clears the result.
 		const dropResult = this.monitor.getDropResult()
-		this.announce('drop', candidates, dropResult)
+		this.announceEvent('drop', candidates, dropResult)
 		this.endDrag()
 	}
 
@@ -440,7 +461,7 @@ export class KeyboardBackendImpl implements Backend {
 			this.actions.hover([])
 		}
 		if (announce) {
-			this.announce('cancel', candidates)
+			this.announceEvent('cancel', candidates)
 		}
 		this.endDrag()
 	}
@@ -453,19 +474,24 @@ export class KeyboardBackendImpl implements Backend {
 		this.hoveredTargetId = null
 	}
 
-	private eligibleTargets(): NavigationCandidate[] {
+	/** Connected targets still in the document, in document order. */
+	private mountedTargets(): NavigationCandidate[] {
 		const doc = this.document
-		const candidates: NavigationCandidate[] = []
+		const mounted: NavigationCandidate[] = []
 		for (const [targetId, node] of this.targets) {
 			if (doc && !doc.contains(node)) {
 				continue
 			}
-			if (!this.monitor.canDropOnTarget(targetId)) {
-				continue
-			}
-			candidates.push({ targetId, node })
+			mounted.push({ targetId, node })
 		}
-		return sortByDocumentOrder(candidates)
+		return sortByDocumentOrder(mounted)
+	}
+
+	/** Of those, the ones that accept the dragged item right now. */
+	private eligibleTargets(): NavigationCandidate[] {
+		return this.mountedTargets().filter(({ targetId }) =>
+			this.monitor.canDropOnTarget(targetId),
+		)
 	}
 
 	private draggingSource(): HTMLElement | null {
@@ -487,7 +513,7 @@ export class KeyboardBackendImpl implements Backend {
 	// Announcements
 	// -------------------------------------------------------------------------
 
-	private announce(
+	private announceEvent(
 		kind: SpokenAnnouncement,
 		candidates: NavigationCandidate[],
 		dropResult?: unknown,

@@ -28,7 +28,9 @@
     "defaultAnnouncements": true,
     "defaultDescribeNode": true,
     "documentOrderNavigation": true,
+    "gridNavigation": true,
     "spatialNavigation": true,
+    "useDragDropAnnounce": true,
     "withKeyboard": true
   },
   "testBackend": {

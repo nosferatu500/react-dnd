@@ -12,6 +12,7 @@ export { CompositeBackend } from './CompositeBackend.js'
 export type {
 	AnnouncementContext,
 	Announcements,
+	AnnouncingBackend,
 	GetNextTarget,
 	KeyboardBackendContext,
 	KeyboardBackendOptions,
@@ -19,8 +20,14 @@ export type {
 	NavigationDirection,
 	NavigationRequest,
 } from './interfaces.js'
-export { documentOrderNavigation, spatialNavigation } from './navigation.js'
+export type { GridNavigationOptions } from './navigation.js'
+export {
+	documentOrderNavigation,
+	gridNavigation,
+	spatialNavigation,
+} from './navigation.js'
 export { defaultDescribeNode } from './OptionsReader.js'
+export { useDragDropAnnounce } from './useDragDropAnnounce.js'
 
 /**
  * Keyboard-only drag and drop.

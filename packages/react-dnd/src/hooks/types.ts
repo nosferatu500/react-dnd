@@ -77,6 +77,10 @@ export interface DragSourceHookSpec<DragObject, DropResult, CollectedProps> {
 	 * technically, the component gets unmounted and a different one gets mounted every time you move it to another list.
 	 *
 	 * Note: You may not call monitor.isDragging() inside this method.
+	 *
+	 * `monitor.getItem()` is typed as nullable because `collect` can read it with
+	 * nothing dragging, but inside this callback there is always an item — it is
+	 * only reached once a drag is in progress and public.
 	 */
 	isDragging?: (monitor: DragSourceMonitor<DragObject, DropResult>) => boolean
 

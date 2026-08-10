@@ -53,7 +53,9 @@ export class DragSourceImpl<O, R, P> implements DragSource {
 		const connector = this.connector
 		const { end } = spec
 		if (end) {
-			end(monitor.getItem(), monitor)
+			// Still non-null here: dnd-core calls the source's `endDrag` before it
+			// dispatches END_DRAG, so the operation — and the item — is still open.
+			end(monitor.getItem() as O, monitor)
 		}
 		connector.reconnect()
 	}

@@ -17,7 +17,7 @@ _New to React DnD? [Read the overview](/docs/overview) before jumping into the d
 
 - **`getItemType()`**: Returns a string or a symbol identifying the type of the current dragged item. Returns `null` if no item is being dragged.
 
-- **`getItem()`**: Returns a plain object representing the currently dragged item. Every drag source must specify it by returning an object from its `beginDrag()` method. Returns `null` if no item is being dragged.
+- **`getItem()`**: Returns a plain object representing the currently dragged item, or `null` if no item is being dragged — the return type is `T | null`, so narrow it before use. Every drag source specifies the item through `spec.item` on [`useDrag`](/docs/api/use-drag). Inside `drop`, `hover`, `canDrop` and `end` the item is passed to you as an argument instead, and is never null there.
 
 - **`getDropResult()`**: Returns a plain object representing the last recorded drop result. The drop targets may optionally specify it by returning an object from their `drop()` methods. When a chain of `drop()` is dispatched for the nested targets, bottom up, any parent that explicitly returns its own result from `drop()` overrides the drop result previously set by the child. Returns `null` if called outside `drop()`.
 

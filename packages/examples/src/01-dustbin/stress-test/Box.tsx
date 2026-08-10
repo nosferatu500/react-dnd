@@ -22,8 +22,7 @@ export const Box: FC<BoxProps> = ({ name, type, isDropped }) => {
 		type,
 		item: { name },
 		isDragging(monitor) {
-			const item = monitor.getItem()
-			return name === item.name
+			return name === monitor.getItem()?.name
 		},
 		collect: (monitor) => ({
 			isDragging: monitor.isDragging(),

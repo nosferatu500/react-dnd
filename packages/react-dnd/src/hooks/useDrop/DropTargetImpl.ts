@@ -9,25 +9,33 @@ export class DropTargetImpl<O, R, P> implements DropTarget {
 		private monitor: DropTargetMonitor<O, R>,
 	) {}
 
+	/**
+	 * `monitor.getItem()` is nullable because `collect` can read it with no drag
+	 * in progress. These three are different: dnd-core only routes `canDrop`,
+	 * `hover` and `drop` to a target while a drag is open — `canDropOnTarget`
+	 * returns early unless `isDragging()` — so the item is always there, and the
+	 * spec callbacks can keep taking a non-null one.
+	 */
+	private get draggedItem(): O {
+		return this.monitor.getItem() as O
+	}
+
 	public canDrop() {
 		const spec = this.spec
-		const monitor = this.monitor
-		return spec.canDrop ? spec.canDrop(monitor.getItem(), monitor) : true
+		return spec.canDrop ? spec.canDrop(this.draggedItem, this.monitor) : true
 	}
 
 	public hover() {
 		const spec = this.spec
-		const monitor = this.monitor
 		if (spec.hover) {
-			spec.hover(monitor.getItem(), monitor)
+			spec.hover(this.draggedItem, this.monitor)
 		}
 	}
 
 	public drop() {
 		const spec = this.spec
-		const monitor = this.monitor
 		if (spec.drop) {
-			return spec.drop(monitor.getItem(), monitor)
+			return spec.drop(this.draggedItem, this.monitor)
 		}
 		return
 	}

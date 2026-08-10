@@ -32,7 +32,16 @@ export interface DragSourceMonitor<DragObject = unknown, DropResult = unknown>
 	 * Returns a plain object representing the currently dragged item. Every drag source must specify it by returning an object from its beginDrag() method.
 	 * Returns null if no item is being dragged.
 	 */
-	getItem<T = DragObject>(): T
+	/**
+	 * The item being dragged, or `null` when nothing is.
+	 *
+	 * The `null` is not defensive: `collect` runs whether or not a drag is in
+	 * progress, and this returned `null` there all along while claiming to return
+	 * `T`. Inside `drop`, `hover`, `canDrop` and `end` the item is handed to you
+	 * as an argument precisely because those only run mid-drag — prefer the
+	 * argument over calling this.
+	 */
+	getItem<T = DragObject>(): T | null
 
 	/**
 	 * Returns a plain object representing the last recorded drop result. The drop targets may optionally specify it by returning an object from their
@@ -112,7 +121,16 @@ export interface DropTargetMonitor<DragObject = unknown, DropResult = unknown>
 	 * Returns a plain object representing the currently dragged item. Every drag source must specify it by returning an object from
 	 * its beginDrag() method. Returns null if no item is being dragged.
 	 */
-	getItem<T = DragObject>(): T
+	/**
+	 * The item being dragged, or `null` when nothing is.
+	 *
+	 * The `null` is not defensive: `collect` runs whether or not a drag is in
+	 * progress, and this returned `null` there all along while claiming to return
+	 * `T`. Inside `drop`, `hover`, `canDrop` and `end` the item is handed to you
+	 * as an argument precisely because those only run mid-drag — prefer the
+	 * argument over calling this.
+	 */
+	getItem<T = DragObject>(): T | null
 
 	/**
 	 * Returns a plain object representing the last recorded drop result. The drop targets may optionally specify it by returning an
@@ -175,7 +193,16 @@ export interface DragLayerMonitor<DragObject = unknown> {
 	 * Every drag source must specify it by returning an object from its beginDrag() method.
 	 * Returns null if no item is being dragged.
 	 */
-	getItem<T = DragObject>(): T
+	/**
+	 * The item being dragged, or `null` when nothing is.
+	 *
+	 * The `null` is not defensive: `collect` runs whether or not a drag is in
+	 * progress, and this returned `null` there all along while claiming to return
+	 * `T`. Inside `drop`, `hover`, `canDrop` and `end` the item is handed to you
+	 * as an argument precisely because those only run mid-drag — prefer the
+	 * argument over calling this.
+	 */
+	getItem<T = DragObject>(): T | null
 
 	/**
 	 * Returns the { x, y } client offset of the pointer at the time when the current drag operation has started.

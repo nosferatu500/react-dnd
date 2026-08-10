@@ -153,6 +153,41 @@ drop(node, null)                                        // clears
 <div ref={drop} />                                      // leaves them alone
 ```
 
+### Breaking: `monitor.getItem()` is typed `T | null`
+
+It always returned `null` when nothing was being dragged. The prose docs have
+said so for years — *"Returns `null` if no item is being dragged"* — while the
+type said `T`. So every `collect` that read it was handed a value TypeScript
+swore was there and which is `null` on the first render, before anything has been
+picked up.
+
+```diff
+- getItem<T = DragObject>(): T
++ getItem<T = DragObject>(): T | null
+```
+
+All three monitors: `DragSourceMonitor`, `DropTargetMonitor` and
+`DragLayerMonitor`. (`getDropResult()` was already `T | null`.)
+
+**What you may need to change.** Only direct `monitor.getItem()` calls — usually
+in `collect`, or in a custom `isDragging`:
+
+```diff
+- isDragging: (monitor) => monitor.getItem<{ id: string }>().id === id,
++ isDragging: (monitor) => monitor.getItem<{ id: string }>()?.id === id,
+```
+
+**What does not change.** `drop`, `hover`, `canDrop` and `end` receive the item
+as their first argument, and it is still non-null there. dnd-core only routes
+those callbacks while a drag is open — `canDropOnTarget` and `isDraggingSource`
+both return early unless `isDragging()`, and a source's `endDrag` runs before
+`END_DRAG` is dispatched. Prefer the argument to calling `getItem()` yourself and
+there is nothing to narrow.
+
+That guarantee also holds inside a custom `isDragging`, which receives only the
+monitor; the optional chaining above is what the type requires rather than a real
+possibility.
+
 ### Collected props are read with `useSyncExternalStore`
 
 A dnd-core monitor *is* an external store: it holds drag state outside React and

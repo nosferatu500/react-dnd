@@ -15,7 +15,7 @@ _New to React DnD? [Read the overview](/docs/overview) before jumping into the d
 
 - **`getItemType()`**: Returns a string or a symbol identifying the type of the current dragged item. Returns `null` if no item is being dragged.
 
-- **`getItem()`**: Returns a plain object representing the currently dragged item. Every drag source must specify it by returning an object from its `beginDrag()` method. Returns `null` if no item is being dragged.
+- **`getItem()`**: Returns a plain object representing the currently dragged item, or `null` if no item is being dragged — the return type is `T | null`, so narrow it before use. Every drag source specifies the item through `spec.item` on [`useDrag`](/docs/api/use-drag). Inside `drop`, `hover`, `canDrop` and `end` the item is passed to you as an argument instead, and is never null there.
 
 - **`getInitialClientOffset()`**: Returns the `{ x, y }` client offset of the pointer at the time when the current drag operation has started. Returns `null` if no item is being dragged.
 

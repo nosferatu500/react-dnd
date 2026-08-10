@@ -77,6 +77,46 @@ describe('TouchBackend teardown', () => {
 	})
 })
 
+/**
+ * react-dnd/react-dnd#3650 — listener options used to be chosen by a 2016-era
+ * feature probe that ran `addEventListener` at module load time to find out
+ * whether the options-object overload existed. Every browser in a React 18+
+ * support matrix supports it, and the probe's import-time side effect ran even
+ * under SSR. Dropping it must not change what is registered: `passive: false`
+ * is load-bearing, because the move handlers call `preventDefault` to stop the
+ * page scrolling under a drag.
+ */
+describe('TouchBackend listener options (#3650)', () => {
+	it('registers move listeners as explicitly non-passive', () => {
+		const root = document.createElement('div')
+		document.body.appendChild(root)
+		const options: unknown[] = []
+		const spy = vi.spyOn(root, 'addEventListener').mockImplementation(((
+			_type: string,
+			_fn: any,
+			opts: any,
+		) => {
+			options.push(opts)
+		}) as any)
+
+		const backend = TouchBackend(mockManager(), {}, {
+			rootElement: root,
+			enableMouseEvents: true,
+		} as any)
+		backend.setup()
+		backend.teardown()
+		spy.mockRestore()
+		root.remove()
+
+		expect(options.length).toBeGreaterThan(0)
+		for (const opt of options) {
+			expect(opt).toMatchObject({ passive: false })
+		}
+		expect(options.some((opt: any) => opt.capture === true)).toBe(true)
+		expect(options.some((opt: any) => opt.capture === false)).toBe(true)
+	})
+})
+
 describe('TouchBackend delayed start (#3664)', () => {
 	it('cancels a pending start timer before scheduling another', () => {
 		vi.useFakeTimers()

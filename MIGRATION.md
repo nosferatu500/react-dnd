@@ -242,6 +242,60 @@ An internal helper destructured `entries.next().value` before checking `done`,
 which throws a `TypeError` on an empty `Map`. Rewritten as a plain
 `for…of`. Reachable from `HandlerRegistry` lookups.
 
+### The HTML5 backend no longer swallows every native drop
+
+Previously, whenever a native drag (file, URL, text, HTML) was in progress and
+nothing in the app accepted it, the backend called `preventDefault()` on both
+`dragover` and `drop`. That is necessary for files and links, whose default drop
+action navigates the document away from your app. It is not necessary for text
+or HTML, and doing it there meant that mounting the backend anywhere stopped
+**every** `<input>`, `<textarea>` and contenteditable on the page from accepting
+dropped text — including ones outside your `DndProvider`, and ones React does
+not manage ([#1552](https://github.com/react-dnd/react-dnd/issues/1552)).
+
+The cancel is now decided from `dataTransfer.types`: payloads carrying `Files`,
+`Url` or `text/uri-list` are still cancelled, everything else is left to the
+browser. A drop that one of your targets actually accepts is cancelled either
+way, so it is never handled twice.
+
+**If you relied on the old behavior** to stop text being dropped into your own
+inputs during a drag, that suppression is gone; handle it on the input.
+
+### The HTML5 backend no longer cancels drags it does not own
+
+`dragstart` used to end in an unconditional `preventDefault()` when no drag
+source claimed the event. Because the backend listens on `window`, that cancelled
+the drag of *any* `draggable` element in the document — another library's, or
+anything outside the provider. A single mounted `useDrop` was enough to disable
+HTML5 dragging page-wide
+([#3304](https://github.com/react-dnd/react-dnd/issues/3304)).
+
+It now cancels only when the `dragstart` originated inside a node connected as a
+drag source, which is the case that branch was written for: a source whose
+`canDrag` returned `false`, or a child of one. Drags of selections, links and
+images are unaffected — they match a native type earlier and never reached this
+branch.
+
+### The HTML5 backend no longer throws on a drop it did not start
+
+A `drop` arriving with no react-dnd drag in progress — because another library
+started the drag, or because the payload matched no native type — dispatched
+`hover`, which asserts that a drag is in progress. The result was an uncaught
+`Invariant Violation: Cannot call hover while not dragging` out of an event
+handler ([#3491](https://github.com/react-dnd/react-dnd/issues/3491),
+[#1572](https://github.com/react-dnd/react-dnd/issues/1572)). Such drops are now
+ignored, matching what `dragenter` and `dragover` already did.
+
+### `dnd-core`: duplicate `targetIds` are rejected again
+
+`hover()` documents that the ids it is given must be unique. Upstream
+[#3432](https://github.com/react-dnd/react-dnd/pull/3432) moved that check behind
+the drag-type filter, so duplicates stopped being caught whenever the duplicated
+target did not accept the dragged type. Uniqueness is now checked against the
+array as passed; the *registration* check stays behind the filter, so a target
+unregistered mid-drag is still dropped silently rather than throwing. This only
+affects backends passing malformed input.
+
 ---
 
 ## For contributors to this repository
@@ -343,18 +397,12 @@ is the source of truth for the prose docs.
 Migrating it (to Astro, Docusaurus, or Next) is a separate piece of work and is
 **not** done here.
 
-### One test remains skipped
+### The HTML5 backend is still only tested in jsdom
 
-`DragDropManager.spec.ts` → `'throws in hover() if it contains the same target
-twice (even if wrong type)'` was already `it.skip` upstream. It is unrelated to
-this migration and is left as-is; see
-[docs/upstream-triage.md](./docs/upstream-triage.md).
-
-### `useCollector` still subscribes manually
-
-`react-dnd` collects monitor state with `useState` + a layout-effect
-subscription rather than `useSyncExternalStore`. That is the pattern
-`useSyncExternalStore` exists to replace, and it is the likely root cause of
-several upstream reports about stale collected props under concurrent rendering.
-Changing it is a behavioral change that needs its own investigation — see the
-triage document.
+`packages/backend-html5/src/__tests__/dragEvents.spec.ts` drives the backend
+with faked `DragEvent`/`DataTransfer` objects, which covers handler order, target
+collection and `preventDefault` call patterns. It cannot observe what a browser
+does *after* `preventDefault`, so the cancel/allow policy behind
+[the native-drop change](#the-html5-backend-no-longer-swallows-every-native-drop)
+is argued from the specified default drop actions rather than measured. See
+§5.2 of [docs/upstream-triage.md](./docs/upstream-triage.md).

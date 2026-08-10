@@ -26,6 +26,25 @@ import type { HTML5BackendContext, HTML5BackendOptions } from './types.js'
 
 type RootNode = Node & { __isReactDndBackendSetUp: boolean | undefined }
 
+/**
+ * `dataTransfer` types whose default drop action destroys the page: the browser
+ * navigates the document to the dropped file or URI. Those have to be cancelled
+ * even when nothing in the app accepts them.
+ *
+ * Plain text and HTML carry no such default — the browser only inserts them
+ * into an editable element under the cursor. Cancelling those unconditionally
+ * is what broke native text drags into every input on the page, including
+ * inputs outside any `DndProvider`.
+ *
+ * Keyed off the payload rather than off the matched native item type on
+ * purpose: a link or image drag also carries `text/html`, so it matches
+ * `NativeTypes.HTML` before `NativeTypes.URL` and a type-based check would let
+ * the navigation through.
+ *
+ * @see https://github.com/react-dnd/react-dnd/issues/1552
+ */
+const DESTRUCTIVE_DROP_TYPES = ['Files', 'Url', 'text/uri-list']
+
 export class HTML5BackendImpl implements Backend {
 	private options: OptionsReader
 
@@ -54,6 +73,7 @@ export class HTML5BackendImpl implements Backend {
 	private dragOverTargetIds: string[] | null = null
 
 	private lastClientOffset: XYCoord | null = null
+	private lastHoverTargetIds: string[] = []
 	private hoverRafId: number | null = null
 
 	public constructor(
@@ -305,6 +325,42 @@ export class HTML5BackendImpl implements Backend {
 		)
 	}
 
+	/**
+	 * Whether letting the browser run its own drop action would blow the
+	 * document away. See {@link DESTRUCTIVE_DROP_TYPES}.
+	 */
+	private hasDestructiveDropDefault(dataTransfer: DataTransfer | null) {
+		const types: string[] = Array.prototype.slice.call(
+			dataTransfer?.types || [],
+		)
+		if (types.length === 0) {
+			// Nothing to judge by. Stay conservative rather than risk navigating
+			// the document away.
+			return true
+		}
+		return DESTRUCTIVE_DROP_TYPES.some((type) => types.includes(type))
+	}
+
+	/**
+	 * Whether a `dragstart` originated inside a node this backend connected as a
+	 * drag source. Anything else is somebody else's drag — another library's, or
+	 * a plain `draggable` element outside the provider — and cancelling it is how
+	 * a single `useDrop` ends up disabling dragging across the whole page.
+	 *
+	 * @see https://github.com/react-dnd/react-dnd/issues/3304
+	 */
+	private isDragStartOnOwnSource(target: EventTarget | null) {
+		if (!target) {
+			return false
+		}
+		for (const node of this.sourceNodes.values()) {
+			if (node === target || node.contains(target as Node)) {
+				return true
+			}
+		}
+		return false
+	}
+
 	private beginDragNativeItem(type: string, dataTransfer?: DataTransfer) {
 		this.clearCurrentDragSourceNode()
 
@@ -398,18 +454,27 @@ export class HTML5BackendImpl implements Backend {
 	}
 
 	private scheduleHover = (dragOverTargetIds: string[] | null) => {
+		// Last write wins. `dragover` can fire more than once per frame, and the
+		// ids have to stay paired with `lastClientOffset`, which is also
+		// last-write-wins. Capturing the ids in the closure instead would dispatch
+		// the first event's targets alongside the last event's coordinates, so a
+		// drag crossing a boundary mid-frame reported the target it had just left.
+		this.lastHoverTargetIds = dragOverTargetIds || []
+
 		if (
 			this.hoverRafId === null &&
 			typeof requestAnimationFrame !== 'undefined'
 		) {
 			this.hoverRafId = requestAnimationFrame(() => {
+				// Cleared first: if `hover` throws, the next `dragover` must still be
+				// able to schedule a frame.
+				this.hoverRafId = null
+
 				if (this.monitor.isDragging()) {
-					this.actions.hover(dragOverTargetIds || [], {
+					this.actions.hover(this.lastHoverTargetIds, {
 						clientOffset: this.lastClientOffset,
 					})
 				}
-
-				this.hoverRafId = null
 			})
 		}
 	}
@@ -542,10 +607,14 @@ export class HTML5BackendImpl implements Backend {
 			// Just let it drag. It's a native type (URL or text) and will be picked up in
 			// dragenter handler.
 			return
-		} else {
-			// If by this time no drag source reacted, tell browser not to drag.
+		} else if (this.isDragStartOnOwnSource(e.target)) {
+			// A connected source refused the drag, or a child of one started it.
+			// Tell the browser not to drag.
 			e.preventDefault()
 		}
+		// Anything else is a drag this backend does not own — a `draggable`
+		// element belonging to another library or living outside the provider.
+		// Leave it alone; cancelling it is upstream #3304.
 	}
 
 	public handleTopDragEndCapture = (): void => {
@@ -661,9 +730,12 @@ export class HTML5BackendImpl implements Backend {
 				e.dataTransfer.dropEffect = this.getCurrentDropEffect()
 			}
 		} else if (this.isDraggingNativeItem()) {
-			// Don't show a nice cursor but still prevent default
-			// "drop and blow away the whole document" action.
-			e.preventDefault()
+			// Don't show a nice cursor, but still prevent the default
+			// "drop and blow away the whole document" action — for the payloads
+			// that actually have one.
+			if (this.hasDestructiveDropDefault(e.dataTransfer)) {
+				e.preventDefault()
+			}
 		} else {
 			e.preventDefault()
 			if (e.dataTransfer) {
@@ -692,7 +764,9 @@ export class HTML5BackendImpl implements Backend {
 		this.dropTargetIds = []
 
 		if (this.isDraggingNativeItem()) {
-			e.preventDefault()
+			if (this.hasDestructiveDropDefault(e.dataTransfer)) {
+				e.preventDefault()
+			}
 			this.currentNativeSource?.loadDataTransfer(e.dataTransfer)
 		} else if (matchNativeItemType(e.dataTransfer)) {
 			// Dragging some elements, like <a> and <img> may still behave like a native drag event,
@@ -713,10 +787,28 @@ export class HTML5BackendImpl implements Backend {
 		const { dropTargetIds } = this
 		this.dropTargetIds = []
 
+		if (!this.monitor.isDragging()) {
+			// The drop belongs to a drag this backend never began: another library
+			// started it, or the payload matched no native type we understand. Both
+			// `hover` and `drop` assert that a drag is in progress, so going on
+			// throws "Cannot call hover while not dragging" out of an event handler.
+			//
+			// @see https://github.com/react-dnd/react-dnd/issues/3491
+			this.cancelHover()
+			return
+		}
+
 		this.actions.hover(dropTargetIds, {
 			clientOffset: getEventClientOffset(e),
 		})
 		this.actions.drop({ dropEffect: this.getCurrentDropEffect() })
+
+		// A target took the drop, so the browser must not also act on it — an
+		// accepted text drop over an editable target would otherwise be inserted
+		// twice. Read before `endDrag`, which clears the flag.
+		if (this.monitor.didDrop()) {
+			e.preventDefault()
+		}
 
 		if (this.isDraggingNativeItem()) {
 			this.endDragNativeItem()

@@ -642,9 +642,12 @@ describe('DragDropManager', () => {
 			})
 
 			/**
-			 * Disabled with https://github.com/react-dnd/react-dnd/pull/3432
+			 * Was `it.skip` upstream from https://github.com/react-dnd/react-dnd/pull/3432
+			 * onwards, which moved the whole invariant block behind the type filter
+			 * so that a target unregistered mid-drag stopped throwing. Uniqueness is
+			 * now checked before the filter, so both hold at once.
 			 */
-			it.skip('throws in hover() if it contains the same target twice (even if wrong type)', () => {
+			it('throws in hover() if it contains the same target twice (even if wrong type)', () => {
 				const source = new NormalSource()
 				const sourceId = registry.addSource(Types.FOO, source)
 				const targetA = new NormalTarget()

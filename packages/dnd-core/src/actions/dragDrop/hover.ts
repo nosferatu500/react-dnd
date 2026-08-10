@@ -22,8 +22,17 @@ export function createHover(manager: DragDropManager) {
 		const monitor = manager.getMonitor()
 		const registry = manager.getRegistry()
 		const draggedItemType = monitor.getItemType()
+
+		// Uniqueness is checked against what the backend actually passed. Checking
+		// it after the type filter below would let duplicates through whenever the
+		// duplicated target happens not to accept the dragged type, which is a
+		// backend bug either way.
+		checkInvariants(targetIds, monitor)
 		removeNonMatchingTargetIds(targetIds, registry, draggedItemType)
-		checkInvariants(targetIds, monitor, registry)
+		// Deliberately after the filter: a target unregistered mid-drag is dropped
+		// by it rather than throwing. Reverting that order brings back
+		// "Expected targetIds to be registered" (upstream #3403, #763).
+		verifyTargetIdsAreRegistered(targetIds, registry)
 		hoverAllTargets(targetIds, monitor, registry)
 
 		return {
@@ -40,22 +49,26 @@ function verifyTargetIdsIsArray(targetIdsArg: string[]) {
 	invariant(Array.isArray(targetIdsArg), 'Expected targetIds to be an array.')
 }
 
-function checkInvariants(
-	targetIds: string[],
-	monitor: DragDropMonitor,
-	registry: HandlerRegistry,
-) {
+function checkInvariants(targetIds: string[], monitor: DragDropMonitor) {
 	invariant(monitor.isDragging(), 'Cannot call hover while not dragging.')
 	invariant(!monitor.didDrop(), 'Cannot call hover after drop.')
 	for (let i = 0; i < targetIds.length; i++) {
-		const targetId = targetIds[i] as string
 		invariant(
-			targetIds.lastIndexOf(targetId) === i,
+			targetIds.lastIndexOf(targetIds[i] as string) === i,
 			'Expected targetIds to be unique in the passed array.',
 		)
+	}
+}
 
-		const target = registry.getTarget(targetId)
-		invariant(target, 'Expected targetIds to be registered.')
+function verifyTargetIdsAreRegistered(
+	targetIds: string[],
+	registry: HandlerRegistry,
+) {
+	for (const targetId of targetIds) {
+		invariant(
+			registry.getTarget(targetId),
+			'Expected targetIds to be registered.',
+		)
 	}
 }
 

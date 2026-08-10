@@ -199,9 +199,35 @@ continue to go to the wrapped backend untouched.
 
 - **applyAriaAttributes** (default: true)
 
-  Whether to make connected drag sources focusable and labelled. Turning this
-  off means taking on `tabindex`, `role` and `aria-describedby` yourself — an
-  element that cannot take focus cannot be picked up by keyboard at all.
+  Whether to make connected drag sources focusable and labelled. Turning it off
+  wholesale means taking on `tabindex`, `role` and `aria-describedby` yourself
+  — an element that cannot take focus cannot be picked up by keyboard at all.
+
+  **An attribute the element already carries is never overwritten**, whatever
+  this is set to. A source with its own `role` keeps it; a source with its own
+  `aria-describedby` gets the instructions appended rather than replaced. So
+  this option is only about elements that have said nothing — reach for it when
+  you want the backend to stop writing an attribute even on sources that are
+  silent about it.
+
+  It also takes an object, naming attributes individually. Anything left out
+  stays on:
+
+  ```jsx
+  // Our own focus management, the backend's ARIA.
+  withKeyboard(HTML5Backend, { applyAriaAttributes: { tabIndex: false } })
+  ```
+
+  | Key | Attribute |
+  | --- | --- |
+  | `tabIndex` | `tabindex="0"`, on sources the platform does not already focus |
+  | `role` | `role="button"`, or `role="group"` when the source wraps controls |
+  | `roleDescription` | `aria-roledescription="draggable item"` |
+  | `describedBy` | `aria-describedby`, pointing at the shared instructions |
+
+  `aria-roledescription` is only exposed on an element that has a role, so
+  `role: false` with `roleDescription` left on means giving the element a role
+  yourself.
 
 - **announce** (default: true)
 

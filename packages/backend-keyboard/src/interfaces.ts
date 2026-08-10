@@ -140,6 +140,36 @@ export interface Announcements {
 	cannotDrop: (context: AnnouncementContext) => string
 }
 
+/**
+ * Which of the four attributes the backend writes onto a drag source. Each
+ * defaults to `true`; an attribute the element already carries is left alone
+ * regardless.
+ */
+export interface AriaAttributeOptions {
+	/**
+	 * `tabindex="0"`, on sources the platform does not already make focusable.
+	 * Turning this off means giving drag sources focus some other way — one that
+	 * cannot take focus cannot be picked up from the keyboard at all.
+	 */
+	tabIndex?: boolean | undefined
+	/**
+	 * `role="button"`, or `role="group"` when the source wraps interactive
+	 * content of its own.
+	 *
+	 * Turning this off while leaving `roleDescription` on is a trap:
+	 * `aria-roledescription` is only exposed on an element that has a role, so
+	 * give the element one yourself.
+	 */
+	role?: boolean | undefined
+	/** `aria-roledescription="draggable item"`. */
+	roleDescription?: boolean | undefined
+	/**
+	 * `aria-describedby`, pointing at the shared instructions in the live
+	 * region. Appended to any value the element already has.
+	 */
+	describedBy?: boolean | undefined
+}
+
 export interface KeyboardBackendOptions {
 	/**
 	 * Where the `keydown` listener is attached. Defaults to the document, which
@@ -163,10 +193,26 @@ export interface KeyboardBackendOptions {
 	/**
 	 * Whether to make connected drag sources focusable and labelled. On by
 	 * default — an unfocusable drag source cannot be picked up by keyboard at
-	 * all, so turning this off means taking on `tabindex`, `role` and
+	 * all, so turning this off wholesale means taking on `tabindex`, `role` and
 	 * `aria-describedby` yourself.
+	 *
+	 * **An attribute the element already carries is never overwritten**,
+	 * whatever this is set to. A source that sets its own `role` keeps it; a
+	 * source with its own `aria-describedby` has the instructions *appended* to
+	 * it rather than replacing it. So this option is only about elements that
+	 * have said nothing — reach for it when you want the backend to stop writing
+	 * an attribute even on sources that are silent about it.
+	 *
+	 * Pass an object to choose per attribute. Anything left out stays on:
+	 *
+	 * ```ts
+	 * // Our own focus management, the backend's ARIA.
+	 * applyAriaAttributes: { tabIndex: false }
+	 * ```
+	 *
+	 * @see AriaAttributeOptions
 	 */
-	applyAriaAttributes?: boolean | undefined
+	applyAriaAttributes?: boolean | AriaAttributeOptions | undefined
 	/** Whether to create and drive the live region. On by default. */
 	announce?: boolean | undefined
 }

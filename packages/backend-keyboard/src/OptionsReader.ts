@@ -1,6 +1,7 @@
 import { defaultAnnouncements } from './Announcer.js'
 import type {
 	Announcements,
+	AriaAttributeOptions,
 	GetNextTarget,
 	KeyboardBackendContext,
 	KeyboardBackendOptions,
@@ -69,8 +70,26 @@ export class OptionsReader {
 		return this.args.describeNode ?? defaultDescribeNode
 	}
 
-	public get applyAriaAttributes(): boolean {
-		return this.args.applyAriaAttributes ?? true
+	/**
+	 * Resolved per attribute, so the caller never has to handle the boolean and
+	 * the object forms separately. Anything unstated is on.
+	 */
+	public get ariaAttributes(): Required<AriaAttributeOptions> {
+		const option = this.args.applyAriaAttributes ?? true
+		if (typeof option === 'boolean') {
+			return {
+				tabIndex: option,
+				role: option,
+				roleDescription: option,
+				describedBy: option,
+			}
+		}
+		return {
+			tabIndex: option.tabIndex ?? true,
+			role: option.role ?? true,
+			roleDescription: option.roleDescription ?? true,
+			describedBy: option.describedBy ?? true,
+		}
 	}
 
 	public get announce(): boolean {

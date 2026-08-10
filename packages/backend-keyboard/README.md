@@ -108,10 +108,40 @@ withKeyboard(HTML5Backend, {
 	},
 
 	// Turn off the automatic parts if you would rather do them yourself.
+	// `applyAriaAttributes` also takes an object, one key per attribute.
 	applyAriaAttributes: true,
 	announce: true,
 })
 ```
+
+### Choosing which attributes the backend writes
+
+`applyAriaAttributes` takes `true` (the default), `false`, or an object naming
+attributes individually. Anything left out of the object stays on:
+
+```tsx
+// Our own focus management, the backend's ARIA.
+withKeyboard(HTML5Backend, { applyAriaAttributes: { tabIndex: false } })
+```
+
+| Key | Attribute |
+| --- | --- |
+| `tabIndex` | `tabindex="0"`, on sources the platform does not already focus |
+| `role` | `role="button"`, or `role="group"` when the source wraps controls |
+| `roleDescription` | `aria-roledescription="draggable item"` |
+| `describedBy` | `aria-describedby`, pointing at the shared instructions |
+
+Reach for this only for sources that say nothing about an attribute — an
+attribute the element **already carries is never overwritten** whatever this is
+set to, so a source with its own `role` keeps it without any configuration, and
+one with its own `aria-describedby` gets the instructions appended rather than
+replaced.
+
+Two things to know before turning one off. A source that cannot take focus
+cannot be picked up from the keyboard at all, so `tabIndex: false` means giving
+drag sources focus another way. And `aria-roledescription` is only exposed on an
+element that has a role, so `role: false` with `roleDescription` left on means
+giving the element a role yourself.
 
 ### Navigation
 

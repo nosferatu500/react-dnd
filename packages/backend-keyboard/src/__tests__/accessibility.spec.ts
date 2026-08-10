@@ -1,4 +1,5 @@
 import { KeyboardBackend } from '../index.js'
+import type { KeyboardBackendOptions } from '../interfaces.js'
 import { harness } from './harness.js'
 
 describe('ARIA attributes on drag sources', () => {
@@ -140,11 +141,82 @@ describe('ARIA attributes on drag sources', () => {
 
 		expect(h.sourceNode.hasAttribute('tabindex')).toBe(false)
 		expect(h.sourceNode.hasAttribute('role')).toBe(false)
+		expect(h.sourceNode.hasAttribute('aria-roledescription')).toBe(false)
+		expect(h.sourceNode.hasAttribute('aria-describedby')).toBe(false)
 		// The interaction still works; only the DOM is left alone.
 		expect(h.press(' ')).toBe(true)
 		expect(h.manager.getMonitor().isDragging()).toBe(true)
 
 		h.cleanup()
+	})
+
+	describe('chosen per attribute', () => {
+		/** What the backend wrote onto the source, by attribute option name. */
+		function written(
+			applyAriaAttributes: KeyboardBackendOptions['applyAriaAttributes'],
+		) {
+			const h = harness(KeyboardBackend, { options: { applyAriaAttributes } })
+			const { sourceNode } = h
+			try {
+				return {
+					tabIndex: sourceNode.hasAttribute('tabindex'),
+					role: sourceNode.hasAttribute('role'),
+					roleDescription: sourceNode.hasAttribute('aria-roledescription'),
+					describedBy: sourceNode.hasAttribute('aria-describedby'),
+				}
+			} finally {
+				h.cleanup()
+			}
+		}
+
+		it.each(['tabIndex', 'role', 'roleDescription', 'describedBy'] as const)(
+			'writes everything except %s',
+			(name) => {
+				// The case this exists for: a consumer wanting the backend's ARIA but
+				// their own focus management is `{ tabIndex: false }`.
+				expect(written({ [name]: false })).toEqual({
+					tabIndex: true,
+					role: true,
+					roleDescription: true,
+					describedBy: true,
+					[name]: false,
+				})
+			},
+		)
+
+		it('leaves anything unstated on', () => {
+			expect(written({})).toEqual(written(true))
+		})
+
+		it('can name the one attribute it wants', () => {
+			// The inverse spelling: everything off, then one back on. Only possible
+			// because each key is independent rather than a mode.
+			expect(
+				written({
+					tabIndex: false,
+					role: false,
+					describedBy: false,
+				}),
+			).toEqual({
+				tabIndex: false,
+				role: false,
+				roleDescription: true,
+				describedBy: false,
+			})
+		})
+
+		it('restores only what it wrote', () => {
+			const h = harness(KeyboardBackend, {
+				options: { applyAriaAttributes: { tabIndex: false } },
+			})
+			const { sourceNode } = h
+			sourceNode.setAttribute('tabindex', '-1') // the application's own
+
+			h.cleanup()
+
+			expect(sourceNode.getAttribute('tabindex')).toBe('-1')
+			expect(sourceNode.hasAttribute('role')).toBe(false)
+		})
 	})
 })
 

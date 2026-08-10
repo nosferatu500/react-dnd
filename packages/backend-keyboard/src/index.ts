@@ -13,6 +13,7 @@ export type {
 	AnnouncementContext,
 	Announcements,
 	AnnouncingBackend,
+	AriaAttributeOptions,
 	GetNextTarget,
 	KeyboardBackendContext,
 	KeyboardBackendOptions,

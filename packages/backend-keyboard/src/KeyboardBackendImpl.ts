@@ -263,16 +263,22 @@ export class KeyboardBackendImpl implements Backend {
 	// -------------------------------------------------------------------------
 
 	private applyAttributes(entry: SourceEntry): void {
-		if (!this.options.applyAriaAttributes) {
-			return
-		}
+		const apply = this.options.ariaAttributes
 		const { node } = entry
 		const tagName = node.tagName.toUpperCase()
 
-		if (!node.hasAttribute('tabindex') && !NATIVELY_INTERACTIVE.has(tagName)) {
+		if (
+			apply.tabIndex &&
+			!node.hasAttribute('tabindex') &&
+			!NATIVELY_INTERACTIVE.has(tagName)
+		) {
 			this.setAttribute(entry, 'tabindex', '0')
 		}
-		if (!node.hasAttribute('role') && !NATIVELY_INTERACTIVE.has(tagName)) {
+		if (
+			apply.role &&
+			!node.hasAttribute('role') &&
+			!NATIVELY_INTERACTIVE.has(tagName)
+		) {
 			// `group` rather than `button` when the source wraps controls of its
 			// own. Dropping the role entirely is not an option: `aria-roledescription`
 			// is only exposed on an element that has a role, so a bare `div` would
@@ -283,12 +289,12 @@ export class KeyboardBackendImpl implements Backend {
 				node.querySelector(INTERACTIVE_DESCENDANTS) ? 'group' : 'button',
 			)
 		}
-		if (!node.hasAttribute('aria-roledescription')) {
+		if (apply.roleDescription && !node.hasAttribute('aria-roledescription')) {
 			this.setAttribute(entry, 'aria-roledescription', 'draggable item')
 		}
 
 		const instructionsId = this.announcer?.instructionsId
-		if (instructionsId) {
+		if (apply.describedBy && instructionsId) {
 			const existing = node.getAttribute('aria-describedby')
 			if (!existing?.split(/\s+/).includes(instructionsId)) {
 				this.setAttribute(

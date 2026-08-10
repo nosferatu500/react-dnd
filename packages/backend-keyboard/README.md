@@ -72,6 +72,14 @@ said otherwise:
 >
 ```
 
+The role is `group` rather than `button` when the source contains interactive
+content of its own — a `button`, an `a[href]`, a form control, or anything with
+a `tabindex`. A `button` role's children are presentational, so a whole-row drag
+source wrapping the row's own buttons would make them unreachable. `group` is
+valid as a container and still carries the `aria-roledescription`, which is why
+the role changes rather than being dropped. It is decided once, when the source
+connects.
+
 Attributes you set yourself are never overwritten, and everything is restored
 when the source disconnects. A single visually hidden `role="status"`
 `aria-live="polite"` region narrates the drag:

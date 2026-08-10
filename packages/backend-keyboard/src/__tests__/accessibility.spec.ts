@@ -60,6 +60,79 @@ describe('ARIA attributes on drag sources', () => {
 		h2.cleanup()
 	})
 
+	/**
+	 * Connects a `<div>` of the given content as an extra drag source and reports
+	 * what the backend wrote, unwinding whatever happens — the assertions belong
+	 * in the test, so that a failing one does not leave a live region behind for
+	 * the next test to trip over.
+	 */
+	function connectSource(html: string, own: Record<string, string> = {}) {
+		const h = harness(KeyboardBackend)
+		const node = document.createElement('div')
+		node.innerHTML = html
+		for (const [name, value] of Object.entries(own)) {
+			node.setAttribute(name, value)
+		}
+		document.body.appendChild(node)
+
+		try {
+			const disconnect = h.backend.connectDragSource('S99', node)
+			const applied = {
+				role: node.getAttribute('role'),
+				tabindex: node.getAttribute('tabindex'),
+				roleDescription: node.getAttribute('aria-roledescription'),
+				roleAfterDisconnect: null as string | null,
+			}
+			disconnect()
+			applied.roleAfterDisconnect = node.getAttribute('role')
+			return applied
+		} finally {
+			node.remove()
+			h.cleanup()
+		}
+	}
+
+	it('uses role="group", not "button", when the source wraps controls', () => {
+		// The whole-row drag source: the row is draggable and it also carries the
+		// row's own buttons. `role="button"` there is invalid nesting — a button's
+		// children are presentational, so the nested controls may not be reachable
+		// at all.
+		const applied = connectSource(
+			'<span>Card A</span><button type="button">Delete</button>',
+		)
+
+		expect(applied.role).toBe('group')
+		// Still focusable, and still announced as a draggable item — which is why
+		// the role cannot simply be dropped: `aria-roledescription` needs one.
+		expect(applied.tabindex).toBe('0')
+		expect(applied.roleDescription).toBe('draggable item')
+		expect(applied.roleAfterDisconnect).toBeNull()
+	})
+
+	it.each([
+		['a link', '<a href="#x">Open</a>'],
+		['a text input', '<input type="text" />'],
+		['a select', '<select><option>a</option></select>'],
+		['a textarea', '<textarea></textarea>'],
+		['anything focusable', '<div tabindex="0">custom</div>'],
+		['something nested deeper', '<div><p><button>Go</button></p></div>'],
+	])('counts %s as an interactive descendant', (_label, html) => {
+		expect(connectSource(html).role).toBe('group')
+	})
+
+	it('keeps role="button" for non-interactive content', () => {
+		const applied = connectSource('<span>Card A</span><img alt="" src="#" />')
+		expect(applied.role).toBe('button')
+	})
+
+	it('leaves an application-chosen role alone either way', () => {
+		const applied = connectSource('<button type="button">Delete</button>', {
+			role: 'listitem',
+		})
+		expect(applied.role).toBe('listitem')
+		expect(applied.roleAfterDisconnect).toBe('listitem')
+	})
+
 	it('can be turned off entirely', () => {
 		const h = harness(KeyboardBackend, {
 			options: { applyAriaAttributes: false },

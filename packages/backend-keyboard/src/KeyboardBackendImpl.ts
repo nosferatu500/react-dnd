@@ -61,6 +61,18 @@ const NATIVELY_INTERACTIVE = new Set([
 	'TEXTAREA',
 ])
 
+/**
+ * Descendants that make `role="button"` invalid on their ancestor.
+ *
+ * `button` is a role whose children are presentational: assistive technology is
+ * entitled to flatten everything inside it to a label, so a focusable control
+ * nested in one may not be reachable at all. A whole-row drag source wrapping
+ * the row's own buttons is the common shape, and it is exactly the shape that
+ * breaks.
+ */
+const INTERACTIVE_DESCENDANTS =
+	'button, a[href], input, select, textarea, [tabindex]'
+
 interface SourceEntry {
 	node: HTMLElement
 	restore: Map<ManagedAttribute, string | null>
@@ -249,7 +261,15 @@ export class KeyboardBackendImpl implements Backend {
 			this.setAttribute(entry, 'tabindex', '0')
 		}
 		if (!node.hasAttribute('role') && !NATIVELY_INTERACTIVE.has(tagName)) {
-			this.setAttribute(entry, 'role', 'button')
+			// `group` rather than `button` when the source wraps controls of its
+			// own. Dropping the role entirely is not an option: `aria-roledescription`
+			// is only exposed on an element that has a role, so a bare `div` would
+			// silently lose "draggable item" as well.
+			this.setAttribute(
+				entry,
+				'role',
+				node.querySelector(INTERACTIVE_DESCENDANTS) ? 'group' : 'button',
+			)
 		}
 		if (!node.hasAttribute('aria-roledescription')) {
 			this.setAttribute(entry, 'aria-roledescription', 'draggable item')

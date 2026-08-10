@@ -82,6 +82,18 @@ Attributes you set yourself are kept, and everything is restored when the source
 disconnects. A single visually hidden `role="status"` `aria-live="polite"`
 region narrates the drag.
 
+The role is `group` rather than `button` when the source contains interactive
+content of its own — a `button`, an `a[href]`, a form control, or anything with
+a `tabindex`. That is the whole-row drag source, where the row is draggable and
+also carries the row's own buttons: a `button` role's children are
+presentational, so nesting controls inside one can make them unreachable.
+`group` is valid as a container and still carries the `aria-roledescription`,
+which is why the role is changed rather than dropped.
+
+It is decided once, when the source connects. A source that grows its first
+button later keeps the role it was given; set `role` yourself if the content
+varies.
+
 ### Options
 
 Pass them as the second argument to `withKeyboard`. The provider's own `options`

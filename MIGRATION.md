@@ -275,11 +275,24 @@ return <div ref={drag} />
 //          ^^^ Type 'ConnectDragSource' is not assignable to type 'Ref<HTMLDivElement>'
 ```
 
-`DragElementWrapper` is now an overloaded interface whose ref-callback form
-reports `void`, while the element-cloning and ref-object forms keep their old
-return types. **Runtime behavior is unchanged** — the connector still returns
-the node it was handed, and React 19 ignores non-function return values from
-callback refs (verified, not assumed).
+`DragElementWrapper` is now a **single function type returning `void`**:
+
+```ts
+type DragElementWrapper<Options> = (
+  elementOrNode: ConnectableElement,
+  options?: Options | null,
+) => void
+```
+
+It was briefly an overloaded interface — the ref-callback overload reporting
+`void` while the element-cloning and ref-object ones kept their old return types
+— because the element-cloning form returned `ReactElement | null`. Removing that
+form (see [the deprecated-API removals](#removed-the-deprecated-api-this-fork-inherited))
+took the reason for the overloads with it.
+
+**Runtime behavior is unchanged** — the connector still returns the node it was
+handed, and React 19 ignores non-function return values from callback refs
+(verified, not assumed). Only the *type* says `void`; do not rely on the return.
 
 **Breaking, at the type level only:** chaining no longer typechecks.
 

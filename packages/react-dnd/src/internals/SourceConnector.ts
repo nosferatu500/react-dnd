@@ -17,7 +17,12 @@ export class SourceConnector implements Connector {
 	public hooks = wrapConnectorHooks({
 		dragSource: (node: Element | Ref<any>, options?: DragSourceOptions) => {
 			this.clearDragSource()
-			this.dragSourceOptions = options || null
+			// Only when the caller actually passed options. Attaching the connector
+			// as a ref says nothing about them, and treating that as "clear them"
+			// loses whatever the spec set.
+			if (options !== undefined) {
+				this.dragSourceOptions = options || null
+			}
 			if (isRef(node)) {
 				this.dragSourceRef = node as RefObject<any>
 			} else {
@@ -27,7 +32,9 @@ export class SourceConnector implements Connector {
 		},
 		dragPreview: (node: any, options?: DragPreviewOptions) => {
 			this.clearDragPreview()
-			this.dragPreviewOptions = options || null
+			if (options !== undefined) {
+				this.dragPreviewOptions = options || null
+			}
 			if (isRef(node)) {
 				this.dragPreviewRef = node
 			} else {

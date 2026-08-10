@@ -9,9 +9,13 @@ import { wrapConnectorHooks } from './wrapConnectorHooks.js'
 
 export class TargetConnector implements Connector {
 	public hooks = wrapConnectorHooks({
-		dropTarget: (node: any, options: DropTargetOptions) => {
+		dropTarget: (node: any, options?: DropTargetOptions) => {
 			this.clearDropTarget()
-			this.dropTargetOptions = options
+			// See SourceConnector: a ref attachment carries no options, and must
+			// not be read as clearing them.
+			if (options !== undefined) {
+				this.dropTargetOptions = options ?? null
+			}
 			if (isRef(node)) {
 				this.dropTargetRef = node
 			} else {

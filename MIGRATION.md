@@ -128,6 +128,31 @@ surfaced two nullability holes the `any` had been hiding in `TargetConnector`
 and `useDropTargetConnector`. `DropEffect` is exported from both `dnd-core` and
 `react-dnd`.
 
+### Fixed: connector options survived only until the element remounted
+
+A drop target or drag source **silently lost its `options`** when its element
+unmounted and remounted without the options object itself changing.
+
+`useDrag`/`useDrop` apply spec options from a layout effect keyed on the options
+object, while the connector's ref callback runs earlier, during commit — and the
+ref callback reset the options to `null`. On a first mount the effect runs after
+the ref and puts them back, which is why this was invisible. On a remount only
+the ref runs, so the handler reconnected with no options at all.
+
+The symptom depended on what the options carried: a target's `dropEffect`
+reverting to `'move'`, a source's being ignored, `previewOptions` like
+`captureDraggingState` and `anchorX` quietly reverting to their defaults.
+
+A connector attachment now says nothing about options unless it is actually
+given some. Passing them explicitly still works and still wins, and passing
+`null` still clears them:
+
+```tsx
+preview(getEmptyImage(), { captureDraggingState: true }) // honoured
+drop(node, null)                                        // clears
+<div ref={drop} />                                      // leaves them alone
+```
+
 ### Collected props are read with `useSyncExternalStore`
 
 A dnd-core monitor *is* an external store: it holds drag state outside React and

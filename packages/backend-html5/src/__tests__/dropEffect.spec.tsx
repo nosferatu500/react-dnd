@@ -10,8 +10,9 @@
  * `dropEffect`. That is the whole mechanism: the browser reads that property to
  * pick the cursor and to decide what its own default drop would do.
  */
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import type { FC, ReactNode } from 'react'
+import { useState } from 'react'
 import type { DropEffect } from 'react-dnd'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 
@@ -293,6 +294,37 @@ describe('the copy modifier', () => {
 			</>,
 		)
 		expect(dragOver(screen.getByTestId('bin'), { altKey: true })).toBe('link')
+	})
+})
+
+describe('a target whose element remounts', () => {
+	it('still reports its own effect afterwards', () => {
+		// The regression that made this feature look broken in practice: the
+		// connector's ref callback used to reset the target's options, and the
+		// layout effect that applies them is keyed on the options object, so it
+		// did not re-run to put them back. Toggling a target off and on silently
+		// dropped its `dropEffect`.
+		const Toggling: FC = () => {
+			const [shown, setShown] = useState(true)
+			return (
+				<>
+					<Card />
+					<button type="button" onClick={() => setShown((s) => !s)}>
+						toggle
+					</button>
+					{shown && <Bin name="bin" dropEffect="copy" />}
+				</>
+			)
+		}
+
+		renderApp(<Toggling />)
+		expect(dragOver(screen.getByTestId('bin'))).toBe('copy')
+
+		const button = screen.getByRole('button')
+		fireEvent.click(button)
+		fireEvent.click(button)
+
+		expect(dragOver(screen.getByTestId('bin'))).toBe('copy')
 	})
 })
 

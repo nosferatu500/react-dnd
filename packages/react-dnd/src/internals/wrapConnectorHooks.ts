@@ -15,8 +15,14 @@ import { isValidElement } from 'react'
  * would otherwise be handed to the backend and blow up somewhere less
  * explicable, several frames from the mistake.
  */
-function wrapConnectorHook(hook: (node: any, options: any) => void) {
-	return (elementOrNode: any = null, options: any = null) => {
+function wrapConnectorHook(hook: (node: any, options?: any) => void) {
+	// `options` is deliberately not defaulted. Passing `null` through when the
+	// caller supplied nothing is indistinguishable from clearing the options, and
+	// the connectors used to take it as exactly that — so `<div ref={drop} />`
+	// wiped whatever the `useDrop` spec had set. It went unnoticed because the
+	// layout effect that applies spec options normally runs *after* the ref and
+	// put them back; on a remount, where only the ref runs, it did not.
+	return (elementOrNode: any = null, options?: any) => {
 		invariant(
 			!isValidElement(elementOrNode),
 			'Connectors no longer accept a React element. Attach the connector with ' +

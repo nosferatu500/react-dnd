@@ -29,10 +29,15 @@ export type ConnectableElement = RefObject<any> | Element | null
  *
  * To attach two connectors to one element, call both from a block-bodied ref
  * callback or share a ref object — never `ref={(n) => drag(drop(n))}`.
+ *
+ * The three states of `options` are all meaningful and distinct: omitted leaves
+ * whatever the `useDrag`/`useDrop` spec set alone, a value overrides it, and an
+ * explicit `null` clears it. Omitted used to behave like `null`, which is how a
+ * target lost its options whenever its element remounted.
  */
 export type DragElementWrapper<Options> = (
 	elementOrNode: ConnectableElement,
-	options?: Options,
+	options?: Options | null,
 ) => void
 
 export type ConnectDragSource = DragElementWrapper<DragSourceOptions>

@@ -17,7 +17,7 @@ import type {
 	NavigationCandidate,
 	NavigationDirection,
 } from './interfaces.js'
-import { sortByDocumentOrder } from './navigation.js'
+import { initialCandidate, sortByDocumentOrder } from './navigation.js'
 import { OptionsReader } from './OptionsReader.js'
 
 const LIFT_KEYS = new Set([' ', 'Spacebar', 'Enter'])
@@ -419,7 +419,10 @@ export class KeyboardBackendImpl implements Backend {
 			return true
 		}
 
-		this.hoverOn(candidates[0] as NavigationCandidate)
+		const initial = initialCandidate(candidates, entry.node)
+		if (initial) {
+			this.hoverOn(initial)
+		}
 		this.announceEvent('pickUp', candidates)
 		return true
 	}

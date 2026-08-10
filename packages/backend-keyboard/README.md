@@ -112,6 +112,13 @@ withKeyboard(HTML5Backend, {
 
 ### Navigation
 
+Picking an item up starts the hover **where the item already is**: on the
+eligible drop target containing the source — the row itself when `drag` and
+`drop` share a ref, or the row a drag handle sits in — and otherwise on the
+nearest one in document order. So lifting the last row of a list announces *that*
+row, rather than previewing the item at the top of the list before the first
+arrow key. `getNextTarget` takes over from there.
+
 `documentOrderNavigation` (the default) steps through the eligible drop targets
 in document order — down/right go forward, up/left go back — and stops at the
 ends rather than wrapping. It needs no measurement, so it behaves identically in

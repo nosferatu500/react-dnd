@@ -103,6 +103,13 @@ continue to go to the wrapped backend untouched.
 
   How the arrow keys choose the next drop target.
 
+  Where the hover *starts* is not up to this option. Picking an item up hovers
+  the eligible target containing the drag source — the row itself when `drag`
+  and `drop` share a ref, or the row a drag handle sits in — and otherwise the
+  nearest one in document order. An item starts out where it already is, so
+  lifting the last row of a list does not preview it at the top before you have
+  pressed anything.
+
   `documentOrderNavigation` steps through the eligible targets in document
   order — down/right forward, up/left back — and stops at the ends rather than
   wrapping.

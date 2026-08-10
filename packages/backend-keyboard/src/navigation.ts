@@ -206,6 +206,62 @@ export function spatialNavigation(crossAxisPenalty = 3): GetNextTarget {
 }
 
 /**
+ * Where the hover starts when an item is picked up.
+ *
+ * Not `candidates[0]`: in a sortable list every row is both a drag source and a
+ * drop target, so entering at the top means lifting the last row previews it
+ * jumping to the front of the list before the user has pressed a single arrow
+ * key. An item should start out where it already is.
+ *
+ * In order of preference:
+ *
+ * 1. The candidate containing the source — the sortable row, where `drag` and
+ *    `drop` share one ref, and the drag handle nested inside a row. The
+ *    innermost one wins, matching how dnd-core treats the end of a target list
+ *    as the shallowest hover.
+ * 2. The candidate nearest the source in document order: the first one after
+ *    it, else the last one before it. Forward breaks the tie, because that is
+ *    the end the default navigation enters a list from.
+ * 3. The first candidate, when there is no source node to compare against.
+ *
+ * Containment and document order rather than geometry, deliberately: the
+ * default navigator has no layout to measure (§8 of the triage doc), and a
+ * pick-up has no direction to measure along in any case.
+ */
+export function initialCandidate(
+	candidates: NavigationCandidate[],
+	source: HTMLElement | null,
+): NavigationCandidate | null {
+	const first = candidates[0] ?? null
+	if (!source || !first) {
+		return first
+	}
+
+	let containing: NavigationCandidate | null = null
+	let preceding: NavigationCandidate | null = null
+	let following: NavigationCandidate | null = null
+
+	for (const candidate of candidates) {
+		// `contains` is true of a node itself, so this covers the shared-ref case
+		// as well as the nested one.
+		if (candidate.node.contains(source)) {
+			// Ancestors sort ahead of their descendants, so the last match is the
+			// innermost — the most specific answer to "where is it already".
+			containing = candidate
+		} else if (
+			candidate.node.compareDocumentPosition(source) &
+			Node.DOCUMENT_POSITION_FOLLOWING
+		) {
+			preceding = candidate
+		} else {
+			following ??= candidate
+		}
+	}
+
+	return containing ?? following ?? preceding ?? first
+}
+
+/**
  * Sorts by position in the document. `compareDocumentPosition` is the only
  * ordering that survives portals, fragments and re-parenting, all of which make
  * registration order meaningless.

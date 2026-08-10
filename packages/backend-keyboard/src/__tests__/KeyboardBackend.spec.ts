@@ -2,7 +2,7 @@ import { KeyboardBackend } from '../index.js'
 import { harness } from './harness.js'
 
 describe('picking a source up', () => {
-	it('begins a drag on space and hovers the first eligible target', () => {
+	it('begins a drag on space and hovers the nearest eligible target', () => {
 		const h = harness(KeyboardBackend)
 
 		expect(h.press(' ')).toBe(true)
@@ -10,6 +10,67 @@ describe('picking a source up', () => {
 		expect(h.manager.getMonitor().isDragging()).toBe(true)
 		expect(h.manager.getMonitor().getItem()).toEqual({ id: 'a' })
 		expect(h.hovered).toEqual(['Target 1'])
+
+		h.cleanup()
+	})
+
+	it('starts the hover where the item already is, not at the top', () => {
+		// The sortable list: every row is both a drag source and a drop target,
+		// sharing one ref. Entering at `candidates[0]` would preview the last row
+		// jumping to the front of the list before the user pressed anything.
+		const h = harness(KeyboardBackend, { sourcePlacement: { isTarget: 2 } })
+
+		h.press(' ')
+
+		expect(h.hovered).toEqual(['Target 3'])
+		expect(h.announcements()).toContain('Over Target 3, 3 of 3.')
+
+		h.cleanup()
+	})
+
+	it('finds the row a drag handle is nested in', () => {
+		const h = harness(KeyboardBackend, { sourcePlacement: { insideTarget: 1 } })
+
+		h.press(' ')
+
+		expect(h.hovered).toEqual(['Target 2'])
+
+		h.cleanup()
+	})
+
+	it('falls back to the last target when the source follows them all', () => {
+		const h = harness(KeyboardBackend, { sourcePlacement: 'after' })
+
+		h.press(' ')
+
+		expect(h.hovered).toEqual(['Target 3'])
+
+		h.cleanup()
+	})
+
+	it('does not start on a row that will not accept the item', () => {
+		// A row that refuses its own item — a list that only takes cards from
+		// elsewhere. Starting there would announce a position it cannot drop on.
+		const h = harness(KeyboardBackend, {
+			targets: [{}, { canDrop: false }, {}],
+			sourcePlacement: { isTarget: 1 },
+		})
+
+		h.press(' ')
+
+		expect(h.hovered).toEqual(['Target 3'])
+
+		h.cleanup()
+	})
+
+	it('arrows on from where it started, not from the top', () => {
+		const h = harness(KeyboardBackend, { sourcePlacement: { isTarget: 2 } })
+		h.press(' ')
+		h.hovered.length = 0
+
+		h.press('ArrowUp')
+
+		expect(h.hovered).toEqual(['Target 2'])
 
 		h.cleanup()
 	})

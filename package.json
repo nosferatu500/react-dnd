@@ -56,7 +56,6 @@
     "packages/test-suite-next",
     "packages/test-suite-vite",
     "packages/test-utils",
-    "packages/util-asap",
     "packages/util-invariant",
     "packages/util-shallowequal"
   ],

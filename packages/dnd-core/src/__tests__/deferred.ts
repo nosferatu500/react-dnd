@@ -23,8 +23,8 @@ export function deferred(): Deferred {
 }
 
 /**
- * Yields until after the current macrotask, which is when dnd-core's
- * `@react-dnd/asap` queue has flushed handler-registry mutations.
+ * Yields until after the current macrotask, by which point the microtask
+ * dnd-core queues for handler-registry mutations has certainly run.
  */
 export function nextMacroTask(): Promise<void> {
 	const { promise, resolve } = Promise.withResolvers<void>()

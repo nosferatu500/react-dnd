@@ -12,7 +12,6 @@ const TYPES_REACT_PEER = '^17.0.0 || ^18.0.0 || ^19.0.0'
 
 /** Packages that are published to npm. */
 const PUBLISHED = [
-	'util-asap',
 	'util-invariant',
 	'util-shallowequal',
 	'dnd-core',

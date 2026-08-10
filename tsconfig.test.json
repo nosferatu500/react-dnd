@@ -21,7 +21,6 @@
       "react-dnd-test-backend": ["./packages/backend-test/src/index.ts"],
       "react-dnd-test-utils": ["./packages/test-utils/src/index.ts"],
       "react-dnd-examples": ["./packages/examples/src/index.ts"],
-      "@react-dnd/asap": ["./packages/util-asap/src/index.ts"],
       "@react-dnd/invariant": ["./packages/util-invariant/src/index.ts"],
       "@react-dnd/shallowequal": ["./packages/util-shallowequal/src/index.ts"]
     }
@@ -34,7 +33,6 @@
     "packages/examples/src/**/*",
     "packages/react-dnd/src/**/*",
     "packages/test-utils/src/**/*",
-    "packages/util-asap/src/**/*",
     "packages/util-invariant/src/**/*",
     "packages/util-shallowequal/src/**/*",
     "vitest.config.mts",

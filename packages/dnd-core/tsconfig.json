@@ -12,9 +12,6 @@
   "exclude": ["./src/**/__tests__/**", "./src/**/__compat__/**"],
   "references": [
     {
-      "path": "../util-asap"
-    },
-    {
       "path": "../util-invariant"
     }
   ]

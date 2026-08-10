@@ -1,6 +1,6 @@
 import { shallowEqual } from '@react-dnd/shallowequal'
 import type { Backend, Identifier, Unsubscribe } from 'dnd-core'
-import type { ReactElement, Ref, RefObject } from 'react'
+import type { Ref, RefObject } from 'react'
 
 import type { DragPreviewOptions, DragSourceOptions } from '../types/index.js'
 import { isRef } from './isRef.js'
@@ -15,10 +15,7 @@ export interface Connector {
 
 export class SourceConnector implements Connector {
 	public hooks = wrapConnectorHooks({
-		dragSource: (
-			node: Element | ReactElement | Ref<any>,
-			options?: DragSourceOptions,
-		) => {
+		dragSource: (node: Element | Ref<any>, options?: DragSourceOptions) => {
 			this.clearDragSource()
 			this.dragSourceOptions = options || null
 			if (isRef(node)) {

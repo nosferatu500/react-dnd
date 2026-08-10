@@ -1,5 +1,0 @@
-.rts2_cache*
-node_modules/
-dist/
-lib/
-*.log

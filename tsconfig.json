@@ -1,7 +1,6 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/util-asap" },
     { "path": "./packages/util-invariant" },
     { "path": "./packages/util-shallowequal" },
     { "path": "./packages/dnd-core" },

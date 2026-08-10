@@ -1,46 +1,35 @@
-import type { ReactElement, RefObject } from 'react'
+import type { RefObject } from 'react'
 
 import type { DragPreviewOptions, DragSourceOptions } from './options.js'
 
-export type ConnectableElement = RefObject<any> | ReactElement | Element | null
+export type ConnectableElement = RefObject<any> | Element | null
 
 /**
  * A connector returned by `useDrag` / `useDrop`.
  *
- * The primary shape is a **ref callback**: `<div ref={drag} />`. React 19
- * narrowed `RefCallback` to `(instance) => void | (() => void)` because a
- * returned function is now interpreted as a ref cleanup. A single signature
- * returning `ReactElement | null` therefore no longer satisfies `Ref<T>`, and
- * `<div ref={drag} />` failed to typecheck against `@types/react@19`.
+ * Three ways to use one, all of which report `void`:
  *
- * The overloads below keep every runtime behavior intact while reporting
- * `void` for the ref-callback call, which is the only form React ever invokes.
+ * ```tsx
+ * <div ref={drag} />                             // the usual one
+ * drag(ref)                                     // a ref object
+ * preview(getEmptyImage(), { captureDraggingState: true })  // node + options
+ * ```
  *
- * Note the runtime still returns the node it was handed (see
- * `wrapConnectorHooks`) so existing JavaScript keeps working; React 19 ignores
- * non-function return values from callback refs.
+ * This was an overloaded interface until the element-cloning form —
+ * `drag(<div />)`, which returned `ReactElement | null` — was removed. That
+ * return type is not assignable to React 19's `RefCallback`
+ * (`(instance) => void | (() => void)`), where a returned function means a ref
+ * cleanup, so `<div ref={drag} />` did not typecheck and the overloads existed
+ * to report `void` for the ref-callback call while the other forms kept their
+ * old return types. With the element form gone, one honest signature does it.
+ *
+ * To attach two connectors to one element, call both from a block-bodied ref
+ * callback or share a ref object — never `ref={(n) => drag(drop(n))}`.
  */
-export interface DragElementWrapper<Options> {
-	/**
-	 * Ref-callback form — the recommended usage.
-	 *
-	 * ```tsx
-	 * const [, drag] = useDrag({ type: 'box' })
-	 * return <div ref={drag} />
-	 * ```
-	 */
-	(elementOrNode: Element | null): void
-
-	/**
-	 * Element form: clones `element` and injects the connector as its ref.
-	 */
-	(element: ReactElement, options?: Options): ReactElement | null
-
-	/**
-	 * Ref-object form, and the node form when options are supplied.
-	 */
-	(elementOrNode: ConnectableElement, options?: Options): ReactElement | null
-}
+export type DragElementWrapper<Options> = (
+	elementOrNode: ConnectableElement,
+	options?: Options,
+) => void
 
 export type ConnectDragSource = DragElementWrapper<DragSourceOptions>
 export type ConnectDropTarget = DragElementWrapper<any>

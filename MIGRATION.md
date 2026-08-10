@@ -33,6 +33,57 @@ working around the older one:
 
 None of these change the public API.
 
+### Removed: the deprecated API this fork inherited
+
+Three pieces of surface that were deprecated, dead, or both.
+
+**`useDrag`'s `spec.begin` check is gone.** It threw *"spec.begin was deprecated
+in v14. Replace spec.begin() with spec.item()"* and linked the old docs site. The
+API it guarded was removed two majors before this fork started; a `begin` in your
+spec is now simply an unknown property.
+
+**`@react-dnd/asap` is no longer published.** See below.
+
+**Connectors no longer accept a React element.** This was the calling convention
+the `DragSource`/`DropTarget` decorators generated:
+
+```tsx
+// Removed
+return drop(preview(<div>{drag(<div />)}</div>))
+
+// Use refs
+return (
+  <div
+    ref={(node) => {
+      drop(node)
+      preview(node)
+    }}
+  >
+    <div ref={drag} />
+  </div>
+)
+```
+
+The decorators themselves were removed upstream in v14; the convention outlived
+them. Passing an element now throws with that migration message rather than being
+mistaken for a DOM node and failing further away.
+
+Everything else a connector accepted still works — a DOM node, a ref object
+(`drag(ref)`), a node plus options
+(`preview(getEmptyImage(), { captureDraggingState: true })`), and `null`.
+
+Two things fall out of it. `DragElementWrapper` is a **single function type**
+returning `void` instead of an overloaded interface: the overloads existed only
+because the element form returned `ReactElement | null`, which React 19's
+`RefCallback` rejects. And `wrapConnectorHooks` loses `cloneElement`, the
+composite-component check, the ref-merging, and a dead branch for hook names
+ending in `Ref` that nothing had produced since the decorators.
+
+Untyped `drag(drop(node))` chaining still works at runtime, because connectors
+still return the node they were handed — returning `undefined` would make that
+spelling silently disconnect handlers instead of failing. The public type says
+`void`; do not rely on it.
+
 ### Collected props are read with `useSyncExternalStore`
 
 A dnd-core monitor *is* an external store: it holds drag state outside React and
@@ -177,7 +228,7 @@ TypeScript resolution is now correct for the first time — upstream's `exports`
 map had no `types` condition at all (in fact no `exports` map), so users on
 `moduleResolution: node16`/`nodenext`/`bundler` could not resolve declarations.
 `npm run check:exports` runs [`attw`](https://arethetypeswrong.github.io) with
-its `esm-only` profile over all ten packages in CI, so this cannot regress.
+its `esm-only` profile over all nine packages in CI, so this cannot regress.
 
 ### The packages target ES2025, and require Node >= 22.12
 
@@ -228,12 +279,6 @@ standard existed. `queueMicrotask` has been in every browser since 2018 and Node
 11, with the same two guarantees the package was built for: the task runs in its
 own turn before the next macrotask, and a throwing task does not prevent the rest
 from running. `dnd-core` no longer depends on the package at all.
-
-`@react-dnd/asap` itself is now a one-line wrapper around `queueMicrotask`,
-marked `@deprecated`. Its `AsapQueue` and `TaskFactory` exports are gone — they
-were implementation detail of the polyfill. Nothing in this repo used them, but
-this is a breaking change to that package's surface if you imported them
-directly.
 
 ### `react-dnd` no longer depends on `hoist-non-react-statics`
 

@@ -1,103 +1,121 @@
 /**
- * Covers the element-cloning form of a connector — `connect(<div />)` rather
- * than `<div ref={connect} />`. It is the pre-hooks calling convention, it is
- * still supported, and it had no tests at all, which is how it came to be
- * reading `element.ref` on React 19 (removed there, and logged to stderr on
- * every call) without anything noticing.
+ * The forms a connector accepts, and the one it no longer does.
  *
- * The suite's `onConsoleLog` guard fails on React deprecation output, so these
- * tests also lock that access out: reintroducing `element.ref` turns them red.
+ * This file was written to cover the element-cloning form — `connect(<div />)`
+ * — which had no tests and was quietly reading `element.ref` on React 19. That
+ * form has since been removed, so what is left pins the two supported shapes
+ * and asserts the removed one fails with something a reader can act on.
  */
 import { render } from '@testing-library/react'
-import type { ReactElement, Ref } from 'react'
 import { createRef, useRef } from 'react'
 
 import { wrapConnectorHooks } from '../wrapConnectorHooks.js'
 
-type Connector = (element: unknown, options?: unknown) => ReactElement
+type Connector = (elementOrNode?: unknown, options?: unknown) => unknown
 
-function connectorSpying(seen: unknown[]) {
+function connectorSpying(seen: unknown[], options: unknown[] = []) {
 	const hooks = wrapConnectorHooks({
-		dragSource: (node: unknown) => seen.push(node),
+		dragSource: (node: unknown, opts: unknown) => {
+			seen.push(node)
+			options.push(opts)
+		},
 	}) as { dragSource: () => Connector }
 	return hooks.dragSource()
 }
 
-describe('the element form of a connector', () => {
-	it('connects an element that carries no ref of its own', () => {
+describe('a connector used as a ref callback', () => {
+	it('receives the DOM node', () => {
 		const seen: unknown[] = []
 		const connect = connectorSpying(seen)
 
-		render(connect(<div data-testid="box">box</div>))
+		render(
+			<div ref={connect as (node: HTMLDivElement | null) => void}>box</div>,
+		)
 
 		// Under StrictMode the ref is attached, detached and reattached, so what
 		// matters is that it settles holding the node rather than null.
 		expect(seen.at(-1)).toBeInstanceOf(HTMLDivElement)
 	})
 
-	it('keeps a ref object the element already had, and adds its own', () => {
+	it('receives null when the element goes away', () => {
 		const seen: unknown[] = []
 		const connect = connectorSpying(seen)
-		const existing = createRef<HTMLDivElement>()
 
-		render(connect(<div ref={existing}>box</div>))
-
-		expect(existing.current).toBeInstanceOf(HTMLDivElement)
-		expect(seen.at(-1)).toBe(existing.current)
-	})
-
-	it('keeps a callback ref the element already had', () => {
-		const seen: unknown[] = []
-		const connect = connectorSpying(seen)
-		const received: unknown[] = []
-
-		// Block body, not `ref={(node) => received.push(node)}`: React 19 reads a
-		// returned function as a cleanup, so the narrowed `RefCallback` rejects
-		// any implicit return — the same trap the connector types encode.
-		render(
-			connect(
-				<div
-					ref={(node) => {
-						received.push(node)
-					}}
-				>
-					box
-				</div>,
-			),
+		const view = render(
+			<div ref={connect as (node: HTMLDivElement | null) => void}>box</div>,
 		)
+		view.unmount()
 
-		expect(received.at(-1)).toBeInstanceOf(HTMLDivElement)
-		expect(seen.at(-1)).toBe(received.at(-1))
+		expect(seen.at(-1)).toBeNull()
 	})
+})
 
-	it('reads the ref through props, where React 19 keeps it', () => {
-		// The distinguishing case: a ref applied by the *parent* of the connected
-		// element. Under React 19 it is visible only as `props.ref`.
+describe('a connector given a ref object', () => {
+	it('takes the ref itself, not its current value', () => {
+		// This is the documented way to attach two connectors to one element, so
+		// the ref object has to survive the wrapper untouched.
 		const seen: unknown[] = []
 		const connect = connectorSpying(seen)
-		let inner: Ref<HTMLDivElement> | null = null
+		const ref = createRef<HTMLDivElement>()
+
+		connect(ref)
+
+		expect(seen).toEqual([ref])
+	})
+
+	it('works when the ref is filled in later by React', () => {
+		const seen: unknown[] = []
+		const connect = connectorSpying(seen)
+		let inner: { current: HTMLDivElement | null } | null = null
 
 		function Box() {
 			const ref = useRef<HTMLDivElement>(null)
 			inner = ref
-			return connect(<div ref={ref}>box</div>)
+			connect(ref)
+			return <div ref={ref}>box</div>
 		}
-
 		render(<Box />)
 
-		expect((inner as unknown as { current: unknown } | null)?.current).toBe(
-			seen.at(-1),
+		expect(seen.at(-1)).toBe(inner)
+		expect(
+			(inner as unknown as { current: unknown } | null)?.current,
+		).toBeInstanceOf(HTMLDivElement)
+	})
+})
+
+describe('a connector given a node and options', () => {
+	it('passes the options through', () => {
+		// `preview(getEmptyImage(), { captureDraggingState: true })` is the real
+		// caller of this shape.
+		const seen: unknown[] = []
+		const options: unknown[] = []
+		const connect = connectorSpying(seen, options)
+		const node = document.createElement('div')
+
+		connect(node, { captureDraggingState: true })
+
+		expect(seen).toEqual([node])
+		expect(options).toEqual([{ captureDraggingState: true }])
+	})
+})
+
+describe('the removed element form', () => {
+	it('rejects a React element with a message that says what to do instead', () => {
+		const connect = connectorSpying([])
+
+		expect(() => connect(<div>box</div>)).toThrow(
+			/Connectors no longer accept a React element.*ref=\{drag\}/s,
 		)
 	})
 
-	it('refuses a composite component, which it cannot attach a DOM ref to', () => {
+	it('rejects a composite element too, rather than treating it as a node', () => {
 		const connect = connectorSpying([])
 		function Composite() {
 			return <div>nope</div>
 		}
 
 		expect(() => connect(<Composite />)).toThrow(
-			/Only native element nodes can now be passed to React DnD connectors/,
+			/no longer accept a React element/,
 		)
 	})
 })

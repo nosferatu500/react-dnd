@@ -5,11 +5,15 @@ export const ADD_TARGET = 'dnd-core/ADD_TARGET'
 export const REMOVE_SOURCE = 'dnd-core/REMOVE_SOURCE'
 export const REMOVE_TARGET = 'dnd-core/REMOVE_TARGET'
 
-export function addSource(sourceId: string): Action<SourceIdPayload> {
+export function addSource(
+	sourceId: string,
+	backendOwned = false,
+): Action<SourceIdPayload> {
 	return {
 		type: ADD_SOURCE,
 		payload: {
 			sourceId,
+			backendOwned,
 		},
 	}
 }
@@ -23,11 +27,17 @@ export function addTarget(targetId: string): Action<TargetIdPayload> {
 	}
 }
 
-export function removeSource(sourceId: string): Action<SourceIdPayload> {
+export function removeSource(
+	sourceId: string,
+	backendOwned = false,
+): Action<SourceIdPayload> {
 	return {
 		type: REMOVE_SOURCE,
 		payload: {
 			sourceId,
+			// Carried on removal too, so the decrement is symmetric with the
+			// increment that never happened.
+			backendOwned,
 		},
 	}
 }

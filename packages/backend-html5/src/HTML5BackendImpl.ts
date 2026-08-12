@@ -146,6 +146,18 @@ export class HTML5BackendImpl implements Backend {
 
 		root.__isReactDndBackendSetUp = false
 		this.removeEventListeners(this.rootElement as Element)
+		// A file may still be hovering over a page that has just unmounted its
+		// last drop target. Nothing else will ever end that drag — `drop`,
+		// `dragleave` and `dragend` all go to listeners that were just removed —
+		// so it would be left open, with a source registered against a manager
+		// whose backend is gone.
+		//
+		// Guarded on the handle rather than left to `endDragNativeItem`'s own
+		// check, which reads the monitor: teardown must stay callable on a
+		// backend that never started one.
+		if (this.currentNativeHandle) {
+			this.endDragNativeItem()
+		}
 		this.clearCurrentDragSourceNode()
 		if (this.asyncEndDragFrameId) {
 			this.window?.cancelAnimationFrame(this.asyncEndDragFrameId)
@@ -407,6 +419,11 @@ export class HTML5BackendImpl implements Backend {
 		this.currentNativeHandle = this.registry.addSource(
 			type,
 			this.currentNativeSource,
+			// Not counted towards the refcount that decides whether this backend
+			// should be set up: it is this backend's own source, so counting it
+			// would let a native drag still in flight hold the backend up after
+			// every application handler has gone.
+			{ backendOwned: true },
 		)
 		this.actions.beginDrag([this.currentNativeHandle])
 	}

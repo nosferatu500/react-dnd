@@ -10,6 +10,7 @@ import {
 	validateType,
 } from '../contracts.js'
 import type {
+	AddSourceOptions,
 	DragSource,
 	DropTarget,
 	HandlerRegistry,
@@ -60,18 +61,31 @@ export class HandlerRegistryImpl implements HandlerRegistry {
 	private dropTargets: Map<string, DropTarget> = new Map()
 	private pinnedSourceId: string | null = null
 	private pinnedSource: any = null
+	/**
+	 * Sources the backend registered for itself. Remembered rather than asked
+	 * for again at removal time, so the caller cannot get the two dispatches out
+	 * of step and corrupt the refcount.
+	 */
+	private backendOwnedSources = new Set<string>()
 	private store: DndStore
 
 	public constructor(store: DndStore) {
 		this.store = store
 	}
 
-	public addSource(type: SourceType, source: DragSource): string {
+	public addSource(
+		type: SourceType,
+		source: DragSource,
+		{ backendOwned = false }: AddSourceOptions = {},
+	): string {
 		validateType(type)
 		validateSourceContract(source)
 
 		const sourceId = this.addHandler(HandlerRole.SOURCE, type, source)
-		this.store.dispatch(addSource(sourceId))
+		if (backendOwned) {
+			this.backendOwnedSources.add(sourceId)
+		}
+		this.store.dispatch(addSource(sourceId, backendOwned))
 		return sourceId
 	}
 
@@ -125,7 +139,8 @@ export class HandlerRegistryImpl implements HandlerRegistry {
 
 	public removeSource(sourceId: string): void {
 		invariant(this.getSource(sourceId), 'Expected an existing source.')
-		this.store.dispatch(removeSource(sourceId))
+		const backendOwned = this.backendOwnedSources.delete(sourceId)
+		this.store.dispatch(removeSource(sourceId, backendOwned))
 		// Deferred so that a source removed during a drag is still resolvable for
 		// the rest of the current turn — endDrag() looks it up after the reducer has
 		// already dropped it.

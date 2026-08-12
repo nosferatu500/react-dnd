@@ -76,8 +76,14 @@ export class DragDropManagerImpl implements DragDropManager {
 				this.backend.setup()
 				this.isSetUp = true
 			} else if (!shouldSetUp && this.isSetUp) {
-				this.backend.teardown()
+				// Flag first, call second: this runs inside a store subscriber, and
+				// tearing down can itself dispatch — the HTML5 backend ends a native
+				// drag left in flight — which re-enters here before the flag would
+				// otherwise have been cleared. Setting it up is the other way round
+				// on purpose, so that a backend whose `setup()` throws is not left
+				// recorded as set up.
 				this.isSetUp = false
+				this.backend.teardown()
 			}
 		}
 	}

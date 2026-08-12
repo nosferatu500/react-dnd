@@ -134,7 +134,11 @@ export interface DragDropMonitor {
 }
 
 export interface HandlerRegistry {
-	addSource(type: SourceType, source: DragSource): Identifier
+	addSource(
+		type: SourceType,
+		source: DragSource,
+		options?: AddSourceOptions,
+	): Identifier
 	addTarget(type: TargetType, target: DropTarget): Identifier
 	containsHandler(handler: DragSource | DropTarget): boolean
 	getSource(sourceId: Identifier, includePinned?: boolean): DragSource
@@ -218,6 +222,24 @@ export interface TargetIdPayload {
 
 export interface SourceIdPayload {
 	sourceId: Identifier
+	/** @see AddSourceOptions.backendOwned */
+	backendOwned?: boolean
+}
+
+export interface AddSourceOptions {
+	/**
+	 * Marks a source the *backend* registered for its own machinery, rather than
+	 * one an application component asked for — the HTML5 backend's stand-in for
+	 * a dragged file being the only case today.
+	 *
+	 * Such a source does not count towards the handler refcount that decides
+	 * whether the backend should be set up. That question is "does anything in
+	 * the application still need this backend?", and a handler the backend
+	 * created for itself cannot answer it: counting it means that while a native
+	 * drag is in flight the backend holds itself up, and an application that
+	 * unmounts before the drag ends can never be torn down.
+	 */
+	backendOwned?: boolean
 }
 
 export interface DragDropActions {

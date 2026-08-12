@@ -1,6 +1,6 @@
 {
   "name": "test-suite-vite",
-  "version": "19.0.0",
+  "version": "19.2.0",
   "private": true,
   "description": "Verifies react-dnd consumes cleanly from a modern Vite/ESM app",
   "type": "module",
@@ -12,10 +12,10 @@
     "check": "biome check src && tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@nosferatu500/react-dnd": "^19.0.0",
-    "@nosferatu500/react-dnd-examples": "^19.0.0",
-    "@nosferatu500/react-dnd-html5-backend": "^19.0.0",
-    "@nosferatu500/react-dnd-keyboard-backend": "^19.0.0",
+    "@nosferatu500/react-dnd": "^19.2.0",
+    "@nosferatu500/react-dnd-examples": "^19.2.0",
+    "@nosferatu500/react-dnd-html5-backend": "^19.2.0",
+    "@nosferatu500/react-dnd-keyboard-backend": "^19.2.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

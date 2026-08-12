@@ -1,6 +1,6 @@
 {
   "name": "@nosferatu500/react-dnd-test-backend",
-  "version": "19.0.0",
+  "version": "19.2.0",
   "description": "A mock backend for testing React DnD apps",
   "license": "MIT",
   "author": "Vitalii Shvetsov",
@@ -61,6 +61,6 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "@nosferatu500/dnd-core": "^19.0.0"
+    "@nosferatu500/dnd-core": "^19.2.0"
   }
 }

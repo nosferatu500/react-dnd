@@ -1,6 +1,6 @@
 {
   "name": "@nosferatu500/react-dnd-touch-backend",
-  "version": "19.0.0",
+  "version": "19.2.0",
   "description": "Touch backend for react-dnd",
   "license": "MIT",
   "author": "Vitalii Shvetsov",
@@ -63,6 +63,6 @@
     "release": "npm publish --access public"
   },
   "dependencies": {
-    "@nosferatu500/dnd-core": "^19.0.0"
+    "@nosferatu500/dnd-core": "^19.2.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@nosferatu500/react-dnd-test-utils",
-  "version": "19.0.0",
+  "version": "19.2.0",
   "license": "MIT",
   "author": "Vitalii Shvetsov",
   "contributors": [
@@ -60,15 +60,15 @@
     "release": "npm publish --access public"
   },
   "devDependencies": {
-    "@nosferatu500/dnd-core": "^19.0.0",
-    "@nosferatu500/react-dnd": "^19.0.0",
-    "@nosferatu500/react-dnd-html5-backend": "^19.0.0",
-    "@nosferatu500/react-dnd-test-backend": "^19.0.0"
+    "@nosferatu500/dnd-core": "^19.2.0",
+    "@nosferatu500/react-dnd": "^19.2.0",
+    "@nosferatu500/react-dnd-html5-backend": "^19.2.0",
+    "@nosferatu500/react-dnd-test-backend": "^19.2.0"
   },
   "peerDependencies": {
-    "@nosferatu500/react-dnd": "^19.0.0",
-    "@nosferatu500/react-dnd-html5-backend": "^19.0.0",
-    "@nosferatu500/react-dnd-test-backend": "^19.0.0",
+    "@nosferatu500/react-dnd": "^19.2.0",
+    "@nosferatu500/react-dnd-html5-backend": "^19.2.0",
+    "@nosferatu500/react-dnd-test-backend": "^19.2.0",
     "@testing-library/react": ">= 16",
     "@types/react": "^18.0.0 || ^19.0.0",
     "@types/react-dom": "^18.0.0 || ^19.0.0",

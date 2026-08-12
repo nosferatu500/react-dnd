@@ -14,10 +14,6 @@ Seven packages are published from this repository:
 | `@nosferatu500/react-dnd-test-backend` | a backend for tests |
 | `@nosferatu500/react-dnd-test-utils` | helpers for tests |
 
-**Versions are not lockstepped.** They started together at `19.0.0`, but a
-release moves only the packages that changed, so it is normal for them to
-diverge. Each entry below names the packages it applies to; anything unnamed is
-unchanged and stays at its previous version.
 
 The major tracks the **React** major these packages target, which is the thing
 most likely to make an install wrong. That is why the fork starts at 19 rather
@@ -69,15 +65,7 @@ explains.
 
 ---
 
-## Unreleased
-
-**`@nosferatu500/dnd-core`, `@nosferatu500/react-dnd` and
-`@nosferatu500/react-dnd-html5-backend`.**
-
-**The version number is not decided.** This carries a breaking type change (see
-below), and this project reserves the major for the React major it targets — a
-`20.0.0` would advertise React 20. Either that scheme changes or this ships as a
-minor with the breakage called out.
+## 19.2.0 — 2026-08-12
 
 ### Added — a drop can be asynchronous
 

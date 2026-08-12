@@ -1,6 +1,7 @@
 import {
 	BEGIN_DRAG,
 	DROP,
+	DROP_PENDING,
 	END_DRAG,
 	HOVER,
 	PUBLISH_DRAG_SOURCE,
@@ -75,6 +76,16 @@ export function reduce(
 			return {
 				...state,
 				dropResult: payload.dropResult,
+				didDrop: true,
+				targetIds: [],
+			}
+		case DROP_PENDING:
+			// A drop that happened but has no result yet. It has to count as a drop
+			// here or the operation would not know one occurred: `didDrop()` would
+			// stay false, an outer target could not see that a nested one took it,
+			// and the "cannot call drop twice" invariant would not fire.
+			return {
+				...state,
 				didDrop: true,
 				targetIds: [],
 			}

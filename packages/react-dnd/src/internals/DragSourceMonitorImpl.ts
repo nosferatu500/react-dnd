@@ -120,6 +120,20 @@ export class DragSourceMonitorImpl implements DragSourceMonitor {
 		return this.internalMonitor.didDrop()
 	}
 
+	public isSettling(): boolean {
+		// Scoped to this source, which is usually the component that wants to
+		// render "saving…" — and by settle time may be the only one left, since a
+		// drop commonly unmounts the target it landed on.
+		if (!this.sourceId) {
+			return false
+		}
+		return this.internalMonitor.isSettling(this.sourceId)
+	}
+
+	public getDropError(): any {
+		return this.internalMonitor.getDropError()
+	}
+
 	public getInitialClientOffset(): XYCoord | null {
 		return this.internalMonitor.getInitialClientOffset()
 	}

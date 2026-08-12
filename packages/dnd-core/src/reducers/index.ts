@@ -8,6 +8,8 @@ import type { State as DragOffsetState } from './dragOffset.js'
 import { reduce as dragOffset } from './dragOffset.js'
 import type { State as DragOperationState } from './dragOperation.js'
 import { reduce as dragOperation } from './dragOperation.js'
+import type { State as DropSettlingState } from './dropSettling.js'
+import { reduce as dropSettling } from './dropSettling.js'
 import type { State as RefCountState } from './refCount.js'
 import { reduce as refCount } from './refCount.js'
 import type { State as StateIdState } from './stateId.js'
@@ -18,6 +20,7 @@ export interface State {
 	dragOffset: DragOffsetState
 	refCount: RefCountState
 	dragOperation: DragOperationState
+	dropSettling: DropSettlingState
 	stateId: StateIdState
 }
 
@@ -33,6 +36,7 @@ export function reduce(state: State = {} as State, action: Action<any>): State {
 		dragOffset: dragOffset(state.dragOffset, action),
 		refCount: refCount(state.refCount, action),
 		dragOperation: dragOperation(state.dragOperation, action),
+		dropSettling: dropSettling(state.dropSettling, action),
 		stateId: stateId(state.stateId),
 	}
 }

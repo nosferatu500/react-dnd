@@ -82,6 +82,26 @@ export interface DragDropMonitor {
 	 * outside endDrag().
 	 */
 	didDrop(): boolean
+	/**
+	 * Whether a drop whose handler returned a promise is still waiting on it.
+	 *
+	 * The drag itself is already over — `isDragging()` goes false at drop time as
+	 * it always did, because for a pointer backend the browser's drag really has
+	 * ended. Settling is the separate, later phase.
+	 *
+	 * With no argument, true while *any* drop is in flight. With a handler id,
+	 * true only while a drop that handler took part in is — either as the target
+	 * that returned the promise or as the source the item came from.
+	 */
+	isSettling(handlerId?: Identifier): boolean
+	/**
+	 * The reason the last asynchronous drop rejected, or `null`.
+	 *
+	 * The rejection is *also* rethrown into the environment's uncaught-error
+	 * handling, so recording it here is for rendering a retry rather than for
+	 * making sure somebody notices.
+	 */
+	getDropError(): any
 	isSourcePublic(): boolean | null
 	/**
 	 * Returns the { x, y } client offset of the pointer at the time when the current drag operation has started.
@@ -176,6 +196,20 @@ export interface HoverOptions {
 
 export interface DropPayload {
 	dropResult: any
+}
+
+export interface DropPendingPayload {
+	/** Identifies this one contribution, so a superseded settle can be ignored. */
+	dropId: number
+	targetId: Identifier
+	sourceId: Identifier | null
+}
+
+export interface DropSettledPayload {
+	dropId: number
+	targetId: Identifier
+	result: any
+	error: unknown
 }
 
 export interface TargetIdPayload {

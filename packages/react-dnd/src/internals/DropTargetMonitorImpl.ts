@@ -79,6 +79,19 @@ export class DropTargetMonitorImpl implements DropTargetMonitor {
 		return this.internalMonitor.didDrop()
 	}
 
+	public isSettling(): boolean {
+		// Scoped to this target: on a board, one column saving must not put every
+		// other column into a "saving…" state.
+		if (!this.targetId) {
+			return false
+		}
+		return this.internalMonitor.isSettling(this.targetId)
+	}
+
+	public getDropError(): any {
+		return this.internalMonitor.getDropError()
+	}
+
 	public getInitialClientOffset(): XYCoord | null {
 		return this.internalMonitor.getInitialClientOffset()
 	}

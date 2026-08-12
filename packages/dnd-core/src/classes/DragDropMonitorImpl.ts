@@ -181,7 +181,29 @@ export class DragDropMonitorImpl implements DragDropMonitor {
 	}
 
 	public getDropResult(): any {
+		const settling = this.store.getState().dropSettling
+		// A settled asynchronous result outranks `dragOperation`, which END_DRAG
+		// has already cleared by the time one arrives. Cleared again by the next
+		// BEGIN_DRAG, so it can never describe the wrong drag.
+		if (settling.hasSettled) {
+			return settling.result
+		}
 		return this.store.getState().dragOperation.dropResult
+	}
+
+	public isSettling(handlerId?: Identifier): boolean {
+		const { pending } = this.store.getState().dropSettling
+		if (!handlerId) {
+			return pending.length > 0
+		}
+		return pending.some(
+			(drop) => drop.targetId === handlerId || drop.sourceId === handlerId,
+		)
+	}
+
+	public getDropError(): any {
+		const settling = this.store.getState().dropSettling
+		return settling.hasSettled ? settling.error : null
 	}
 
 	public didDrop(): boolean {

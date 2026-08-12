@@ -57,6 +57,36 @@ export interface DragSourceMonitor<DragObject = unknown, DropResult = unknown>
 	didDrop(): boolean
 
 	/**
+	 * Whether a drop of *this source's* item is still waiting on the promise its
+	 * `drop` handler returned.
+	 *
+	 * The drag is already over by then — `isDragging()` goes false at drop time,
+	 * because for a pointer backend the browser's drag really has ended. This is
+	 * the later phase, and it is what a "saving…" state should render from.
+	 *
+	 * Scoped to this source deliberately: it is usually the component that wants
+	 * to show progress, and by the time the promise settles it may be the only
+	 * one left, since a drop commonly unmounts the target it landed on.
+	 *
+	 * ```tsx
+	 * const [{ isSettling }, drag] = useDrag(() => ({
+	 *   type: 'card',
+	 *   collect: (monitor) => ({ isSettling: monitor.isSettling() }),
+	 * }))
+	 * ```
+	 */
+	isSettling(): boolean
+
+	/**
+	 * The reason the last asynchronous drop rejected, or `null`.
+	 *
+	 * The rejection is also rethrown into the environment's uncaught-error
+	 * handling, so this is for rendering a retry rather than for making sure the
+	 * failure is noticed.
+	 */
+	getDropError<T = unknown>(): T | null
+
+	/**
 	 * Returns the { x, y } client offset of the pointer at the time when the current drag operation has started. Returns null if no item is being dragged.
 	 */
 	getInitialClientOffset(): XYCoord | null
@@ -147,6 +177,40 @@ export interface DropTargetMonitor<DragObject = unknown, DropResult = unknown>
 	didDrop(): boolean
 
 	/**
+	 * Whether a drop *on this target* is still waiting on the promise its `drop`
+	 * handler returned.
+	 *
+	 * The drag is already over by then — `isDragging()` goes false at drop time,
+	 * because for a pointer backend the browser's drag really has ended. This is
+	 * the later phase.
+	 *
+	 * ```tsx
+	 * const [{ isSettling }, drop] = useDrop(() => ({
+	 *   accept: 'card',
+	 *   drop: async (item) => {
+	 *     await moveCard(item.id, columnId)
+	 *     return { columnId }
+	 *   },
+	 *   collect: (monitor) => ({ isSettling: monitor.isSettling() }),
+	 * }))
+	 * ```
+	 *
+	 * Scoped to this target, so one column saving does not put every other
+	 * column into a "saving…" state. If the target unmounts as a result of its
+	 * own drop, read it from the drag source instead.
+	 */
+	isSettling(): boolean
+
+	/**
+	 * The reason the last asynchronous drop rejected, or `null`.
+	 *
+	 * The rejection is also rethrown into the environment's uncaught-error
+	 * handling, so this is for rendering a retry rather than for making sure the
+	 * failure is noticed.
+	 */
+	getDropError<T = unknown>(): T | null
+
+	/**
 	 * Returns the { x, y } client offset of the pointer at the time when the current drag operation has started. Returns null if no item
 	 * is being dragged.
 	 */
@@ -203,6 +267,24 @@ export interface DragLayerMonitor<DragObject = unknown> {
 	 * argument over calling this.
 	 */
 	getItem<T = DragObject>(): T | null
+
+	/**
+	 * Whether *any* drop is still waiting on the promise its `drop` handler
+	 * returned.
+	 *
+	 * Unscoped, unlike the source and target monitors: a drag layer is a
+	 * page-level overlay and has no one handler to speak for. Use it to keep a
+	 * layer on screen through the save, or to show a global indicator.
+	 */
+	isSettling(): boolean
+
+	/**
+	 * The reason the last asynchronous drop rejected, or `null`.
+	 *
+	 * The rejection is also rethrown into the environment's uncaught-error
+	 * handling, so this is for rendering rather than for noticing.
+	 */
+	getDropError<T = unknown>(): T | null
 
 	/**
 	 * Returns the { x, y } client offset of the pointer at the time when the current drag operation has started.

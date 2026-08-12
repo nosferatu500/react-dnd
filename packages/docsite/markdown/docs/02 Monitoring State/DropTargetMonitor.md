@@ -23,6 +23,10 @@ _New to React DnD? [Read the overview](/docs/overview) before jumping into the d
 
 - **`didDrop()`** Returns `true` if some drop target has handled the drop event, `false` otherwise. Even if a target did not return a drop result, `didDrop()` returns `true`. Use it inside `drop()` to test whether any nested drop target has already handled the drop. Returns `false` if called outside `drop()`.
 
+- **`isSettling()`**: Returns `true` while a drop **on this target** is still waiting on the promise its `drop` handler returned. The drag is already over by then — `isDragging()` goes false when the drag ends, because for a pointer backend the browser's drag really has ended — so this is the later phase, and it is what a "saving…" state should render from. Scoped to this target, so one column saving does not put every other column into a saving state; if the target unmounts as a result of its own drop, read it from the drag source instead. See [async drops](/docs/api/use-drop#asynchronous-drops).
+
+- **`getDropError()`**: Returns the reason the last asynchronous drop rejected, or `null`. The rejection is also handed to `reportError`, so this is for rendering a retry rather than for making sure the failure is noticed.
+
 - **`getInitialClientOffset()`**: Returns the `{ x, y }` client offset of the pointer at the time when the current drag operation has started. Returns `null` if no item is being dragged.
 
 - **`getInitialSourceClientOffset()`**: Returns the `{ x, y }` client offset of the drag source component's root DOM node at the time when the current drag operation has started. Returns `null` if no item is being dragged.

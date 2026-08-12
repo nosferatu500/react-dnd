@@ -225,8 +225,9 @@ export function spatialNavigation(crossAxisPenalty = 3): GetNextTarget {
  * 3. The first candidate, when there is no source node to compare against.
  *
  * Containment and document order rather than geometry, deliberately: the
- * default navigator has no layout to measure (§8 of the triage doc), and a
- * pick-up has no direction to measure along in any case.
+ * default navigator has no layout to measure — under jsdom every rect is zero,
+ * which is why document order is the default model at all — and a pick-up has
+ * no direction to measure along in any case.
  */
 export function initialCandidate(
 	candidates: NavigationCandidate[],

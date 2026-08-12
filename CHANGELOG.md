@@ -69,6 +69,88 @@ explains.
 
 ---
 
+## Unreleased
+
+**`@nosferatu500/dnd-core`, `@nosferatu500/react-dnd` and
+`@nosferatu500/react-dnd-html5-backend`.**
+
+**The version number is not decided.** This carries a breaking type change (see
+below), and this project reserves the major for the React major it targets — a
+`20.0.0` would advertise React 20. Either that scheme changes or this ships as a
+minor with the breakage called out.
+
+### Added — a drop can be asynchronous
+
+A `drop` handler that returns a promise now works. It used to be **silently
+swallowed**: the returned value was spread into the drop result, and
+`{ ...promise }` is `{}`, so the resolved value reached nobody and the promise
+itself was discarded. The side effect still ran, which is why it looked like it
+worked until something depended on the outcome.
+
+```tsx
+const [{ isSettling }, drop] = useDrop(() => ({
+  accept: 'card',
+  drop: async (item) => {
+    await moveCard(item.id, columnId)
+    return { columnId }
+  },
+  collect: (monitor) => ({ isSettling: monitor.isSettling() }),
+}))
+```
+
+**The drag still ends when it always ended.** It is not held open while the
+promise is in flight: for the HTML5 backend the browser's drag genuinely ends at
+`drop`, so a monitor still reporting `isDragging()` would describe a drag that
+does not exist, and a promise that never settled would wedge the library.
+Settling is a separate, later phase.
+
+| | during the drag | while settling | after |
+| --- | --- | --- | --- |
+| `isDragging()` | `true` | `false` | `false` |
+| `didDrop()` | `false` | `true` | `true` |
+| `isSettling()` | `false` | `true` | `false` |
+| `getDropResult()` | `null` | `null` | the resolved value |
+
+`isSettling()` is scoped on the source and target monitors — a target reports
+only drops on itself, so one column saving does not put every other column into
+a "saving…" state — and unscoped on `useDragLayer`, which is page-level.
+
+A rejection is recorded on `monitor.getDropError()` *and* handed to
+`reportError`, so a failure is never silent even if nothing renders it.
+
+`spec.end` is unchanged: it fires when the drag ends, not when the drop settles.
+Backends are untouched — a custom backend calls `drop()` then `endDrag()` as
+before and never learns a promise was involved.
+
+### Fixed — a dragged file could disable drag and drop page-wide
+
+If a file was dragged over the app and the component under it unmounted before
+the drag ended, **every later `DndProvider` failed to mount** with *"Cannot have
+two HTML5 backends at the same time."* It looked like unrelated drag and drop
+just stopping after a stray file drag.
+
+dnd-core decides whether a backend should be set up by counting registered
+handlers, and the HTML5 backend registers a source of its own so a dragged file
+has something to be — so while a native drag was in flight the backend held that
+count up itself, it never reached zero, and `teardown()` never ran. A handler a
+backend registers for itself no longer counts, and teardown now ends a native
+drag it is still holding. Nothing to do on your side.
+
+Custom backends that register their own sources should mark them:
+`registry.addSource(type, source, { backendOwned: true })`. The two-argument
+call is unchanged.
+
+### Breaking
+
+- The monitor interfaces gained `isSettling()` and `getDropError()`. Anything
+  **implementing** `DragSourceMonitor`, `DropTargetMonitor`, `DragLayerMonitor`
+  or dnd-core's `DragDropMonitor` — a hand-rolled test double, most likely —
+  must add them. Using the monitors is unaffected.
+- `drop: async () => {}` used to make `getDropResult()` `{}` synchronously. It
+  is now `null` until the promise settles, then `{}`.
+
+---
+
 ## 19.1.0 — 2026-08-10
 
 **`@nosferatu500/react-dnd-keyboard-backend` only.** Every other package is

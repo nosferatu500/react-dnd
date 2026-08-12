@@ -3,8 +3,11 @@
  *
  * This file used to be a characterization test pinning the opposite: a `drop`
  * returning a promise had its result spread into `{}` and silently discarded.
- * See docs/async-drops.md for the design, and §20 of docs/upstream-triage.md
- * for why the drag must not stay open while the promise is in flight.
+ * The drag deliberately ends when it always ended rather than staying open
+ * until the promise settles: for a pointer backend the browser's drag really
+ * has finished at `drop`, so a monitor still reporting `isDragging()` would
+ * describe a drag that no longer exists — and a promise that never settled
+ * would leave the library unable to start another one.
  */
 import type { ITestBackend } from '@nosferatu500/react-dnd-test-backend'
 import { TestBackend } from '@nosferatu500/react-dnd-test-backend'

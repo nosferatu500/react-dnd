@@ -7,9 +7,8 @@ Drag and Drop for React.
 > effect semantics and React 19's ref-cleanup contract, and it has not shipped a
 > fix for either. This fork targets **React 19** and builds on it directly —
 > `useSyncExternalStore`, `ref` as a prop, context rendered as its own provider —
-> rather than emulating any of it. See [MIGRATION.md](./MIGRATION.md) for what changed and
-> [docs/upstream-triage.md](./docs/upstream-triage.md) for how upstream's open
-> issues map onto this codebase.
+> rather than emulating any of it. See [MIGRATION.md](./MIGRATION.md) for what
+> changed and why, and [CHANGELOG.md](./CHANGELOG.md) for the release history.
 >
 > **Published as `@nosferatu500/*`, starting at `19.0.0`.** The scope keeps it
 > clearly distinct from upstream on npm; the major matches the React version it

@@ -118,6 +118,96 @@ still return the node they were handed — returning `undefined` would make that
 spelling silently disconnect handlers instead of failing. The public type says
 `void`; do not rely on it.
 
+### Fixed: a dragged file could disable drag and drop for the whole page
+
+If a file (or any other native payload) was dragged over your app and the
+component under it unmounted before the drag ended, **every later
+`DndProvider` failed to mount** with *"Cannot have two HTML5 backends at the
+same time."* From the outside it looked like unrelated drag and drop simply
+stopping after a stray file drag.
+
+dnd-core decides whether a backend should be set up by counting registered
+handlers. The HTML5 backend registers a drag source of its own so a dragged file
+has something to be — so while a native drag was in flight the backend was
+holding that count up itself, it never reached zero, and `teardown()` never ran.
+The window listeners stayed attached and the root stayed flagged as in use.
+
+A handler a backend registers for itself no longer counts towards that total,
+and tearing the backend down now ends a native drag it is still holding. There
+is nothing to do on your side.
+
+**If you maintain a custom backend** that registers its own sources, mark them
+so they are not counted:
+
+```diff
+- registry.addSource(type, source)
++ registry.addSource(type, source, { backendOwned: true })
+```
+
+The two-argument call is unchanged, so an existing backend keeps working — it
+just keeps the old behavior for handlers it owns.
+
+### New: a drop can be asynchronous
+
+A `drop` handler that returns a promise now works. It used to be **silently
+swallowed**: `createDrop` spread the returned value into the drop result, and
+`{ ...promise }` is `{}`, so the resolved value reached nobody and the promise
+itself was discarded too. The side effect still ran, which is why it looked like
+it worked until something depended on the outcome.
+
+```tsx
+const [{ isSettling }, drop] = useDrop(() => ({
+	accept: 'card',
+	drop: async (item) => {
+		await moveCard(item.id, columnId)
+		return { columnId }
+	},
+	collect: (monitor) => ({ isSettling: monitor.isSettling() }),
+}))
+```
+
+**The drag still ends when it always ended.** It is not held open while the
+promise is in flight, because for the HTML5 backend the browser's drag genuinely
+ends at `drop` — no pointer capture, no more `dragover` — so a monitor still
+reporting `isDragging()` would be describing a drag that does not exist, and a
+promise that never settled would wedge the library. Settling is a separate,
+later phase.
+
+| | during the drag | while settling | after |
+| --- | --- | --- | --- |
+| `isDragging()` | `true` | `false` | `false` |
+| `didDrop()` | `false` | `true` | `true` |
+| `isSettling()` | `false` | `true` | `false` |
+| `getDropResult()` | `null` | `null` | the resolved value |
+
+`isSettling()` is **scoped** on the source and target monitors: a target reports
+only drops on itself, so one column saving does not put every other column into
+a "saving…" state, and a source reports drops of its own item, which matters
+because a drop commonly unmounts the target it landed on. `useDragLayer`'s is
+unscoped — a layer is page-level.
+
+**A rejection is recorded and reported.** `monitor.getDropError()` holds it so
+you can render a retry, and it is handed to `reportError` so a failure is never
+silent even if nothing reads it. A resolved value that is not an object goes the
+same way, rather than throwing where nobody can catch it.
+
+`spec.end` is unchanged: it fires when the drag ends, not when the drop settles,
+and sees `getDropResult()` as `null` for an async drop. Use `didDrop()` to know
+a drop happened and `isSettling()` to know the answer is still coming.
+
+**What you may need to change.** Only code that was already relying on the
+broken behavior:
+
+- `drop: async () => {}` used to make `getDropResult()` `{}` synchronously. It is
+  now `null` until the promise settles, then `{}`.
+- Anything **implementing** `DragSourceMonitor`, `DropTargetMonitor`,
+  `DragLayerMonitor` or dnd-core's `DragDropMonitor` — a hand-rolled test
+  double, most likely — must add `isSettling()` and `getDropError()`. Using the
+  monitors, which is what almost all code does, is unaffected.
+
+Backends are untouched. A custom backend calls `drop()` then `endDrag()` exactly
+as before and never learns a promise was involved.
+
 ### New: drop targets can say what dropping does
 
 `useDrop` gained a `dropEffect` option, and the HTML5 backend gained a
@@ -691,5 +781,7 @@ with faked `DragEvent`/`DataTransfer` objects, which covers handler order, targe
 collection and `preventDefault` call patterns. It cannot observe what a browser
 does *after* `preventDefault`, so the cancel/allow policy behind
 [the native-drop change](#the-html5-backend-no-longer-swallows-every-native-drop)
-is argued from the specified default drop actions rather than measured. See
-§5.2 of [docs/upstream-triage.md](./docs/upstream-triage.md).
+is argued from the specified default drop actions — navigate on a file or a
+URI, insert on text — rather than measured. **It should be confirmed in a real
+browser before the next release.** The other HTML5 fixes do not carry that
+caveat; they are pure control flow, which jsdom exercises honestly.

@@ -3,7 +3,7 @@
  *
  * The dnd-core suite pins the state machine; this pins the thing a consumer
  * actually writes — a collected prop that re-renders when a drop finishes
- * saving, from all three monitors. See docs/async-drops.md.
+ * saving, from all three monitors.
  */
 
 import type { Identifier } from '@nosferatu500/dnd-core'

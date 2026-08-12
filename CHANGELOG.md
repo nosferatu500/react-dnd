@@ -122,6 +122,70 @@ A rejection is recorded on `monitor.getDropError()` *and* handed to
 Backends are untouched — a custom backend calls `drop()` then `endDrag()` as
 before and never learns a promise was involved.
 
+`drop` also receives an **`AbortSignal`** as its third argument, aborted when
+the drop can no longer affect anything — today, when a new drag begins and takes
+the drop result slot with it. Pass it to `fetch`; an `AbortError` that follows
+is neither reported nor recorded, because the abort was ours. Compose
+`AbortSignal.any([signal, AbortSignal.timeout(ms)])` for a deadline.
+
+### Added — several backends behind one provider
+
+`composeBackends` runs more than one backend at a time, which react-dnd has
+never allowed — a provider takes exactly one, so supporting a mouse and a finger
+meant choosing ([#3483](https://github.com/react-dnd/react-dnd/issues/3483)):
+
+```tsx
+import { composeBackends } from '@nosferatu500/dnd-core'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+import { TouchBackend } from '@nosferatu500/react-dnd-touch-backend'
+
+<DndProvider backend={composeBackends(HTML5Backend, TouchBackend)}>
+  <App />
+</DndProvider>
+```
+
+Nothing in the application changes — `useDrag` and `useDrop` are untouched, and
+every backend connects to the same nodes. Each is handed the provider's
+`context` and `options`; wrap one in a factory of your own when they need
+different options.
+
+**Nothing arbitrates a gesture between backends**, so compose ones that respond
+to *different* gestures. HTML5 (`dragstart`) and Touch (`touchstart`) do not
+overlap by default; `TouchBackend`'s `enableMouseEvents` makes it listen for
+`mousedown` too, which is the one combination where both could try to start the
+same drag. That combination is **not verified** — it needs a real browser and a
+touchscreen.
+
+This is the machinery `withKeyboard` was already built on, generalised.
+`CompositeBackend` moves from `@nosferatu500/react-dnd-keyboard-backend` to
+`@nosferatu500/dnd-core`, where `Backend` and `BackendFactory` are defined, and
+is still re-exported from the keyboard package so existing imports keep working.
+
+### Docs — dragging several items at once
+
+No API change: a drag carries whatever object `item` returns, so a multi-item
+drag is only an item that holds several ids. That has always worked; nothing
+said so. `useDrag`'s docs now cover the pattern, and there is a runnable
+[multi-select example](/examples/customize/multi-select) with tests pinning it.
+
+The two non-obvious parts are both existing API. A custom `isDragging` is what
+makes *every* selected row look like it is moving rather than only the one you
+grabbed — the default is scoped to the source that started the drag, which is
+right for the common case and wrong for this one. And the count has to be drawn
+in a drag layer, because the browser's drag image is a picture of a single node.
+
+### Performance — `canDrop` is consulted once per event, not twice
+
+The HTML5 backend asked each drop target the same question twice per `dragover`
+— once to decide whether to cancel the browser's default, and again to resolve
+the `dropEffect`, scanning the target list from opposite ends. `canDrop` is
+application code and `dragover` fires continuously, so a predicate that walks a
+tree did all of it twice for nothing.
+
+Measured, so as not to oversell it: the backend's own per-`dragover` bookkeeping
+is ~3µs and flat from one nested target to ten — 0.02% of a 60fps frame. This
+changes nothing inside the library. It halves how often *your* `canDrop` runs.
+
 ### Fixed — a dragged file could disable drag and drop page-wide
 
 If a file was dragged over the app and the component under it unmounted before

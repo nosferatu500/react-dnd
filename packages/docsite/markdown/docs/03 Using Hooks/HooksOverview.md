@@ -71,3 +71,31 @@ function Bucket() {
 ```
 
 To explore further, read the individual hook API documentation, or check out the [examples](https://github.com/react-dnd/react-dnd/tree/main/packages/examples) on GitHub.
+
+## A reported hazard with React Compiler
+
+**Status: reported by a consumer, not reproduced here.** It is recorded because
+it cost somebody a shipped crash, not because this project has confirmed it.
+
+`useDrag` and `useDrop` accept a *factory* — `useDrag(() => spec, deps)` — which
+invites the spec to close over whatever is in scope. A consumer reported that
+when such a closure captures the parameters of an enclosing HOC factory, React
+Compiler outlines it incorrectly and the result crashes at runtime.
+
+Attempts to reproduce a compiler mis-outlining against this codebase did not
+succeed, and if the report is accurate the defect belongs to
+[facebook/react](https://github.com/facebook/react/issues) rather than to this
+library — there is nothing in `useDrag`/`useDrop` that could be changed to fix
+it. It is noted here so that anyone hitting the same crash recognizes the shape
+rather than starting from nothing.
+
+If you are using React Compiler and see something like this, two things help:
+
+- Keep the spec factory's captures small and local. Reading values straight from
+  props or component-scope state, rather than from an enclosing factory's
+  parameters, avoids the shape that was reported.
+- Pass an explicit dependency array. The factory form defaults to `[]`, so a
+  captured value that changes needs to be listed anyway.
+
+If you can reduce it to a minimal case, please file it upstream at
+`facebook/react` — that is where a fix would have to land.

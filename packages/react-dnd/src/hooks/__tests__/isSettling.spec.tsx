@@ -23,8 +23,11 @@ let backend: ITestBackend | undefined
 let sourceId: Identifier | null = null
 let targetId: Identifier | null = null
 
+/** What an async drop here resolves to. */
+type DropOutcome = Record<string, unknown> | undefined
+
 /** Resolves the drop currently in flight. Reassigned by each `drop` call. */
-let resolveDrop: (value: unknown) => void = () => undefined
+let resolveDrop: (value: DropOutcome) => void = () => undefined
 let rejectDrop: (reason: unknown) => void = () => undefined
 
 const Source: FC = () => {
@@ -48,7 +51,7 @@ const Target: FC = () => {
 	const [{ isSettling, error, handlerId }, drop] = useDrop(() => ({
 		accept: CARD,
 		drop: () =>
-			new Promise((resolve, reject) => {
+			new Promise<DropOutcome>((resolve, reject) => {
 				resolveDrop = resolve
 				rejectDrop = reject
 			}),

@@ -14,6 +14,48 @@ import { DROP, DROP_PENDING, DROP_SETTLED } from './types.js'
 
 let nextDropId = 0
 
+/**
+ * Abort controllers for drops still in flight, per manager.
+ *
+ * Kept here rather than in the store because a controller is not state — it is
+ * a handle, nothing renders from it, and reducers have to stay pure. Keyed by
+ * manager so a drag beginning in one provider cannot abort another's drop.
+ */
+const outstandingDrops = new WeakMap<
+	DragDropManager,
+	Map<number, AbortController>
+>()
+
+function outstandingFor(
+	manager: DragDropManager,
+): Map<number, AbortController> {
+	let outstanding = outstandingDrops.get(manager)
+	if (!outstanding) {
+		outstanding = new Map()
+		outstandingDrops.set(manager, outstanding)
+	}
+	return outstanding
+}
+
+/**
+ * Aborts every drop still waiting on a promise.
+ *
+ * Called when a new drag begins, which is the moment those drops stop being
+ * able to affect anything: `BEGIN_DRAG` clears the claim on the drop result, so
+ * whatever they eventually resolve to is discarded either way. Telling the
+ * handler that — rather than letting it finish a request nobody will read — is
+ * the whole point of handing it a signal.
+ */
+export function abortOutstandingDrops(manager: DragDropManager): void {
+	const outstanding = outstandingFor(manager)
+	for (const controller of outstanding.values()) {
+		controller.abort(
+			new DOMException('The drop was superseded by a new drag.', 'AbortError'),
+		)
+	}
+	outstanding.clear()
+}
+
 export function createDrop(manager: DragDropManager) {
 	return function drop(options = {}): void {
 		const monitor = manager.getMonitor()
@@ -24,7 +66,18 @@ export function createDrop(manager: DragDropManager) {
 
 		// Multiple actions are dispatched here, which is why this doesn't return an action
 		targetIds.forEach((targetId, index) => {
-			const dropResult = determineDropResult(targetId, index, registry, monitor)
+			// Created before the handler runs, because there is no way to know it is
+			// asynchronous until it has already returned a promise — by which time
+			// it is too late to have handed it a signal. Discarded again below when
+			// the drop turns out to be synchronous.
+			const controller = new AbortController()
+			const dropResult = determineDropResult(
+				targetId,
+				index,
+				registry,
+				monitor,
+				controller.signal,
+			)
 
 			if (isThenable(dropResult)) {
 				// The drag is over the moment the drop happens — for the HTML5 backend
@@ -35,6 +88,7 @@ export function createDrop(manager: DragDropManager) {
 					targetId,
 					sourceId,
 					options,
+					controller,
 				})
 				return
 			}
@@ -60,13 +114,17 @@ function dispatchPending(
 		targetId,
 		sourceId,
 		options,
+		controller,
 	}: {
 		targetId: Identifier
 		sourceId: Identifier | null
 		options: Record<string, unknown>
+		controller: AbortController
 	},
 ): void {
 	const dropId = nextDropId++
+	const outstanding = outstandingFor(manager)
+	outstanding.set(dropId, controller)
 	const pending: Action<DropPendingPayload> = {
 		type: DROP_PENDING,
 		payload: { dropId, targetId, sourceId },
@@ -74,6 +132,7 @@ function dispatchPending(
 	manager.dispatch(pending)
 
 	const settle = (payload: DropSettledPayload): void => {
+		outstanding.delete(dropId)
 		manager.dispatch({ type: DROP_SETTLED, payload })
 	}
 
@@ -81,6 +140,14 @@ function dispatchPending(
 	// reported so a failure is never merely sitting in the store waiting for
 	// someone to think of reading it.
 	const fail = (error: unknown): void => {
+		// An abort is this library's own doing, not the application's failure:
+		// the drop was superseded and its result discarded before the handler
+		// ever rejected. Recording or reporting it would be inventing an error
+		// nobody can act on.
+		if (controller.signal.aborted) {
+			settle({ dropId, targetId, result: null, error: null })
+			return
+		}
 		settle({ dropId, targetId, result: null, error })
 		reportError(error)
 	}
@@ -94,6 +161,13 @@ function dispatchPending(
 			verifyDropResultType(resolved)
 		} catch (error) {
 			fail(error)
+			return
+		}
+		if (controller.signal.aborted) {
+			// It resolved anyway — a handler that ignored the signal, which is
+			// allowed. The result is still not used: something else has claimed
+			// the slot by now.
+			settle({ dropId, targetId, result: null, error: null })
 			return
 		}
 		settle({
@@ -144,9 +218,10 @@ function determineDropResult(
 	index: number,
 	registry: HandlerRegistry,
 	monitor: DragDropMonitor,
+	signal: AbortSignal,
 ) {
 	const target = registry.getTarget(targetId)
-	let dropResult = target ? target.drop(monitor, targetId) : undefined
+	let dropResult = target ? target.drop(monitor, targetId, signal) : undefined
 	if (isThenable(dropResult)) {
 		// Checked when it resolves instead; there is nothing to inspect yet.
 		return dropResult

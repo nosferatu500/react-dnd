@@ -112,9 +112,17 @@ export const APIPages: PageGroup[] = [
 				location: '/docs/backends/touch',
 				title: 'Touch',
 			},
+			KEYBOARD_BACKEND: {
+				location: '/docs/backends/keyboard',
+				title: 'Keyboard',
+			},
 			TEST_BACKEND: {
 				location: '/docs/backends/test',
 				title: 'Test',
+			},
+			COMPOSING_BACKENDS: {
+				location: '/docs/backends/composing',
+				title: 'Composing Backends',
 			},
 		},
 	},
@@ -212,6 +220,10 @@ export const ExamplePages: PageGroup[] = [
 			CUSTOMIZE_DROP_EFFECTS: {
 				location: '/examples/customize/drop-effects',
 				title: 'Drop Effects',
+			},
+			CUSTOMIZE_MULTI_SELECT: {
+				location: '/examples/customize/multi-select',
+				title: 'Multi-Select Drag',
 			},
 		},
 	},

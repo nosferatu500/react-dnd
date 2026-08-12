@@ -33,10 +33,13 @@ interface Harness {
  * @param drop the innermost target's handler — the one that takes the drop
  * @param outerDrops enclosing targets, outermost first
  */
-function setup(
-	drop: () => unknown,
-	outerDrops: Array<() => unknown> = [],
-): Harness {
+type RawDrop = (
+	monitor?: unknown,
+	targetId?: unknown,
+	signal?: AbortSignal,
+) => unknown
+
+function setup(drop: RawDrop, outerDrops: RawDrop[] = []): Harness {
 	const manager: DragDropManager = createDragDropManager(TestBackend)
 	const backend = manager.getBackend() as unknown as ITestBackend
 	const registry = manager.getRegistry()
@@ -50,7 +53,7 @@ function setup(
 			resultSeenByEndDrag = manager.getMonitor().getDropResult()
 		},
 	})
-	const addTarget = (handler: () => unknown) =>
+	const addTarget = (handler: RawDrop) =>
 		registry.addTarget('CARD', {
 			canDrop: () => true,
 			hover: () => undefined,
@@ -362,5 +365,132 @@ describe('synchronous drops', () => {
 		h.endDrag()
 		expect(h.resultSeenByEndDrag()).toEqual({ saved: true })
 		expect(monitor.getDropResult()).toBeNull()
+	})
+})
+
+describe('cancelling a drop that is still saving', () => {
+	it('hands the handler a signal that is not aborted to begin with', async () => {
+		const seen: AbortSignal[] = []
+		const h = setup(async (_monitor, _targetId, signal) => {
+			if (signal) {
+				seen.push(signal)
+			}
+			return { saved: true }
+		})
+
+		h.drag()
+		h.drop()
+		h.endDrag()
+		await flush()
+
+		expect(seen).toHaveLength(1)
+		expect(seen[0]?.aborted).toBe(false)
+	})
+
+	it('aborts it when a new drag supersedes the drop', async () => {
+		let captured: AbortSignal | undefined
+		let resolveDrop: (value: unknown) => void = () => undefined
+		const h = setup((_monitor, _targetId, signal) => {
+			captured = signal
+			return new Promise((resolve) => {
+				resolveDrop = resolve
+			})
+		})
+
+		h.drag()
+		h.drop()
+		h.endDrag()
+		expect(captured?.aborted).toBe(false)
+
+		// The user starts dragging something else. Whatever this drop resolves to
+		// is already discarded — the claim on the result is gone — so the handler
+		// is told to stop rather than left finishing a request nobody will read.
+		h.drag()
+
+		expect(captured?.aborted).toBe(true)
+		expect((captured?.reason as DOMException)?.name).toBe('AbortError')
+
+		resolveDrop({})
+		await flush()
+		h.endDrag()
+	})
+
+	it('does not report an abort as an application failure', async () => {
+		// A handler that passes the signal to `fetch` rejects with AbortError when
+		// we abort it. That rejection is this library's own doing, so recording or
+		// reporting it would be inventing an error nobody can act on.
+		let rejectDrop: (reason: unknown) => void = () => undefined
+		const h = setup((_monitor, _targetId, signal) => {
+			return new Promise((_resolve, reject) => {
+				rejectDrop = reject
+				signal?.addEventListener('abort', () => reject(signal.reason))
+			})
+		})
+		const monitor = h.manager.getMonitor()
+
+		h.drag()
+		h.drop()
+		h.endDrag()
+
+		h.drag() // supersedes, and the handler rejects in response
+		await flush()
+
+		expect(h.reported).toEqual([])
+		expect(monitor.getDropError()).toBeNull()
+		expect(monitor.isSettling()).toBe(false)
+
+		void rejectDrop
+		h.endDrag()
+	})
+
+	it('still reports a genuine rejection that had nothing to do with an abort', async () => {
+		const boom = new Error('the server said no')
+		const h = setup(async () => {
+			throw boom
+		})
+
+		h.drag()
+		h.drop()
+		h.endDrag()
+		await flush()
+
+		expect(h.reported).toEqual([boom])
+	})
+
+	it('stops settling even if the handler ignores the signal', async () => {
+		let resolveDrop: (value: unknown) => void = () => undefined
+		const h = setup(
+			() =>
+				new Promise((resolve) => {
+					resolveDrop = resolve
+				}),
+		)
+		const monitor = h.manager.getMonitor()
+
+		h.drag()
+		h.drop()
+		h.endDrag()
+		h.drag()
+
+		// Ignoring an abort is allowed; the result simply is not used.
+		resolveDrop({ tooLate: true })
+		await flush()
+
+		expect(monitor.isSettling()).toBe(false)
+		expect(monitor.getDropResult()).toBeNull()
+
+		h.endDrag()
+	})
+
+	it('leaves a synchronous drop alone', () => {
+		// No promise, nothing outstanding, nothing to abort.
+		const h = setup(() => ({ saved: true }))
+
+		h.drag()
+		h.drop()
+		h.endDrag()
+
+		expect(() => h.drag()).not.toThrow()
+		h.endDrag()
 	})
 })

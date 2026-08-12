@@ -10,6 +10,7 @@ import type {
 } from '../../interfaces.js'
 import { invariant } from '../../utils/invariant.js'
 import { isObject } from '../../utils/js_utils.js'
+import { abortOutstandingDrops } from './drop.js'
 import { setClientOffset } from './local/setClientOffset.js'
 import { BEGIN_DRAG, INIT_COORDS } from './types.js'
 
@@ -69,6 +70,11 @@ export function createBeginDrag(manager: DragDropManager) {
 		}
 		verifyItemIsObject(item)
 		registry.pinSource(sourceId)
+
+		// This drag supersedes anything still saving from the last one: the
+		// reducer is about to drop their claim on the drop result, so their
+		// handlers are working towards an answer nobody will read.
+		abortOutstandingDrops(manager)
 
 		const itemType = registry.getSourceType(sourceId)
 		return {

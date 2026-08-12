@@ -116,5 +116,36 @@ when the drop settles, and sees `getDropResult()` as `null` for an async drop.
 Use `monitor.didDrop()` to know a drop happened and `monitor.isSettling()` to
 know the answer is still coming.
 
-There is no cancellation and no `AbortSignal` — an app that needs one owns its
-own promise and can wire that up itself.
+#### Cancelling
+
+`drop` receives an `AbortSignal` as its third argument, aborted when the drop
+can no longer affect anything — which today means a new drag has begun, taking
+the drop result slot with it. Pass it straight to `fetch`:
+
+```jsx
+drop: async (item, monitor, signal) => {
+  const response = await fetch('/api/move', {
+    method: 'POST',
+    body: JSON.stringify(item),
+    signal,
+  })
+  return response.json()
+}
+```
+
+An `AbortError` that follows from this is **not** reported and **not** recorded
+on `getDropError()` — the abort was the library's own doing, so surfacing it as
+a failure would be inventing an error nobody can act on. A rejection for any
+other reason is still reported as usual.
+
+Ignoring the signal is allowed. The drop simply stops settling and its result is
+discarded, exactly as it would have been.
+
+For a timeout, compose with the platform rather than waiting for an option:
+
+```jsx
+drop: async (item, monitor, signal) =>
+  save(item, {
+    signal: AbortSignal.any([signal, AbortSignal.timeout(5000)]),
+  })
+```

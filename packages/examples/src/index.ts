@@ -15,6 +15,7 @@ import sortableSimple from './04-sortable/simple/index.js'
 import sortableStressTest from './04-sortable/stress-test/index.js'
 import customizeDropEffects from './05-customize/drop-effects/index.js'
 import customizeHandlesAndPreviews from './05-customize/handles-and-previews/index.js'
+import customizeMultiSelect from './05-customize/multi-select/index.js'
 import otherNativeFiles from './06-other/native-files/index.js'
 import otherNativeHtml from './06-other/native-html/index.js'
 import otherChainedConnectors from './07-regression/chained-connectors/index.js'
@@ -40,6 +41,7 @@ export const componentIndex: {
 	'sortable-stress-test': sortableStressTest,
 	'customize-drop-effects': customizeDropEffects,
 	'customize-handles-and-previews': customizeHandlesAndPreviews,
+	'customize-multi-select': customizeMultiSelect,
 	'other-drag-source-rerender': dragSourceRerender,
 	'other-remount-with-correct-props': remountWithCorrectProps,
 	'other-native-files': otherNativeFiles,

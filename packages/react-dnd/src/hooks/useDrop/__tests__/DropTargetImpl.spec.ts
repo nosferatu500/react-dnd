@@ -79,7 +79,22 @@ describe('The Hooks DropTargetImpl', () => {
 			)
 			impl.drop()
 			expect(drop.mock.calls.length).toEqual(1)
-			expect(drop.mock.calls[0]).toEqual([item, monitor])
+			expect(drop.mock.calls[0]?.slice(0, 2)).toEqual([item, monitor])
+		})
+
+		it('forwards the abort signal dnd-core hands it', () => {
+			// The third argument is how an async `drop` learns it has been
+			// superseded; it comes from dnd-core, which creates a controller per
+			// drop before the handler runs.
+			const item = {}
+			const monitor = { getItem: () => item } as DropTargetMonitor
+			const drop = vi.fn()
+			const impl = new DropTargetImpl({ drop } as any, monitor)
+			const { signal } = new AbortController()
+
+			impl.drop(monitor, 'T1', signal)
+
+			expect(drop.mock.calls[0]?.[2]).toBe(signal)
 		})
 	})
 })

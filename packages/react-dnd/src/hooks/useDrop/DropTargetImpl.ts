@@ -32,10 +32,10 @@ export class DropTargetImpl<O, R, P> implements DropTarget {
 		}
 	}
 
-	public drop() {
+	public drop(_monitor?: unknown, _targetId?: unknown, signal?: AbortSignal) {
 		const spec = this.spec
 		if (spec.drop) {
-			return spec.drop(this.draggedItem, this.monitor)
+			return spec.drop(this.draggedItem, this.monitor, signal as AbortSignal)
 		}
 		return
 	}

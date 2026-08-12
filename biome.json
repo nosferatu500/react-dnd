@@ -82,7 +82,8 @@
       "linter": {
         "rules": {
           "a11y": {
-            "useValidAriaRole": "off"
+            "useValidAriaRole": "off",
+            "noNoninteractiveElementToInteractiveRole": "off"
           }
         }
       }

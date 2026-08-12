@@ -277,5 +277,10 @@ export interface DragSource {
 export interface DropTarget {
 	canDrop(monitor: DragDropMonitor, targetId: Identifier): boolean
 	hover(monitor: DragDropMonitor, targetId: Identifier): void
-	drop(monitor: DragDropMonitor, targetId: Identifier): any
+	/**
+	 * @param signal aborted if the drop is superseded before its result is used.
+	 * Only meaningful to a target that returns a promise; an implementation that
+	 * ignores it is still valid.
+	 */
+	drop(monitor: DragDropMonitor, targetId: Identifier, signal: AbortSignal): any
 }

@@ -64,3 +64,45 @@ function DraggableComponent(props) {
 * **`isDragging(monitor)`**: Optional. By default, only the drag source that initiated the drag operation is considered to be dragging. You can override this behavior by defining a custom `isDragging` method. It might return something like `props.id === monitor.getItem().id`. Do this if the original component may be unmounted during the dragging and later “resurrected” with a different parent. For example, when moving a card across the lists in a Kanban board, you want it to retain the dragged appearance—even though technically, the component gets unmounted and a different one gets mounted every time you move it to another list. _Note: You may not call `monitor.isDragging()` inside this method._
 
 - **`collect`**: Optional. The collecting function. It should return a plain object of the props to return for injection into your component. It receives two parameters, `monitor` and `props`. Read the [overview](/docs/overview) for an introduction to the monitors and the collecting function. See the collecting function described in detail in the next section.
+
+### Dragging several items at once
+
+There is no separate multi-drag API, and none is needed: a drag carries whatever
+object `item` returns, so carrying several ids is only a different object.
+
+```jsx
+const [{ isDragging }, drag] = useDrag(
+  () => ({
+    type: 'row',
+    // Read at drag start, not on every render.
+    item: () => ({ ids: selected.includes(id) ? selected : [id] }),
+
+    // Without this, only the row you grabbed looks like it is moving.
+    isDragging: (monitor) => monitor.getItem()?.ids.includes(id) ?? false,
+
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+  }),
+  [id, selected],
+)
+```
+
+Two things are worth knowing.
+
+**`isDragging` is scoped to the source that started the drag.** That is the
+right default — it is what makes `isDragging` mean "this element" — but for a
+multi-item drag every row in the set should look like it is moving, and the
+custom `isDragging` above is what widens it.
+
+**The preview cannot show more than one element.** The browser's drag image is a
+picture of the single node the drag started on, so a "3 items" badge or a
+stacked preview has to be drawn with [`useDragLayer`](/docs/api/use-drag-layer),
+which already receives the item.
+
+The drop target needs nothing special: `drop(item)` receives the object the
+source built, ids and all.
+
+Where the selection lives, and what happens when you grab a row outside it, are
+application decisions. The
+[multi-select example](/examples/customize/multi-select) drags just the grabbed
+row in that case and resets the selection to match, which is how file managers
+behave — but `item()` is where that is decided, so you can choose otherwise.

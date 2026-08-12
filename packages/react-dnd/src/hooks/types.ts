@@ -115,11 +115,18 @@ export interface DropTargetHookSpec<DragObject, DropResult, CollectedProps> {
 	 * target has already handled drop by checking monitor.didDrop() and monitor.getDropResult(). Both this method and
 	 * the source's endDrag method are good places to fire Flux actions. This method will not be called if canDrop()
 	 * is defined and returns false.
+	 *
+	 * Returning a **promise** makes the drop asynchronous: the drag ends when it
+	 * always ended, `monitor.isSettling()` is true until the promise settles, and
+	 * the resolved value becomes the drop result then. A rejection is recorded on
+	 * `monitor.getDropError()` and reported to the environment's uncaught-error
+	 * handling.
 	 */
 	drop?: (
 		item: DragObject,
 		monitor: DropTargetMonitor<DragObject, DropResult>,
-	) => DropResult | undefined
+		signal: AbortSignal,
+	) => DropResult | undefined | Promise<DropResult | undefined>
 
 	/**
 	 * Optional.

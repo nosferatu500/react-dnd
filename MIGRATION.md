@@ -118,6 +118,50 @@ still return the node they were handed — returning `undefined` would make that
 spelling silently disconnect handlers instead of failing. The public type says
 `void`; do not rely on it.
 
+### New: more than one backend behind a provider
+
+A `DndProvider` takes exactly one backend, so supporting a mouse *and* a finger
+has meant choosing since 2015. `composeBackends` runs several at once:
+
+```tsx
+import { composeBackends } from '@nosferatu500/dnd-core'
+import { HTML5Backend } from '@nosferatu500/react-dnd-html5-backend'
+import { TouchBackend } from '@nosferatu500/react-dnd-touch-backend'
+
+<DndProvider backend={composeBackends(HTML5Backend, TouchBackend)}>
+	<App />
+</DndProvider>
+```
+
+`useDrag` and `useDrop` do not change; every backend connects to the same nodes,
+and one unsubscribe undoes all of them. Setup runs first-to-last and teardown
+last-to-first, and a backend that throws during setup unwinds the ones already
+started — otherwise a half-composed provider would poison every later mount.
+
+Each backend receives the provider's `context` and `options`. When two need
+different options, wrap one:
+
+```tsx
+const touch = (manager, context, options) =>
+	TouchBackend(manager, context, { ...options, delayTouchStart: 200 })
+
+composeBackends(HTML5Backend, touch)
+```
+
+**Compose backends that respond to different gestures.** Nothing arbitrates
+between them. HTML5 listens for `dragstart` and Touch for `touchstart`, which do
+not overlap — but `TouchBackend`'s `enableMouseEvents` adds `mousedown`, and two
+backends trying to start a drag from one gesture is not a case this has been
+tested against on a real device.
+
+This is what `withKeyboard` was already doing internally. `CompositeBackend`
+moved from `@nosferatu500/react-dnd-keyboard-backend` to
+`@nosferatu500/dnd-core` — it is still re-exported from the keyboard package, so
+existing imports work — and it no longer carries `announce()` or
+`isKeyboardDragging()` itself. Those are capabilities of the keyboard backend,
+found through the new `getComposedBackends()`; use `useDragDropAnnounce()` and
+`isKeyboardDrag()` as before rather than calling the composite directly.
+
 ### Fixed: a dragged file could disable drag and drop for the whole page
 
 If a file (or any other native payload) was dragged over your app and the
@@ -194,6 +238,13 @@ same way, rather than throwing where nobody can catch it.
 `spec.end` is unchanged: it fires when the drag ends, not when the drop settles,
 and sees `getDropResult()` as `null` for an async drop. Use `didDrop()` to know
 a drop happened and `isSettling()` to know the answer is still coming.
+
+**`drop` receives an `AbortSignal` as a third argument**, aborted when the drop
+can no longer affect anything — today, when a new drag begins and takes the drop
+result slot with it. Pass it to `fetch`; an `AbortError` that follows is neither
+reported nor recorded on `getDropError()`, because the abort was ours. Compose
+`AbortSignal.any([signal, AbortSignal.timeout(ms)])` for a deadline. Ignoring it
+is allowed.
 
 **What you may need to change.** Only code that was already relying on the
 broken behavior:
@@ -702,6 +753,10 @@ in the toolchain:
   fields.
 - `a11y/useValidAriaRole` is off for examples and specs, which use non-standard
   `role` values as test hooks.
+- `a11y/noNoninteractiveElementToInteractiveRole` is off in the same places. It
+  rejects `<ul role="listbox">` with `<li role="option">`, which is the pattern
+  the WAI-ARIA Authoring Practices give for a multi-select list — and the one
+  place `aria-selected` is actually valid. The multi-select example uses it.
 
 ### Jest 29 → Vitest 4
 

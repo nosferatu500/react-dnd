@@ -1,7 +1,10 @@
 {
   "core": {
+    "CompositeBackend": true,
     "HandlerRole": true,
+    "composeBackends": true,
     "createDragDropManager": true,
+    "getComposedBackends": true,
     "invariant": true
   },
   "dnd": {

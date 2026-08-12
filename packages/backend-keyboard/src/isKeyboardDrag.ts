@@ -1,4 +1,5 @@
 import type { DragDropManager } from '@nosferatu500/dnd-core'
+import { getComposedBackends } from '@nosferatu500/dnd-core'
 
 import type { KeyboardDragBackend } from './interfaces.js'
 
@@ -36,6 +37,7 @@ import type { KeyboardDragBackend } from './interfaces.js'
  * relevant `useDrag`/`useDrop` — and consult this only to decide what to show.
  */
 export function isKeyboardDrag(manager: DragDropManager): boolean {
-	const backend = manager.getBackend() as Partial<KeyboardDragBackend>
-	return backend?.isKeyboardDragging?.() ?? false
+	return getComposedBackends(manager.getBackend()).some((backend) =>
+		(backend as Partial<KeyboardDragBackend>).isKeyboardDragging?.(),
+	)
 }

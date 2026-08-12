@@ -1,3 +1,4 @@
+import { getComposedBackends } from '@nosferatu500/dnd-core'
 import { useDragDropManager } from '@nosferatu500/react-dnd'
 import { useCallback } from 'react'
 
@@ -39,8 +40,9 @@ export function useDragDropAnnounce(): (message: string) => void {
 
 	return useCallback(
 		(message: string) => {
-			const backend = manager.getBackend() as Partial<AnnouncingBackend>
-			backend?.announce?.(message)
+			for (const backend of getComposedBackends(manager.getBackend())) {
+				;(backend as Partial<AnnouncingBackend>).announce?.(message)
+			}
 		},
 		[manager],
 	)

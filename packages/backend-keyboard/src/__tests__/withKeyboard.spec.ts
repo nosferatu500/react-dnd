@@ -180,9 +180,45 @@ describe('CompositeBackend', () => {
 
 	it('says no keyboard drag when no backend can answer', () => {
 		// Two pointer backends: nobody to ask, and "no" is the honest answer.
+		// Asked through `isKeyboardDrag`, which is how an application asks — the
+		// composite itself knows nothing about keyboards, it just exposes what it
+		// composed.
 		const composite = new CompositeBackend([stub(), stub()])
+		const manager = {
+			getBackend: () => composite,
+		} as unknown as DragDropManager
 
-		expect(composite.isKeyboardDragging()).toBe(false)
+		expect(isKeyboardDrag(manager)).toBe(false)
+	})
+
+	it('finds a keyboard backend nested inside another composite', () => {
+		// `composeBackends(withKeyboard(HTML5Backend), TouchBackend)` — and the
+		// other nesting order too. A capability one level down is still a
+		// capability the provider has.
+		const keyboard = stub({
+			isKeyboardDragging: () => true,
+		} as Partial<Backend>)
+		const composite = new CompositeBackend([
+			new CompositeBackend([stub(), keyboard]),
+			stub(),
+		])
+		const manager = {
+			getBackend: () => composite,
+		} as unknown as DragDropManager
+
+		expect(isKeyboardDrag(manager)).toBe(true)
+	})
+
+	it('finds the keyboard backend among several composed backends', () => {
+		const keyboard = stub({
+			isKeyboardDragging: () => true,
+		} as Partial<Backend>)
+		const composite = new CompositeBackend([stub(), keyboard, stub()])
+		const manager = {
+			getBackend: () => composite,
+		} as unknown as DragDropManager
+
+		expect(isKeyboardDrag(manager)).toBe(true)
 	})
 
 	it('is a BackendFactory-compatible result', () => {

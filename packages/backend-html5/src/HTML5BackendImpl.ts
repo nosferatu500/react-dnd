@@ -323,24 +323,43 @@ export class HTML5BackendImpl implements Backend {
 	 * @param targetIds the hovered targets, outermost first — the order dnd-core
 	 * uses everywhere, and the reason this reads from the end.
 	 */
-	private getCurrentDropEffect(targetIds: string[]): DropEffect {
+	/**
+	 * The innermost target that will accept the item, or `null` if none will.
+	 *
+	 * `targetIds` runs outermost-first, so scanning from the end reaches the
+	 * innermost first and stops there.
+	 *
+	 * Both things an event needs to know come from this one answer: whether to
+	 * cancel the browser's default (anything accepted) and whose `dropEffect` to
+	 * honour (this target's). They used to be two passes over the same list from
+	 * opposite ends, which meant every application `canDrop` ran twice per
+	 * `dragover` — and `dragover` fires continuously for as long as a drag
+	 * lasts.
+	 */
+	private findInnermostDropTarget(targetIds: string[]): string | null {
+		for (let i = targetIds.length - 1; i >= 0; i--) {
+			const targetId = targetIds[i] as string
+			if (this.monitor.canDropOnTarget(targetId)) {
+				return targetId
+			}
+		}
+		return null
+	}
+
+	private getCurrentDropEffect(innermostTargetId: string | null): DropEffect {
 		if (this.isDraggingNativeItem()) {
 			return 'copy'
 		}
 
-		for (let i = targetIds.length - 1; i >= 0; i--) {
-			const targetId = targetIds[i] as string
-			if (!this.monitor.canDropOnTarget(targetId)) {
-				continue
-			}
-			const dropEffect = this.dropTargetOptions.get(targetId)?.dropEffect
+		if (innermostTargetId) {
+			const dropEffect =
+				this.dropTargetOptions.get(innermostTargetId)?.dropEffect
 			if (dropEffect) {
 				return dropEffect
 			}
 			// The innermost target that could accept the drop has no opinion, so
 			// nothing further out gets to have one either: its effect would
 			// describe a drop that is not happening there.
-			break
 		}
 
 		const sourceId = this.monitor.getSourceId() as string
@@ -728,16 +747,13 @@ export class HTML5BackendImpl implements Backend {
 			})
 		}
 
-		const canDrop = dragEnterTargetIds.some((targetId) =>
-			this.monitor.canDropOnTarget(targetId),
-		)
+		const innermostTargetId = this.findInnermostDropTarget(dragEnterTargetIds)
 
-		if (canDrop) {
+		if (innermostTargetId) {
 			// IE requires this to fire dragover events
 			e.preventDefault()
 			if (e.dataTransfer) {
-				e.dataTransfer.dropEffect =
-					this.getCurrentDropEffect(dragEnterTargetIds)
+				e.dataTransfer.dropEffect = this.getCurrentDropEffect(innermostTargetId)
 			}
 		}
 	}
@@ -776,17 +792,15 @@ export class HTML5BackendImpl implements Backend {
 
 		this.scheduleHover(dragOverTargetIds)
 
-		const canDrop = (dragOverTargetIds || []).some((targetId) =>
-			this.monitor.canDropOnTarget(targetId),
+		const innermostTargetId = this.findInnermostDropTarget(
+			dragOverTargetIds || [],
 		)
 
-		if (canDrop) {
+		if (innermostTargetId) {
 			// Show user-specified drop effect.
 			e.preventDefault()
 			if (e.dataTransfer) {
-				e.dataTransfer.dropEffect = this.getCurrentDropEffect(
-					dragOverTargetIds || [],
-				)
+				e.dataTransfer.dropEffect = this.getCurrentDropEffect(innermostTargetId)
 			}
 		} else if (this.isDraggingNativeItem()) {
 			// Don't show a nice cursor, but still prevent the default
@@ -860,7 +874,11 @@ export class HTML5BackendImpl implements Backend {
 		this.actions.hover(dropTargetIds, {
 			clientOffset: getEventClientOffset(e),
 		})
-		this.actions.drop({ dropEffect: this.getCurrentDropEffect(dropTargetIds) })
+		this.actions.drop({
+			dropEffect: this.getCurrentDropEffect(
+				this.findInnermostDropTarget(dropTargetIds),
+			),
+		})
 
 		// A target took the drop, so the browser must not also act on it — an
 		// accepted text drop over an editable target would otherwise be inserted
